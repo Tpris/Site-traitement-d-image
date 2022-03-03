@@ -1,6 +1,7 @@
 package pdl.backend;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -21,11 +22,7 @@ public class ImageDao implements Dao<Image> {
 
   private final Map<Long, Image> images = new HashMap<>();
 
-  public ImageDao() throws IOException {
-
-    System.out.println("-------------------------------------------");
-    System.out.println("-------------------------------------------");
-    System.out.println("-------------------------------------------");
+  public ImageDao() throws Exception {
 
     ClassLoader classLoader = getClass().getClassLoader();
     File directory = new File(classLoader.getResource("images").getFile());
@@ -42,19 +39,52 @@ public class ImageDao implements Dao<Image> {
 
       for (File file : files) {
         if (file.isFile()) {
-          // System.out.println(file.getName());
           fileContent = Files.readAllBytes(file.toPath());
           if (isImage(file)) {
             Image img = new Image(file.getName(), fileContent);
             images.put(img.getId(), img);
-          } else {
-            System.out.println(file.getName() + " is not img");
           }
         }
       }
     } catch (final IOException e) {
       e.printStackTrace();
     }
+
+    /*
+     * ClassLoader classLoader = getClass().getClassLoader();
+     * 
+     * try {
+     * File directory = new File(classLoader.getResource("images").getFile());
+     * byte[] fileContent;
+     * try {
+     * File[] files = directory.listFiles();
+     * 
+     * for (File file : files) {
+     * if (file.isFile()) {
+     * // System.out.println(file.getName());
+     * fileContent = Files.readAllBytes(file.toPath());
+     * if (isImage(file)) {
+     * Image img = new Image(file.getName(), fileContent);
+     * images.put(img.getId(), img);
+     * } else {
+     * System.out.println(file.getName() + " is not img");
+     * }
+     * }
+     * }
+     * } catch (final IOException e) {
+     * e.printStackTrace();
+     * }
+     * } catch (Exception exception) {
+     * throw new FileNotFoundException("Directory images not found!");
+     * /
+     * if (!directory.exists()) {
+     * Path path = Paths.get(directory.getPath());
+     * Files.createDirectories(path);
+     * directory = new File(classLoader.getResource("images").getFile());
+     * }
+     * 
+     * }
+     */
   }
 
   private boolean isImage(File file) {
