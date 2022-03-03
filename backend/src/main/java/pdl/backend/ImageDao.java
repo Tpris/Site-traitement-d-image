@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -41,7 +42,8 @@ public class ImageDao implements Dao<Image> {
         if (file.isFile()) {
           fileContent = Files.readAllBytes(file.toPath());
           if (isImage(file)) {
-            Image img = new Image(file.getName(), fileContent);
+            MediaType mediaType = getType(file).equals("jpg") ? MediaType.IMAGE_JPEG : MediaType.IMAGE_PNG;
+            Image img = new Image(file.getName(), fileContent, mediaType);
             images.put(img.getId(), img);
           }
         }
@@ -85,6 +87,21 @@ public class ImageDao implements Dao<Image> {
      * 
      * }
      */
+  }
+
+  private String getType(File file) {
+    String fileName = file.toString();
+
+    int index = fileName.lastIndexOf('.');
+    String extension = "";
+    if (index > 0) {
+      extension = fileName.substring(index + 1);
+    }
+
+    if (extension.equals("jpeg"))
+      extension = "jpg";
+
+    return extension;
   }
 
   private boolean isImage(File file) {
