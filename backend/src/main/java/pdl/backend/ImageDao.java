@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +21,7 @@ public class ImageDao implements Dao<Image> {
 
   private final Map<Long, Image> images = new HashMap<>();
 
-  public ImageDao() {
+  public ImageDao() throws IOException {
 
     System.out.println("-------------------------------------------");
     System.out.println("-------------------------------------------");
@@ -28,10 +30,13 @@ public class ImageDao implements Dao<Image> {
     final File folder = new File(
         "C:/Users/maema/Documents/Ecole/Université/S6/Projet/Projet/Projet_pdl/backend/src/main/resources/images");
 
-    System.out.println("-------------------------------------------");
-    System.out.println("-------------------------------------------");
-    System.out.println("-------------------------------------------");
-    // final ClassPathResource imgFile = new ClassPathResource("test.jpg");
+    if (folder == null || !folder.exists()) {
+      Path path = Paths.get(
+          "C:/Users/maema/Documents/Ecole/Université/S6/Projet/Projet/Projet_pdl/backend/src/main/resources/images");
+
+      // java.nio.file.Files;
+      Files.createDirectories(path);
+    }
     byte[] fileContent;
     try {
       File[] files = folder.listFiles();
