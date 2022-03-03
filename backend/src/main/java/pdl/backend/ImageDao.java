@@ -27,19 +27,18 @@ public class ImageDao implements Dao<Image> {
     System.out.println("-------------------------------------------");
     System.out.println("-------------------------------------------");
 
-    final File folder = new File(
-        "C:/Users/maema/Documents/Ecole/Université/S6/Projet/Projet/Projet_pdl/backend/src/main/resources/images");
+    ClassLoader classLoader = getClass().getClassLoader();
+    File directory = new File(classLoader.getResource("images").getFile());
 
-    if (folder == null || !folder.exists()) {
-      Path path = Paths.get(
-          "C:/Users/maema/Documents/Ecole/Université/S6/Projet/Projet/Projet_pdl/backend/src/main/resources/images");
-
-      // java.nio.file.Files;
+    if (!directory.exists()) {
+      Path path = Paths.get(directory.getPath());
       Files.createDirectories(path);
+      directory = new File(classLoader.getResource("images").getFile());
     }
+
     byte[] fileContent;
     try {
-      File[] files = folder.listFiles();
+      File[] files = directory.listFiles();
 
       for (File file : files) {
         if (file.isFile()) {
