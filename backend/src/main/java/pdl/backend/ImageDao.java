@@ -1,6 +1,8 @@
 package pdl.backend;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,12 +20,30 @@ public class ImageDao implements Dao<Image> {
   private final Map<Long, Image> images = new HashMap<>();
 
   public ImageDao() {
-    final ClassPathResource imgFile = new ClassPathResource("test.jpg");
+
+    System.out.println("-------------------------------------------");
+    System.out.println("-------------------------------------------");
+    System.out.println("-------------------------------------------");
+
+    final File folder = new File(
+        "C:/Users/maema/Documents/Ecole/Université/S6/Projet/Projet/Projet_pdl/backend/src/main/resources/images");
+
+    System.out.println("-------------------------------------------");
+    System.out.println("-------------------------------------------");
+    System.out.println("-------------------------------------------");
+    // final ClassPathResource imgFile = new ClassPathResource("test.jpg");
     byte[] fileContent;
     try {
-      fileContent = Files.readAllBytes(imgFile.getFile().toPath());
-      Image img = new Image("test.jpg", fileContent);
-      images.put(img.getId(), img);
+      File[] files = folder.listFiles();
+
+      for (File file : files) {
+        if (file.isFile()) {
+          System.out.println(file.getName());
+          fileContent = Files.readAllBytes(file.toPath());
+          Image img = new Image(file.getName(), fileContent);
+          images.put(img.getId(), img);
+        }
+      }
     } catch (final IOException e) {
       e.printStackTrace();
     }
