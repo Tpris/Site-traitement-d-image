@@ -42,15 +42,30 @@ public class ImageDao implements Dao<Image> {
 
       for (File file : files) {
         if (file.isFile()) {
-          System.out.println(file.getName());
+          // System.out.println(file.getName());
           fileContent = Files.readAllBytes(file.toPath());
-          Image img = new Image(file.getName(), fileContent);
-          images.put(img.getId(), img);
+          if (isImage(file)) {
+            Image img = new Image(file.getName(), fileContent);
+            images.put(img.getId(), img);
+          } else {
+            System.out.println(file.getName() + " is not img");
+          }
         }
       }
     } catch (final IOException e) {
       e.printStackTrace();
     }
+  }
+
+  private boolean isImage(File file) {
+    String fileName = file.toString();
+
+    int index = fileName.lastIndexOf('.');
+    String extension = "";
+    if (index > 0) {
+      extension = fileName.substring(index + 1);
+    }
+    return extension.equals("jpg") || extension.equals("jpeg") || extension.equals("png");
   }
 
   @Override
