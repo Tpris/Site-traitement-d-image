@@ -3,24 +3,7 @@
 
 <template>
   <div id="app">
-    <nav>
-      <ul>
-        <li>
-          <router-link to="/">Home</router-link>
-        </li>
-        <li>
-          <router-link to="/gallery">Gallery</router-link>
-        </li>
-        <li>
-          <router-link to="/upload">Upload</router-link>
-        </li>
-      </ul>
-    </nav>
-
-    <div>
-      <h1>PDL - L3</h1>
       <router-view />
-    </div>
   </div>
 </template>
 
@@ -30,12 +13,39 @@
   font-family: Arial, Helvetica, sans-serif;
   color: #2c3e50;
 }
+
+body{
+  margin:0;
+  background-color: #E9F2FB;
+}
+
+.neumorphism{
+  background: #E9F2FB;
+  box-shadow:
+      inset 0 0 15px rgba(55, 84, 170,0),
+      inset 0 0 20px rgba(255, 255, 255,0),
+      7px 7px 15px rgba(55, 84, 170,.15),
+      -7px -7px 20px rgba(255, 255, 255,1),
+      inset 0 0 4px rgba(255, 255, 255,.2);
+}
+
+.neumorphism-push{
+  transition: box-shadow 199ms ease-in-out;
+}
+
+.neumorphism-push:hover{
+  box-shadow:
+      inset 7px 7px 15px rgba(55, 84, 170,.15),
+      inset -7px -7px 20px rgba(255, 255, 255,1),
+      0 0 4px rgba(255, 255, 255,.2);
+  transition: box-shadow 199ms ease-in-out;
+}
 ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #333;
+  background-color: #E9F2FB;
 }
 li {
   float: left;

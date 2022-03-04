@@ -5,25 +5,25 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "home",
-    component: () => import("./components/Home.vue"),
+    component: () => import("./View/Home.vue"),
     props: true
   },
   {
     path: "/gallery",
     name: "gallery",
-    component: () => import("./components/Gallery.vue"),
+    component: () => import("./View/Gallery.vue"),
     props: true
   },
   {
     path: "/image/:id",
     name: "image",
-    component: () => import("./components/Image.vue"),
+    component: () => import("./View/Image.vue"),
     props: ({ params }) => ({ id: Number(params.id) || 0 })
   },
   {
     path: "/upload",
     name: "upload",
-    component: () => import("./components/Upload.vue"),
+    component: () => import("./View/Upload.vue"),
     props: true
   }
 ];

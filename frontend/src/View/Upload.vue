@@ -3,8 +3,9 @@ import { ref } from 'vue';
 import { api } from '@/http-api';
 
 const target = ref<HTMLInputElement>();
+const emit = defineEmits(['updated'])
 
-function submitFile() {
+async function submitFile() {
   if (target.value !== null && target.value !== undefined && target.value.files !== null) {
     const file = target.value.files[0];
     if (file === undefined)
@@ -20,22 +21,34 @@ function submitFile() {
   }
 }
 
-function handleFileUpload(event: Event) {
+async function handleFileUpload(event: Event) {
   target.value = (event.target as HTMLInputElement);
+  await submitFile().then(() => {
+    emit("updated");
+  })
 }
 </script>
 
 <template>
-  <div>
-    <h3>Upload an image</h3>
-    <div>
+  <label for="file">
+    <a>Upload</a>
+  </label>
+  <div id="input-upload">
       <input type="file" id="file" ref="file" @change="handleFileUpload" />
-    </div>
-    <div>
-      <button @click="submitFile">Submit</button>
-    </div>
   </div>
 </template>
 
 <style scoped>
+#input-upload{
+  display: none;
+}
+
+label{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
 </style>
