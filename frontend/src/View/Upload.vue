@@ -5,7 +5,7 @@ import { api } from '@/http-api';
 const target = ref<HTMLInputElement>();
 const emit = defineEmits(['updated'])
 
-async function submitFile() {
+const submitFile = ()  =>{
   if (target.value !== null && target.value !== undefined && target.value.files !== null) {
     const file = target.value.files[0];
     if (file === undefined)
@@ -15,17 +15,16 @@ async function submitFile() {
     api.createImage(formData).then(() => {
       if (target.value !== undefined)
         target.value.value = '';
+      emit('updated')
     }).catch(e => {
       console.log(e.message);
     });
   }
 }
 
-async function handleFileUpload(event: Event) {
-  target.value = (event.target as HTMLInputElement);
-  await submitFile().then(() => {
-    emit("updated");
-  })
+const handleFileUpload = (event: Event) => {
+  target.value = (event.target as HTMLInputElement)
+  submitFile()
 }
 </script>
 

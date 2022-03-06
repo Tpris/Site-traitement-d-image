@@ -1,12 +1,16 @@
 <template>
   <div class="neumorphism container">
-    <div id="arrow-left"> - </div>
+    <div class="arrow">
+      <item>&lt;</item>
+    </div>
     <div class="container-images">
       <div class="img" v-for="image in props.images">
-        <Image @click="$emit('update:modelValue', image.id)" :id="image.id" />
+          <Image @click="$emit('update:modelValue', image.id)" :id="image.id" />
       </div>
     </div>
-    <div id="arrow-right"> + </div>
+    <div class="arrow">
+      <item>&gt;</item>
+    </div>
   </div>
 </template>
 
@@ -14,6 +18,7 @@
 import {ImageType} from "@/image";
 import {defineProps} from "vue";
 import Image from '@/View/Image.vue';
+import Item from '@/components/Item.vue'
 
 const props = defineProps<{ images: ImageType[] }>()
 defineEmits(['update:modelValue'])
@@ -21,10 +26,20 @@ defineEmits(['update:modelValue'])
 
 <style scoped>
 .container{
-  width: 98vw;
-  height: 18vh;
+  width: 100%;
+  height: 100%;
   border-radius: 20px;
   display: flex;
+  margin: auto;
+}
+
+.img img{
+  max-height: 100%;
+}
+
+.arrow{
+  margin: auto;
+  font-size: 2em;
 }
 
 .container-images{
@@ -32,15 +47,13 @@ defineEmits(['update:modelValue'])
   justify-content: center;
 }
 
-#arrow-left{
-  margin:auto ;
-}
-
-#arrow-right{
-  margin:auto;
-}
-
 .img{
-  margin-left: 50px;
+  margin-left: 2vw;
+  margin-right: 2vw;
+  cursor: pointer;
+}
+
+.img:hover{
+  opacity: 70%;
 }
 </style>

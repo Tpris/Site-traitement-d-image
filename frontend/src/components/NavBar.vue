@@ -41,6 +41,7 @@ watch(uploaded, () => {
 nav{
   display: flex;
   height: 70px;
+  width: 100vw;
   align-items: center;
 }
 

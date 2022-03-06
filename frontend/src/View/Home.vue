@@ -1,49 +1,53 @@
 <script setup lang="ts">
-import {ref, watch} from 'vue';
+import {reactive, ref, watch} from 'vue';
 import { api } from '@/http-api';
 import { ImageType } from '@/image'
 import ToolBox from '@/components/ToolBox.vue'
 import Carrousel from '@/components/Caroussel.vue'
 import Image from "@/View/Image.vue"
 import NavBar from '@/components/NavBar.vue'
+import {resolve} from "dns";
+const state = reactive({
+  selectedId: -1,
+  imageList: Array<ImageType>(),
+})
 
-const selectedId = ref(-1);
-const imageList = ref<ImageType[]>([]);
-getImageList();
-
-async function getImageList() {
-  api.getImageList().then((data) => {
-    imageList.value = data;
+const getImageList = async () => {
+  return api.getImageList().then((data) => {
+    state.imageList = data;
   }).catch(e => {
     console.log(e.message);
   });
 }
 
+getImageList();
+
 const download = document.getElementById("download-image");
 
-watch(selectedId, (newId) => {
-  api.getImage(newId)
-      .then((data: Blob) => {
-        const reader = new window.FileReader();
-        reader.readAsDataURL(data);
-        reader.onload = () => {
-          const download = document.getElementById("download-image");
-          if (reader.result as string && download) {
-            download.setAttribute("href", reader.result as string)
-            download.setAttribute("download", imageList.value.find((elem) => elem.id  === newId).name);
-          }
-        };
-      })
-      .catch(e => {
-        console.log(e.message);
-      });
-})
+//Peut être factoriser dans un composable
+watch(() => state.selectedId, (newId => {
+          api.getImage(newId)
+              .then((data: Blob) => {
+                const reader = new window.FileReader();
+                reader.readAsDataURL(data);
+                reader.onload = () => {
+                  const download = document.getElementById("download-image");
+                  if (reader.result as string && download) {
+                    download.setAttribute("href", reader.result as string)
+                    download.setAttribute("download", state.imageList.find((elem) => elem.id  === newId).name);
+                  }
+                };
+              })
+              .catch(e => {
+                console.log(e.message);
+              });
+    })
+)
 
 const updateImageListUpload = async () => {
-  await getImageList().then( () =>{
-        const imagesData = imageList.value
-        selectedId.value = imagesData[imagesData.length - 1].id
-  })
+  await getImageList();
+  const imagesData = state.imageList
+  state.selectedId = imagesData[imagesData.length - 1].id
 }
 </script>
 
@@ -54,32 +58,44 @@ const updateImageListUpload = async () => {
       <tool-box></tool-box>
     </div>
     <div id="img-box-selected">
-        <Image v-if="selectedId !== -1" :id="selectedId"></Image>
+      <div class="img-box">
+        <Image v-if="state.selectedId !== -1" :id="state.selectedId"></Image>
+      </div>
     </div>
   </div>
   <div id="carrousel-box">
-    <carrousel v-model="selectedId" :images="imageList"></carrousel>
+    <carrousel v-model="state.selectedId" :images="state.imageList"></carrousel>
   </div>
 </template>
 
 <style scoped>
 #img-box-selected{
   margin: auto;
+  height: 70vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
+.img-box img{
+  max-height: 70vh;
+}
+
 #main-content{
   display: flex;
-  margin-left: 20px;
+  width: 100vw;
 }
 
 #toolBox{
-  margin-right: 50px;
   margin-top: 1.5vh;
+  margin-left: 1vw;
 }
 
 #carrousel-box{
   margin-top: 1.5vh;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
+  margin-left: auto;
+  margin-right: auto;
+  width: 98vw;
+  height: 15vh;
 }
 </style>
