@@ -41,13 +41,4 @@ const handleFileUpload = (event: Event) => {
 #input-upload{
   display: none;
 }
-
-label{
-  height: 100%;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
 </style>

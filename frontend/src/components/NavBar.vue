@@ -2,13 +2,13 @@
   <nav class="neumorphism">
     <h1 id="title">Notre super projet</h1>
     <div id="items">
-      <div class="neumorphism neumorphism-push">
+      <div class="neumorphism neumorphism-push link-sizing">
         <router-link :class="name === 'Home' ? 'selected' : 'unselected'" to="/">Accueil</router-link>
       </div>
-      <div class="neumorphism neumorphism-push">
+      <div class="neumorphism neumorphism-push link-sizing">
         <a :class="name === 'Portfolio' ? 'selected' : 'unselected'" id="download-image">Download</a>
       </div>
-      <div class="neumorphism neumorphism-push">
+      <div class="neumorphism neumorphism-push link-sizing">
         <upload @updated="$emit('updated')" ></upload>
       </div>
     </div>
@@ -30,6 +30,15 @@ watch(uploaded, () => {
 </script>
 
 <style>
+.link-sizing a,label{
+  border-radius: 50px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
 .selected {
   color: #0777D9;
 }
@@ -63,7 +72,6 @@ nav{
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
 }
 
 #items div:hover a{
