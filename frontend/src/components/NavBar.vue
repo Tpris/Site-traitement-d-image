@@ -6,27 +6,31 @@
         <router-link :class="name === 'Home' ? 'selected' : 'unselected'" to="/">Accueil</router-link>
       </div>
       <div class="neumorphism neumorphism-push link-sizing">
-        <a :class="name === 'Portfolio' ? 'selected' : 'unselected'" id="download-image">Download</a>
+        <a v-if="selectedImage.source && selectedImage.id !== -1"
+           :href="selectedImage.source"
+           :download="selectedImage.id">
+          Download
+        </a>
+        <a v-else>Download</a>
       </div>
       <div class="neumorphism neumorphism-push link-sizing">
         <upload @updated="$emit('updated')" ></upload>
+      </div>
+      <div class="neumorphism neumorphism-push link-sizing">
+        <delete @updated="$emit('updated')" :selected-image="selectedImage"></delete>
       </div>
     </div>
   </nav>
 </template>
 
 <script setup lang="ts">
-import Upload from "@/View/Upload.vue"
+import Upload from "@/components/Upload.vue"
+import Delete from "@/components/Delete.vue"
 import {ref, watch} from "vue";
 import {api} from "@/http-api";
 
-defineProps<{ name: ""}>()
-const emits = defineEmits(['updated'])
-
-const uploaded= ref(false);
-watch(uploaded, () => {
-  emits("updated");
-})
+defineProps<{ name: "", selectedImage: { id:number, source:string }}>()
+defineEmits(['updated'])
 </script>
 
 <style>
@@ -80,5 +84,9 @@ nav{
 
 #items div a{
   text-decoration: none;
+}
+
+#items div a{
+  color: inherit;
 }
 </style>

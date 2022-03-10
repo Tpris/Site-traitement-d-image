@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import {ImageType} from "@/image";
 import {defineProps} from "vue";
-import Image from '@/View/Image.vue';
+import Image from '@/components/Image.vue';
 import Item from '@/components/Item.vue'
 
 const props = defineProps<{ images: ImageType[] }>()

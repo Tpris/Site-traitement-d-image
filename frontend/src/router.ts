@@ -17,13 +17,13 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/image/:id",
     name: "image",
-    component: () => import("./View/Image.vue"),
+    component: () => import("./components/Image.vue"),
     props: ({ params }) => ({ id: Number(params.id) || 0 })
   },
   {
     path: "/upload",
     name: "upload",
-    component: () => import("./View/Upload.vue"),
+    component: () => import("./components/Upload.vue"),
     props: true
   }
 ];
