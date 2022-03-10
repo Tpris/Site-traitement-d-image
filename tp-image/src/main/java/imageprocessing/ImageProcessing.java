@@ -7,7 +7,6 @@ import boofcv.io.image.UtilImageIO;
 import boofcv.struct.border.BorderType;
 import boofcv.struct.image.GrayU8;
 import boofcv.struct.image.Planar;
-import boofcv.alg.color.ColorHsv;
 
 public class ImageProcessing {
 
@@ -25,22 +24,6 @@ public class ImageProcessing {
         int nbCanaux = input.getNumBands();
         for (int i = 0; i < nbCanaux; ++i) {
           GrayLevelProcessing.luminosite(input.getBand(i), delta);
-        }
-      }
-    
-      public static void meanFilterWithBorders(Planar<GrayU8> image, int size, BorderType borderType) {
-        int nbCanaux = image.getNumBands();
-        Planar<GrayU8> input = image.clone();
-        for (int i = 0; i < nbCanaux; ++i) {
-          Convolution.meanFilterWithBorders(input.getBand(i), image.getBand(i), size, borderType);
-        }
-      }
-    
-      public static void convolutionColor(Planar<GrayU8> image, int size, double sigma) {
-        int nbCanaux = image.getNumBands();
-        Planar<GrayU8> input = image.clone();
-        for (int i = 0; i < nbCanaux; ++i) {
-          Convolution.flouGaussien(input.getBand(i), image.getBand(i), size, sigma);
         }
       }
     
@@ -76,5 +59,45 @@ public class ImageProcessing {
     
           }
         }
+      }
+
+      public static void meanFilterWithBorders(Planar<GrayU8> image, int size, BorderType borderType) {
+        int nbCanaux = image.getNumBands();
+        Planar<GrayU8> input = image.clone();
+        for (int i = 0; i < nbCanaux; ++i) {
+          Convolution.meanFilterWithBorders(input.getBand(i), image.getBand(i), size, borderType);
+        }
+      }
+    
+      public static void convolutionColor(Planar<GrayU8> image, int size, double sigma) {
+        int nbCanaux = image.getNumBands();
+        Planar<GrayU8> input = image.clone();
+        for (int i = 0; i < nbCanaux; ++i) {
+          Convolution.flouGaussien(input.getBand(i), image.getBand(i), size, sigma);
+        }
+      }
+
+      public static void egalisationV(Planar<GrayU8> input) {
+        int nbCanaux = input.getNumBands();
+        if(nbCanaux==1){
+          GrayU8[] bands = new GrayU8[3];
+          for(int i = 0; i<3;++i) bands[i] = input.getBand(0).clone();
+          input.setBands(bands);
+        }
+        nbCanaux = input.getNumBands();
+        if(nbCanaux==3) ColorProcessing.egalisationColorV(input);
+        else System.err.println("error : unsupported type");
+      }
+
+      public static void egalisationS(Planar<GrayU8> input) {
+        int nbCanaux = input.getNumBands();
+        if(nbCanaux==1){
+          GrayU8[] bands = new GrayU8[3];
+          for(int i = 0; i<3;++i) bands[i] = input.getBand(0).clone();
+          input.setBands(bands);
+        }
+        nbCanaux = input.getNumBands();
+        if(nbCanaux==3) ColorProcessing.egalisationColorS(input);
+        else System.err.println("error : unsupported type");
       }
 }

@@ -131,9 +131,9 @@ public class ColorProcessing {
     }
   }
 
-  public static void egalisationHSV(Planar<GrayU8> image) {
+  public static void egalisationColorHSV(Planar<GrayU8> image, int[] histoCum) {
     int[] egal = new int[256];
-    int[] histoCumul = histogramCumulV(image);
+    int[] histoCumul = histoCum;
     for (int i = 0; i < 256; i++) {
       egal[i] = histoCumul[i] * 255 / (image.height * image.width);
     }
@@ -150,17 +150,35 @@ public class ColorProcessing {
     }
   }
 
+  public static void egalisationColorV(Planar<GrayU8> image) {
+    egalisationColorHSV(image, histogramCumulV(image));
+  }
+
+  public static void egalisationColorS(Planar<GrayU8> image) {
+    egalisationColorHSV(image, histogramCumulS(image));
+  }
+
   public static void contrastColor(Planar<GrayU8> image, int min, int max) {
     for (int i = 0; i < 3; ++i) {
       GrayLevelProcessing.contrast(image.getBand(i), min, max);
     }
   }
 
-  private static float getVfromRgb(int x, int y, Planar<GrayU8> image) {
+  private static float[] getHSVfromRgb(int x, int y, Planar<GrayU8> image) {
     int rgb[] = { image.getBand(0).get(x, y), image.getBand(1).get(x, y), image.getBand(2).get(x, y) };
     float[] hsv = new float[3];
     rgbToHsv(rgb[0], rgb[1], rgb[2], hsv);
+    return hsv;
+  }
+
+  private static float getVfromRgb(int x, int y, Planar<GrayU8> image) {
+    float[] hsv = getHSVfromRgb(x, y, image);
     return hsv[2];
+  }
+
+  private static float getSfromRgb(int x, int y, Planar<GrayU8> image) {
+    float[] hsv = getHSVfromRgb(x, y, image);
+    return hsv[1];
   }
 
   public static float minV(Planar<GrayU8> image) {
@@ -185,6 +203,70 @@ public class ColorProcessing {
       }
     }
     return max;
+  }
+
+  public static float minS(Planar<GrayU8> image) {
+    float min = 255;
+    for (int y = 0; y < image.height; ++y) {
+      for (int x = 0; x < image.width; ++x) {
+        float v = getSfromRgb(x, y, image);
+        if (min > v)
+          min = v;
+      }
+    }
+    return min;
+  }
+
+  public static float maxS(Planar<GrayU8> image) {
+    float max = 0;
+    for (int y = 0; y < image.height; ++y) {
+      for (int x = 0; x < image.width; ++x) {
+        float v = getSfromRgb(x, y, image);
+        if (max < v)
+          max = v;
+      }
+    }
+    return max;
+  }
+
+  public static int[] histogramV(Planar<GrayU8> image) {
+    int values[] = new int[256];
+    for (int y = 0; y < image.height; ++y) {
+      for (int x = 0; x < image.width; ++x) {
+        float v = getVfromRgb(x, y, image);
+        values[(int) v]++;
+      }
+    }
+    return values;
+  }
+
+  public static int[] histogramS(Planar<GrayU8> image) {
+    int values[] = new int[256];
+    for (int y = 0; y < image.height; ++y) {
+      for (int x = 0; x < image.width; ++x) {
+        float v = getSfromRgb(x, y, image);
+        values[(int) v]++;
+      }
+    }
+    return values;
+  }
+
+  public static int[] histogramCumulHSV(Planar<GrayU8> input, int[] hist) {
+    int[] histo = hist;
+    int histoCum[] = new int[256];
+    histoCum[0] = histo[0];
+    for (int i = 1; i < 256; i++) {
+      histoCum[i] = histo[i] + histoCum[i - 1];
+    }
+    return histoCum;
+  }
+
+  public static int[] histogramCumulV(Planar<GrayU8> input) {
+    return histogramCumulHSV(input, histogramV(input));
+  }
+
+  public static int[] histogramCumulS(Planar<GrayU8> input) {
+    return histogramCumulHSV(input, histogramS(input));
   }
 
   public static void contrastHSV(Planar<GrayU8> image, int min, int max) {
@@ -233,27 +315,6 @@ public class ColorProcessing {
 		}
 	}
 
-  public static int[] histogramV(Planar<GrayU8> image) {
-    int values[] = new int[256];
-    for (int y = 0; y < image.height; ++y) {
-      for (int x = 0; x < image.width; ++x) {
-        float v = getVfromRgb(x, y, image);
-        values[(int) v]++;
-      }
-    }
-    return values;
-  }
-
-  public static int[] histogramCumulV(Planar<GrayU8> input) {
-    int[] histo = histogramV(input);
-    int histoCum[] = new int[256];
-    histoCum[0] = histo[0];
-    for (int i = 1; i < 256; i++) {
-      histoCum[i] = histo[i] + histoCum[i - 1];
-    }
-    return histoCum;
-  }
-
   public static void main(String[] args) {
 
     // load image
@@ -278,7 +339,11 @@ public class ColorProcessing {
     // ImageProcessing.luminositeImage(image, 80);
     // ImageProcessing.filter(image, 0, (float) 0.5, 1);
     // ImageProcessing.meanFilterWithBorders(image, 11, BorderType.NORMALIZED);
-    ImageProcessing.convolutionColor(image, 3, 1);
+    // ImageProcessing.egalisationV(image);
+
+    // ImageProcessing.convolutionColor(image, 3, 1);
+
+    ImageProcessing.egalisationS(image);
 
     // save output image
     final String outputPath = args[1];
