@@ -1,6 +1,7 @@
 package pdl.backend;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -70,7 +71,9 @@ public class ImageController {
     }
 
     try {
-      imageDao.create(new Image(file.getOriginalFilename(), file.getBytes()));
+      imageDao.save(file.getOriginalFilename(), file.getBytes());
+      // File img = new File(file, file.getContentType());
+      // imageDao.create(new Image(file.getOriginalFilename(), file.getBytes()));
     } catch (IOException e) {
       return new ResponseEntity<>("Failure to read file", HttpStatus.NO_CONTENT);
     }

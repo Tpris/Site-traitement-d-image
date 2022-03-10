@@ -1,6 +1,7 @@
 package pdl.backend;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,8 +46,7 @@ public class ImageDao implements Dao<Image> {
             directories.add(file);
           } else if (file.isFile()) {
             if (isImage(file)) {
-              MediaType mediaType = getType(file).equals("jpg") ? MediaType.IMAGE_JPEG : MediaType.IMAGE_PNG;
-              Image img = new Image(file, mediaType);
+              Image img = new Image(file, getType(file));
               images.put(img.getId(), img);
             }
           }
@@ -60,7 +60,7 @@ public class ImageDao implements Dao<Image> {
     }
   }
 
-  private String getType(File file) {
+  private MediaType getType(File file) {
     String fileName = file.toString();
 
     int index = fileName.lastIndexOf('.');
@@ -72,7 +72,7 @@ public class ImageDao implements Dao<Image> {
     if (extension.equals("jpeg"))
       extension = "jpg";
 
-    return extension;
+    return extension.equals("jpg") ? MediaType.IMAGE_JPEG : MediaType.IMAGE_PNG;
   }
 
   private boolean isImage(File file) {
@@ -111,5 +111,13 @@ public class ImageDao implements Dao<Image> {
   @Override
   public void delete(final Image img) {
     images.remove(img.getId());
+  }
+
+  public void save(String filename, byte[] bytes) throws IOException {
+    File file = new File(filename);
+    FileOutputStream fos = new FileOutputStream(file);
+    fos.write(bytes);
+    fos.close();
+    create(new Image(file, getType(file)));
   }
 }
