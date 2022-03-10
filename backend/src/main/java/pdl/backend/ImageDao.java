@@ -34,20 +34,32 @@ public class ImageDao implements Dao<Image> {
       directory = new File(classLoader.getResource("images").getFile());
     }
 
+    ArrayList<File> directories = new ArrayList<>();
+    directories.add(directory);
+
     byte[] fileContent;
     try {
-      File[] files = directory.listFiles();
+      while (directories.size() != 0) {
+        File currentDirectory = directories.get(0);
+        File[] files = currentDirectory.listFiles();
 
-      for (File file : files) {
-        if (file.isFile()) {
-          fileContent = Files.readAllBytes(file.toPath());
-          if (isImage(file)) {
-            MediaType mediaType = getType(file).equals("jpg") ? MediaType.IMAGE_JPEG : MediaType.IMAGE_PNG;
-            Image img = new Image(file.getName(), fileContent, mediaType);
-            images.put(img.getId(), img);
+        for (File file : files) {
+
+          if (file.isDirectory()) {
+            directories.add(file);
+          } else if (file.isFile()) {
+            fileContent = Files.readAllBytes(file.toPath());
+            if (isImage(file)) {
+              MediaType mediaType = getType(file).equals("jpg") ? MediaType.IMAGE_JPEG : MediaType.IMAGE_PNG;
+              Image img = new Image(file.getName(), fileContent, mediaType);
+              images.put(img.getId(), img);
+            }
           }
         }
+
+        directories.remove(currentDirectory);
       }
+
     } catch (final IOException e) {
       e.printStackTrace();
     }
