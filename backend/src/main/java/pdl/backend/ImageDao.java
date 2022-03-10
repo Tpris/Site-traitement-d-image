@@ -1,9 +1,7 @@
 package pdl.backend;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,7 +12,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 
@@ -37,7 +34,6 @@ public class ImageDao implements Dao<Image> {
     ArrayList<File> directories = new ArrayList<>();
     directories.add(directory);
 
-    byte[] fileContent;
     try {
       while (directories.size() != 0) {
         File currentDirectory = directories.get(0);
