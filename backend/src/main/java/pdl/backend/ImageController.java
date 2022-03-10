@@ -76,6 +76,8 @@ public class ImageController {
       // imageDao.create(new Image(file.getOriginalFilename(), file.getBytes()));
     } catch (IOException e) {
       return new ResponseEntity<>("Failure to read file", HttpStatus.NO_CONTENT);
+    } catch (Exception e) {
+      return new ResponseEntity<>(e, HttpStatus.NO_CONTENT);
     }
     return new ResponseEntity<>("Image uploaded", HttpStatus.OK);
   }
@@ -114,6 +116,7 @@ public class ImageController {
    * }
    * return nodes;
    * }
+   * /**
    * 
    * @RequestMapping(value = "/images/{id}", method = RequestMethod.DELETE)
    * public ResponseEntity<?> deleteImage(@PathVariable("id") long id) {

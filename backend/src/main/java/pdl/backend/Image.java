@@ -30,7 +30,7 @@ public class Image {
     String width = String.valueOf(img.getWidth());
     String height = String.valueOf(img.getHeight());
 
-    return width + height + width.length();
+    return width + 'x' + height + 'x' + width.length();
   }
 
   public long getId() {

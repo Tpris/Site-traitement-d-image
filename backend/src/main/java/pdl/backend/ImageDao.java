@@ -104,7 +104,6 @@ public class ImageDao implements Dao<Image> {
   @Override
   public void update(final Image img, final String[] params) {
     img.setName(Objects.requireNonNull(params[0], "Name cannot be null"));
-
     images.put(img.getId(), img);
   }
 
@@ -114,10 +113,29 @@ public class ImageDao implements Dao<Image> {
   }
 
   public void save(String filename, byte[] bytes) throws IOException {
-    File file = new File(filename);
-    FileOutputStream fos = new FileOutputStream(file);
-    fos.write(bytes);
-    fos.close();
+    ClassLoader classLoader = getClass().getClassLoader();
+    System.out.println("---------------------------------------");
+    System.out.println("---------------------------------------");
+    System.out.println("---------------------------------------");
+    System.out.println(classLoader.getResource("images") + "/" + filename);
+    System.out.println("---------------------------------------");
+    System.out.println("---------------------------------------");
+    System.out.println("---------------------------------------");
+    File file = new File(classLoader.getResource("images") + "/" + filename);
+
+    try (FileOutputStream fos = new FileOutputStream(file)) {
+      fos.write(bytes);
+    }
+    /*
+     * FileOutputStream fos = new FileOutputStream(file);
+     * fos.write(bytes);
+     * fos.close();
+     */
+    if (file.createNewFile()) {
+      System.out.println("File is created!");
+    } else {
+      System.out.println("File is already existed!");
+    }
     create(new Image(file, getType(file)));
   }
 }
