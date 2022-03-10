@@ -93,4 +93,37 @@ public class ImageController {
     return nodes;
   }
 
+  /*
+   * @RequestMapping(value = "/images", method = RequestMethod.GET, produces =
+   * "application/json")
+   * 
+   * @ResponseBody
+   * public ArrayNode getImageList() {
+   * List<Image> images = imageDao.retrieveAll();
+   * ArrayNode nodes = mapper.createArrayNode();
+   * for (Image image : images) {
+   * ObjectNode objectNode = mapper.createObjectNode();
+   * objectNode.put("id", image.getId());
+   * objectNode.put("name", image.getName());
+   * objectNode.put("type", image.getType().toString());
+   * objectNode.put("size", image.getSize());
+   * nodes.add(objectNode);
+   * }
+   * return nodes;
+   * }
+   * 
+   * @RequestMapping(value = "/images/{id}", method = RequestMethod.DELETE)
+   * public ResponseEntity<?> deleteImage(@PathVariable("id") long id) {
+   * 
+   * Optional<Image> image = imageDao.retrieve(id);
+   * 
+   * if (image.isPresent()) {
+   * imageDao.delete(image.get());
+   * return new ResponseEntity<>("Image id=" + id + " deleted.", HttpStatus.OK);
+   * }
+   * return new ResponseEntity<>("Image id=" + id + " not found.",
+   * HttpStatus.NOT_FOUND);
+   * }
+   */
+
 }

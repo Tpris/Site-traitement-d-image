@@ -48,10 +48,9 @@ public class ImageDao implements Dao<Image> {
           if (file.isDirectory()) {
             directories.add(file);
           } else if (file.isFile()) {
-            fileContent = Files.readAllBytes(file.toPath());
             if (isImage(file)) {
               MediaType mediaType = getType(file).equals("jpg") ? MediaType.IMAGE_JPEG : MediaType.IMAGE_PNG;
-              Image img = new Image(file.getName(), fileContent, mediaType);
+              Image img = new Image(file, mediaType);
               images.put(img.getId(), img);
             }
           }
@@ -63,42 +62,6 @@ public class ImageDao implements Dao<Image> {
     } catch (final IOException e) {
       e.printStackTrace();
     }
-
-    /*
-     * ClassLoader classLoader = getClass().getClassLoader();
-     * 
-     * try {
-     * File directory = new File(classLoader.getResource("images").getFile());
-     * byte[] fileContent;
-     * try {
-     * File[] files = directory.listFiles();
-     * 
-     * for (File file : files) {
-     * if (file.isFile()) {
-     * // System.out.println(file.getName());
-     * fileContent = Files.readAllBytes(file.toPath());
-     * if (isImage(file)) {
-     * Image img = new Image(file.getName(), fileContent);
-     * images.put(img.getId(), img);
-     * } else {
-     * System.out.println(file.getName() + " is not img");
-     * }
-     * }
-     * }
-     * } catch (final IOException e) {
-     * e.printStackTrace();
-     * }
-     * } catch (Exception exception) {
-     * throw new FileNotFoundException("Directory images not found!");
-     * /
-     * if (!directory.exists()) {
-     * Path path = Paths.get(directory.getPath());
-     * Files.createDirectories(path);
-     * directory = new File(classLoader.getResource("images").getFile());
-     * }
-     * 
-     * }
-     */
   }
 
   private String getType(File file) {

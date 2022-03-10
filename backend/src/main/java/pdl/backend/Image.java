@@ -1,5 +1,12 @@
 package pdl.backend;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
+import javax.imageio.ImageIO;
+
 import org.springframework.http.MediaType;
 
 public class Image {
@@ -8,14 +15,22 @@ public class Image {
   private String name;
   private byte[] data;
   private MediaType type;
-  private int size;
+  private String size;
 
-  public Image(final String name, final byte[] data, final MediaType type) {
+  public Image(final File file, MediaType type) throws IOException {
     id = count++;
-    this.name = name;
-    this.data = data;
+    this.name = file.getName();
+    this.data = Files.readAllBytes(file.toPath());
     this.type = type;
-    this.size = data.length;
+    BufferedImage img = ImageIO.read(file);
+    this.size = createSize(img);
+  }
+
+  private String createSize(BufferedImage img) {
+    String width = String.valueOf(img.getWidth());
+    String height = String.valueOf(img.getHeight());
+
+    return width + height + width.length();
   }
 
   public long getId() {
@@ -38,7 +53,7 @@ public class Image {
     return type;
   }
 
-  public int getSize() {
+  public String getSize() {
     return size;
   }
 
