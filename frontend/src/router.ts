@@ -20,12 +20,6 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("./components/Image.vue"),
     props: ({ params }) => ({ id: Number(params.id) || 0 })
   },
-  {
-    path: "/upload",
-    name: "upload",
-    component: () => import("./components/Upload.vue"),
-    props: true
-  }
 ];
 
 const router = createRouter({

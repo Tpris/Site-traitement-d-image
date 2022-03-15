@@ -1,48 +1,49 @@
+<script setup lang="ts">
+  import ToolBoxButton from "@/components/buttons/ToolBoxButton.vue";
+</script>
+
 <template>
-  <ul class="neumorphism">
+  <ul id="tool-box" class="neumorphism">
     <li class="item">
-      <item></item>
+      <tool-box-button class="tool-box-item-appear">1</tool-box-button>
     </li>
     <li class="item">
-      <item></item>
+      <tool-box-button class="tool-box-item-appear">1</tool-box-button>
     </li>
     <li class="item">
-      <item></item>
+      <tool-box-button class="tool-box-item-appear">1</tool-box-button>
     </li>
     <li class="item">
-      <item></item>
+      <tool-box-button class="tool-box-item-appear">1</tool-box-button>
     </li>
     <li class="item">
-      <item></item>
+      <tool-box-button class="tool-box-item-appear">1</tool-box-button>
     </li>
     <li class="item">
-      <item></item>
+      <tool-box-button class="tool-box-item-appear">1</tool-box-button>
     </li>
     <li class="item">
-      <item></item>
+      <tool-box-button class="tool-box-item-appear">1</tool-box-button>
     </li>
     <li class="item">
-      <item></item>
+      <tool-box-button class="tool-box-item-appear">1</tool-box-button>
     </li>
     <li class="item">
-      <item></item>
+      <tool-box-button class="tool-box-item-appear">1</tool-box-button>
     </li>
     <li class="item">
-      <item></item>
+      <tool-box-button class="tool-box-item-appear">1</tool-box-button>
     </li>
 
   </ul>
 </template>
 
-<script setup lang="ts">
-import Item from '@/components/Item.vue'
-</script>
-
 <style scoped>
 .item{
   margin-top: 20px;
 }
-ul{
+
+#tool-box{
   border-radius: 20px;
   width: 80px;
   height: 71vh;
@@ -52,7 +53,7 @@ ul{
   overflow-y: scroll ;
 }
 
-ul::-webkit-scrollbar {
+#tool-box::-webkit-scrollbar {
   display: none;
 }
 </style>

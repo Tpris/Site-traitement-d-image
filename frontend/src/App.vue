@@ -19,6 +19,20 @@ body{
   background-color: #E9F2FB;
 }
 
+@keyframes appear-neu {
+  From {
+    box-shadow: unset;
+  }
+  To {
+    box-shadow:
+        inset 0 0 15px rgba(55, 84, 170,0),
+        inset 0 0 20px rgba(255, 255, 255,0),
+        7px 7px 15px rgba(55, 84, 170,.15),
+        -7px -7px 20px rgba(255, 255, 255,1),
+        inset 0 0 4px rgba(255, 255, 255,.2);
+  }
+}
+
 .neumorphism{
   background: #E9F2FB;
   box-shadow:
@@ -27,6 +41,7 @@ body{
       7px 7px 15px rgba(55, 84, 170,.15),
       -7px -7px 20px rgba(255, 255, 255,1),
       inset 0 0 4px rgba(255, 255, 255,.2);
+  animation: appear-neu 650ms ease-in-out;
 }
 
 .neumorphism-push{
@@ -40,6 +55,7 @@ body{
       0 0 4px rgba(255, 255, 255,.2);
   transition: box-shadow 199ms ease-in-out;
 }
+
 ul {
   list-style-type: none;
   margin: 0;

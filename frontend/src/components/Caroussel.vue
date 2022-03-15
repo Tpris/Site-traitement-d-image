@@ -1,28 +1,71 @@
-<template>
-  <div class="neumorphism container">
-    <div class="arrow">
-      <item>&lt;</item>
-    </div>
-    <div class="container-images">
-      <div class="img" v-for="image in props.images">
-          <Image @click="$emit('update:modelValue', image.id)" :id="image.id" />
-      </div>
-    </div>
-    <div class="arrow">
-      <item>&gt;</item>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import {ImageType} from "@/image";
-import {defineProps} from "vue";
+import {defineProps, onMounted, reactive, ref, watch} from "vue";
 import Image from '@/components/Image.vue';
-import Item from '@/components/Item.vue'
 
-const props = defineProps<{ images: ImageType[] }>()
-defineEmits(['update:modelValue'])
+const props = defineProps<{ images: ImageType[], id: number, updated: boolean}>()
+const emit  = defineEmits(['update:modelValue', 'updated'])
+
+const state = reactive({
+  index: 0,
+  nbImg: 5,
+  currentImages: Array<ImageType>()
+})
+
+onMounted(() => {
+  for (let i = 0; i < state.nbImg && props.images[i]; i++)
+    state.currentImages[i] = props.images[i * state.index + i]
+})
+
+const resetCurrentImages = (newImages) => {
+  state.currentImages = Array()
+  for (let i = 0; i < state.nbImg && newImages[(state.nbImg * state.index) + i]; i++)
+    state.currentImages[i] = newImages[(state.nbImg * state.index) + i]
+}
+
+const getPreviousImages = () =>{
+  if(state.index !== 0)
+    state.index--
+}
+
+const getNextImages = () =>{
+  if(((state.index + 1) * state.nbImg)  + state.nbImg < props.images.length + state.nbImg)
+    state.index++;
+}
+
+const imageClick = (id : number) => {
+  emit('update:modelValue', id)
+}
+
+watch(() => props.id, (newId => {
+      if(props.updated){
+        let newIndex = props.images.findIndex((img) => img.id == newId)
+        if(props.images.length - 1 < (state.index) * state.nbImg) {
+          state.index--
+          emit('updated', false)
+          return
+        }
+        while (newIndex >= (state.index + 1) * state.nbImg)
+          state.index++
+        emit('updated', false)
+      }
+    })
+)
+watch(() => props.images, (newImages => resetCurrentImages(newImages)))
+watch(() => state.index, (newIndex => resetCurrentImages(props.images)))
 </script>
+
+<template>
+  <div class="neumorphism container">
+    <a id="arrow-left" class="arrow neumorphism neumorphism-push" @click="getPreviousImages">&lt;</a>
+    <div class="container-images">
+      <div class="img" v-for="image in state.currentImages" :key="image.id">
+          <Image class="neumorphism appear" :class="props.id === image.id ? 'selected-image' : 'neumorphism-push'" @click="imageClick(image.id)" :id="image.id" />
+      </div>
+    </div>
+      <a id="arrow-right" class="arrow neumorphism neumorphism-push" @click="getNextImages">&gt;</a>
+  </div>
+</template>
 
 <style scoped>
 .container{
@@ -31,29 +74,83 @@ defineEmits(['update:modelValue'])
   border-radius: 20px;
   display: flex;
   margin: auto;
+  animation: appear 700ms ease-in-out;
+}
+
+.selected-image{
+  box-shadow:
+      inset 7px 7px 15px rgba(55, 84, 170,.15),
+      inset -7px -7px 20px rgba(255, 255, 255,1),
+      0 0 4px rgba(255, 255, 255,.2);
+  opacity: 50%;
 }
 
 .img img{
-  max-height: 100%;
+  max-height: 90%;
+  border-radius: 10px;
 }
 
 .arrow{
-  margin: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+  border-radius: 15px;
+  width: 60px;
+  height: 60px;
   font-size: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.arrow div{
+  animation: appear 700ms ease-in-out;
+}
+
+#arrow-left{
+  margin-left: 2vw;
+}
+
+#arrow-right{
+  margin-right: 2vw;
 }
 
 .container-images{
   display: flex;
   justify-content: center;
+  width: 90vw;
 }
 
+@keyframes appear {
+  From {
+    opacity: 0;
+    box-shadow: unset;
+  }
+  To {
+    opacity: 100%;
+    box-shadow:
+        inset 0 0 15px rgba(55, 84, 170,0),
+        inset 0 0 20px rgba(255, 255, 255,0),
+        7px 7px 15px rgba(55, 84, 170,.15),
+        -7px -7px 20px rgba(255, 255, 255,1),
+        inset 0 0 4px rgba(255, 255, 255,.2);
+  }
+}
+
+.img .appear{
+  animation: appear 650ms ease-in-out;
+}
 .img{
   margin-left: 2vw;
   margin-right: 2vw;
+  display: flex;
+  align-items: center;
   cursor: pointer;
+  transition: opacity 199ms ease-in-out;
 }
 
-.img:hover{
+.img .neumorphism-push:hover{
+  transition: opacity 199ms ease-in-out;
   opacity: 70%;
 }
 </style>

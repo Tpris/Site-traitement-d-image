@@ -29,16 +29,33 @@ const handleFileUpload = (event: Event) => {
 </script>
 
 <template>
-  <label for="file">
-    <a>Upload</a>
-  </label>
-  <div id="input-upload">
-      <input type="file" id="file" ref="file" @change="handleFileUpload" />
-  </div>
+    <div>
+      <label id="button" class="neumorphism neumorphism-push" for="file">
+        Upload
+      </label>
+      <div id="input-upload">
+        <input type="file" id="file" ref="file" @change="handleFileUpload" />
+      </div>
+    </div>
 </template>
 
 <style scoped>
 #input-upload{
   display: none;
+}
+
+#button{
+  margin-right: 50px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 35px;
+  cursor: pointer;
+}
+
+#button:hover{
+  color: #0777D9;
 }
 </style>

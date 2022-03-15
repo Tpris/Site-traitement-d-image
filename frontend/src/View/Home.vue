@@ -13,6 +13,7 @@ const state = reactive({
     source : '',
   },
   imageList: Array<ImageType>(),
+  updated: false,
 })
 
 const getImageList = async () => {
@@ -25,9 +26,6 @@ const getImageList = async () => {
 
 getImageList();
 
-const download = document.getElementById("download-image");
-
-//Peut être factoriser dans un composable
 watch(() => state.selectedImage.id, (newId => {
           if(newId !== -1){
             api.getImage(newId)
@@ -50,6 +48,7 @@ const updateImageListUpload = async () => {
   await getImageList();
   const imagesData = state.imageList
   state.selectedImage.id = imagesData.length != 0 ? imagesData[imagesData.length - 1].id : -1
+  state.updated = true
 }
 </script>
 
@@ -60,13 +59,13 @@ const updateImageListUpload = async () => {
       <tool-box></tool-box>
     </div>
     <div id="img-box-selected">
-      <div class="img-box">
+      <div class="img-box" :key="state.selectedImage.id">
         <Image v-if="state.selectedImage.id !== -1" :id="state.selectedImage.id"></Image>
       </div>
     </div>
   </div>
   <div id="carrousel-box">
-    <carrousel v-model="state.selectedImage.id" :images="state.imageList"></carrousel>
+    <carrousel v-model="state.selectedImage.id" :id="state.selectedImage.id" :images="state.imageList" :updated="state.updated" @updated="(e) => state.updated=e"></carrousel>
   </div>
 </template>
 
@@ -81,7 +80,22 @@ const updateImageListUpload = async () => {
 
 .img-box img{
   max-height: 70vh;
+  animation: appear-opacity 650ms ease-in-out;
 }
+
+.img-box{
+  animation: appear-opacity 500ms ease-in-out;
+}
+
+@keyframes appear-opacity {
+  From {
+    opacity: 0;
+  }
+  To {
+    opacity: 100%;
+  }
+}
+
 
 #main-content{
   display: flex;

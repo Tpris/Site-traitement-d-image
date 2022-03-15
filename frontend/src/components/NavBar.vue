@@ -1,48 +1,27 @@
-<template>
-  <nav class="neumorphism">
-    <h1 id="title">Notre super projet</h1>
-    <div id="items">
-      <div class="neumorphism neumorphism-push link-sizing">
-        <router-link :class="name === 'Home' ? 'selected' : 'unselected'" to="/">Accueil</router-link>
-      </div>
-      <div class="neumorphism neumorphism-push link-sizing">
-        <a v-if="selectedImage.source && selectedImage.id !== -1"
-           :href="selectedImage.source"
-           :download="selectedImage.id">
-          Download
-        </a>
-        <a v-else>Download</a>
-      </div>
-      <div class="neumorphism neumorphism-push link-sizing">
-        <upload @updated="$emit('updated')" ></upload>
-      </div>
-      <div class="neumorphism neumorphism-push link-sizing">
-        <delete @updated="$emit('updated')" :selected-image="selectedImage"></delete>
-      </div>
-    </div>
-  </nav>
-</template>
-
 <script setup lang="ts">
-import Upload from "@/components/Upload.vue"
-import Delete from "@/components/Delete.vue"
-import {ref, watch} from "vue";
-import {api} from "@/http-api";
+import NavBarUploadButton from "@/components/buttons/NavBarUploadButton.vue"
+import NavBarDeleteButton from "@/components/buttons/NavBarDeleteButton.vue";
+import NavBarDownloadButton from "@/components/buttons/NavBarDownloadButton.vue"
 
 defineProps<{ name: "", selectedImage: { id:number, source:string }}>()
 defineEmits(['updated'])
 </script>
 
-<style>
-.link-sizing a,label{
-  border-radius: 50px;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
+<template>
+  <nav class="neumorphism" id="nav-bar">
+    <h1 id="title">Notre super projet</h1>
+    <div id="items">
+      <router-link class="link neumorphism neumorphism-push" :class="name === 'home' ? 'selected' : 'unselected'" to="/">
+        Accueil
+      </router-link>
+      <NavBarDownloadButton :selected-image="selectedImage"></NavBarDownloadButton>
+      <NavBarUploadButton @updated="$emit('updated')"></NavBarUploadButton>
+      <NavBarDeleteButton @updated="$emit('updated')" :selected-image="selectedImage"></NavBarDeleteButton>
+    </div>
+  </nav>
+</template>
+
+<style scoped>
 .selected {
   color: #0777D9;
 }
@@ -51,7 +30,7 @@ defineEmits(['updated'])
   color: black;
 }
 
-nav{
+#nav-bar{
   display: flex;
   height: 70px;
   width: 100vw;
@@ -68,25 +47,39 @@ nav{
   margin-right: 10px;
 }
 
-#items div{
+.link{
   margin-right: 50px;
   border-radius: 50px;
-  width: 100px;
-  height: 35px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100px;
+  height: 35px;
+  cursor: pointer;
+  text-decoration: none;
+  color: #2c3e50;
 }
 
-#items div:hover a{
+.link:hover{
   color:#0777D9;
 }
 
-#items div a{
-  text-decoration: none;
+.appear{
+  animation: appear 650ms ease-in-out;
 }
 
-#items div a{
-  color: inherit;
+@keyframes appear {
+  From {
+    box-shadow: unset;
+  }
+  To {
+    box-shadow:
+        inset 0 0 15px rgba(55, 84, 170,0),
+        inset 0 0 20px rgba(255, 255, 255,0),
+        7px 7px 15px rgba(55, 84, 170,.15),
+        -7px -7px 20px rgba(255, 255, 255,1),
+        inset 0 0 4px rgba(255, 255, 255,.2);
+  }
 }
+
 </style>

@@ -1,9 +1,8 @@
 <template>
-  <div class="neumorphism neumorphism-push" id="item"><slot></slot></div>
+  <a id="button" class="neumorphism neumorphism-push">
+    <slot></slot>
+  </a>
 </template>
-
-<script setup lang="ts">
-</script>
 
 <style scoped>
 .selected {
@@ -14,13 +13,10 @@
   color: black;
 }
 
-#item{
-  padding: -50px;
+#button{
   border-radius: 15px;
-  margin-right: 5px;
-  margin-left: 5px;
-  width: 55px;
-  height: 55px;
+  width: 25px;
+  height: 25px;
   display: flex;
   justify-content: center;
   align-items: center;
