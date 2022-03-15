@@ -34,8 +34,9 @@
     <li class="item">
       <tool-box-button class="tool-box-item-appear">1</tool-box-button>
     </li>
-
   </ul>
+
+  
 </template>
 
 <style scoped>

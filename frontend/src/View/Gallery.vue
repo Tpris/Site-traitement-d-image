@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { api } from '@/http-api';
 import { ImageType } from '@/image'
-import Image from '../components/Image.vue';
+import Image from '../components/ImageGetter.vue';
 
 const imageList = ref<ImageType[]>([]);
 

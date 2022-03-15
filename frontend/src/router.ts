@@ -17,7 +17,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/image/:id",
     name: "image",
-    component: () => import("./components/Image.vue"),
+    component: () => import("./components/ImageGetter.vue"),
     props: ({ params }) => ({ id: Number(params.id) || 0 })
   },
 ];

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ImageType} from "@/image";
 import {defineProps, onMounted, reactive, ref, watch} from "vue";
-import Image from '@/components/Image.vue';
+import Image from '@/components/ImageGetter.vue';
 
 const props = defineProps<{ images: ImageType[], id: number, updated: boolean}>()
 const emit  = defineEmits(['update:modelValue', 'updated'])

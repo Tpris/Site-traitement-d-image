@@ -3,8 +3,8 @@ import {reactive, ref, watch} from 'vue';
 import { api } from '@/http-api';
 import { ImageType } from '@/image'
 import ToolBox from '@/components/ToolBox.vue'
-import Carrousel from '@/components/Caroussel.vue'
-import Image from "@/components/Image.vue"
+import Carrousel from '@/components/HomeCaroussel.vue'
+import Image from "@/components/ImageGetter.vue"
 import NavBar from '@/components/NavBar.vue'
 
 const state = reactive({
