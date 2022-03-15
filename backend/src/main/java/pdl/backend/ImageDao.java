@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 
@@ -121,11 +122,15 @@ public class ImageDao implements Dao<Image> {
     System.out.println("---------------------------------------");
     System.out.println("---------------------------------------");
     System.out.println("---------------------------------------");
-    File file = new File(classLoader.getResource("images") + "/" + filename);
 
-    try (FileOutputStream fos = new FileOutputStream(file)) {
-      fos.write(bytes);
-    }
+    File file = new File(classLoader.getResource("images") + "/" + filename);
+    System.out.println(file);
+    /*
+     * try (FileOutputStream fos = new FileOutputStream(file)) {
+     * fos.write(bytes);
+     * }
+     */
+
     /*
      * FileOutputStream fos = new FileOutputStream(file);
      * fos.write(bytes);
