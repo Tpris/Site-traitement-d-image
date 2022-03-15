@@ -159,34 +159,40 @@ public class Convolution {
     }
   }
 
-  public static void flouGaussien(GrayU8 input, GrayU8 output, int size, double sigma) {
+  public static void flouGaussienGrayU8(GrayU8 input, GrayU8 output, int size, double[][] kernel) {
     if (size % 2 == 1) {
       int bord = (size - 1) / 2;
-      double denominateur1 = 2*sigma*sigma;
-      double denominateur2 = denominateur1*Math.PI;
       for (int y = 0; y < input.height; ++y) {
         for (int x = 0; x < input.width; ++x) {
           if (x < bord || x >= input.width - bord || y < bord || y >= input.height - bord) {
             skip(x, y, input, output);
           } else {
             int val = 0;
-            int nbPix = 0;
             for (int ky = -bord; ky <= bord; ky++) {
-              System.out.println();
               for (int kx = -bord; kx <= bord; kx++) {
-                double gauss = /* Math.round( */(10*Math.exp(-(((kx*kx)+(ky*ky))/denominateur1))/* /denominateur2 */);
-                System.out.print("("+kx+","+ky+")"+gauss+" ");
-                val += input.get(x + kx, y + ky) * gauss;
-                nbPix += gauss;
+                val += input.get(x + kx, y + ky) * kernel[ky+bord][kx+bord];
               }
             }
-            output.set(x, y, val /* / nbPix */);
+            output.set(x, y, val);
           }
         }
       }
     } else {
       System.err.println("la taille du noyau doit être impair");
     }
+  }
+
+  public static double[][] gaussianKernel(int size, double sigma){
+      double[][] kernel = new double [size][size];
+      int bord = (size - 1) / 2;
+      double denominateur1 = 2*sigma*sigma;
+      double denominateur2 = denominateur1*Math.PI;
+      for (int ky = -bord; ky <= bord; ky++) {
+        for (int kx = -bord; kx <= bord; kx++) {
+          kernel[ky+bord][kx+bord] = Math.exp(-(((kx*kx)+(ky*ky))/denominateur1)) /denominateur2;
+        }
+      }
+      return kernel;
   }
 
   public static void convolutionParallele(GrayU8 input, GrayU8 output, int[][] kernel) {
