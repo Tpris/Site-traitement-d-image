@@ -1,10 +1,20 @@
 package pdl.backend;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+
+import boofcv.io.image.ConvertBufferedImage;
+import boofcv.io.image.ConvertRaster;
+import boofcv.struct.image.GrayU8;
+import boofcv.struct.image.Planar;
+import pdl.imageprocessing.ImageProcessing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -37,13 +47,39 @@ public class ImageController {
     this.imageDao = imageDao;
   }
 
+  // @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+  // public ResponseEntity<?> getImage(@PathVariable("id") long id) {
+
+  //   Optional<Image> image = imageDao.retrieve(id);
+
+  //   if (image.isPresent()) {
+  //     InputStream inputStream = new ByteArrayInputStream(image.get().getData());
+  //     return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(new InputStreamResource(inputStream));
+  //   }
+  //   return new ResponseEntity<>("Image id=" + id + " not found.", HttpStatus.NOT_FOUND);
+  // }
+
   @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
-  public ResponseEntity<?> getImage(@PathVariable("id") long id) {
+  public ResponseEntity<?> getImageProcessing(@PathVariable("id") long id) {
 
     Optional<Image> image = imageDao.retrieve(id);
 
     if (image.isPresent()) {
       InputStream inputStream = new ByteArrayInputStream(image.get().getData());
+      try {
+        BufferedImage imBuff = ImageIO.read(inputStream);
+        Planar<GrayU8> img = ConvertBufferedImage.convertFromPlanar(imBuff, null, true, GrayU8.class);
+        ImageProcessing.contoursImage(img);
+        ConvertRaster.planarToBuffered_U8(img, imBuff);
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ImageIO.write(imBuff, "jpeg", os);
+        inputStream = new ByteArrayInputStream(os.toByteArray());
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+
       return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(new InputStreamResource(inputStream));
     }
     return new ResponseEntity<>("Image id=" + id + " not found.", HttpStatus.NOT_FOUND);
