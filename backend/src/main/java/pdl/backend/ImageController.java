@@ -35,7 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RestController
-public class ImageController {
+public class ImageController<Item> {
 
   @Autowired
   private ObjectMapper mapper;
@@ -47,39 +47,64 @@ public class ImageController {
     this.imageDao = imageDao;
   }
 
-  // @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+  // @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces
+  // = MediaType.IMAGE_JPEG_VALUE)
   // public ResponseEntity<?> getImage(@PathVariable("id") long id) {
 
-  //   Optional<Image> image = imageDao.retrieve(id);
+  // Optional<Image> image = imageDao.retrieve(id);
 
-  //   if (image.isPresent()) {
-  //     InputStream inputStream = new ByteArrayInputStream(image.get().getData());
-  //     return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(new InputStreamResource(inputStream));
-  //   }
-  //   return new ResponseEntity<>("Image id=" + id + " not found.", HttpStatus.NOT_FOUND);
+  // if (image.isPresent()) {
+  // InputStream inputStream = new ByteArrayInputStream(image.get().getData());
+  // return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(new
+  // InputStreamResource(inputStream));
+  // }
+  // return new ResponseEntity<>("Image id=" + id + " not found.",
+  // HttpStatus.NOT_FOUND);
   // }
 
   @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
-  public ResponseEntity<?> getImageProcessing(@PathVariable("id") long id) {
-
+  // @ResponseBody Item getItem(@RequestParam("itemid") Optional<Integer> itemid)
+  public @ResponseBody ResponseEntity<?> getImageProcessing(@PathVariable("id") long id,
+      @RequestParam(value = "algorithm", required=false) String algo,
+      @RequestParam(value = "i", required=false) Integer p1,
+      @RequestParam("p2") Optional<Integer> p2) {
     Optional<Image> image = imageDao.retrieve(id);
 
     if (image.isPresent()) {
       InputStream inputStream = new ByteArrayInputStream(image.get().getData());
-      try {
-        BufferedImage imBuff = ImageIO.read(inputStream);
-        Planar<GrayU8> img = ConvertBufferedImage.convertFromPlanar(imBuff, null, true, GrayU8.class);
-        ImageProcessing.contoursImage(img);
-        ConvertRaster.planarToBuffered_U8(img, imBuff);
+      System.out.println("tototoImg");
+      // if (algo!=null) {
+        System.out.println("tototoAlgo");
+        try {
+          System.out.println("tototo0");
+          BufferedImage imBuff = ImageIO.read(inputStream);
+          Planar<GrayU8> img = ConvertBufferedImage.convertFromPlanar(imBuff, null, true, GrayU8.class);
+          ////////
 
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        ImageIO.write(imBuff, "jpeg", os);
-        inputStream = new ByteArrayInputStream(os.toByteArray());
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
+          if (p1!=null && p2.isPresent()) {
+            System.out.println("tototo1");
+            ImageProcessing.flouGaussien(img, p1, p2.get());
 
+          } else if (p1!=null) {
+            System.out.println("tototo2");
+  
+          } else {
+            System.out.println("tototo3");
+            ImageProcessing.contoursImage(img);
+            // ImageProcessing.egalisationS(img);
+            // ImageProcessing.egalisationV(img);
+          }
+          ///////
+          ConvertRaster.planarToBuffered_U8(img, imBuff);
+          ByteArrayOutputStream os = new ByteArrayOutputStream();
+          ImageIO.write(imBuff, "jpeg", os);
+          inputStream = new ByteArrayInputStream(os.toByteArray());
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          System.out.println("tototoCatch");
+          e.printStackTrace();
+        }
+      // }
       return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(new InputStreamResource(inputStream));
     }
     return new ResponseEntity<>("Image id=" + id + " not found.", HttpStatus.NOT_FOUND);

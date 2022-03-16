@@ -68,7 +68,7 @@ public class ImageProcessing {
     }
   }
 
-  public static void flouGaussien(Planar<GrayU8> image, int size, double sigma) {
+  public static void flouGaussien(Planar<GrayU8> image, int size, int sigma) {
     if (size % 2 == 1) {
       int nbCanaux = image.getNumBands();
       Planar<GrayU8> input = image.clone();

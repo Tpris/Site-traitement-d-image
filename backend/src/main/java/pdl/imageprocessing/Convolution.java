@@ -182,7 +182,7 @@ public class Convolution {
     }
   }
 
-  public static double[][] gaussianKernel(int size, double sigma){
+  public static double[][] gaussianKernel(int size, int sigma){
       double[][] kernel = new double [size][size];
       int bord = (size - 1) / 2;
       double denominateur1 = 2*sigma*sigma;
