@@ -43,7 +43,7 @@ public class ColorProcessing {
   }
 
 
-  public static void rgbToHsv(int r, int g, int b, float[] hsv) {
+  public static void rgbToHsv(int r, int g, int b, double[] hsv) {
     hsv[2] = Math.max(r, Math.max(g, b));
     float min = Math.min(r, Math.min(g, b));
     hsv[1] = (hsv[2] == 0) ? 0 : 1 - (min / hsv[2]);
@@ -57,9 +57,9 @@ public class ColorProcessing {
       hsv[0] = 60 * (r - g) / (hsv[2] - min) + 240;
   }
 
-  public static void hsvToRgb(float h, float s, float v, int[] rgb) {
+  public static void hsvToRgb(double h, double s, double v, int[] rgb) {
     int ti = (int) (Math.floor(h / 60)) % 6;
-    float f = h / 60 - ti;
+    double f = h / 60 - ti;
     int l = (int) (v * (1 - s));
     int m = (int) (v * (1 - f * s));
     int n = (int) (v * (1 - (1 - f) * s));
@@ -98,9 +98,9 @@ public class ColorProcessing {
     }
   }
 
-  public static void filter(Planar<GrayU8> input, float h) {
+  public static void filter(Planar<GrayU8> input, double h) {
     int[] rgb = new int[3];
-    float[] hsv = new float[3];
+    double[] hsv = new double[3];
     for (int y = 0; y < input.height; ++y) {
       for (int x = 0; x < input.width; ++x) {
         rgbToHsv(input.getBand(0).get(x, y),
@@ -140,7 +140,7 @@ public class ColorProcessing {
     for (int y = 0; y < image.height; ++y) {
       for (int x = 0; x < image.width; ++x) {
         int rgb[] = { image.getBand(0).get(x, y), image.getBand(1).get(x, y), image.getBand(2).get(x, y) };
-        float[] hsv = new float[3];
+        double[] hsv = new double[3];
         rgbToHsv(rgb[0], rgb[1], rgb[2], hsv);
         hsvToRgb(hsv[0], hsv[1], egal[(int) hsv[2]], rgb);
         for (int i = 0; i < 3; i++) {
@@ -152,7 +152,7 @@ public class ColorProcessing {
 
   public static void egalisationColorS(Planar<GrayU8> image) {
     // egalisationColorHSV(image, histogramCumulS(image));
-    float[] egal = new float[101];
+    double[] egal = new double[101];
     int[] histoCumul = histogramCumulS(image);
     for (int i = 0; i < 101; i++) {
       egal[i] = histoCumul[i] * 100 / (image.height * image.width);
@@ -160,7 +160,7 @@ public class ColorProcessing {
     for (int y = 0; y < image.height; ++y) {
       for (int x = 0; x < image.width; ++x) {
         int rgb[] = { image.getBand(0).get(x, y), image.getBand(1).get(x, y), image.getBand(2).get(x, y) };
-        float[] hsv = new float[3];
+        double[] hsv = new double[3];
         rgbToHsv(rgb[0], rgb[1], rgb[2], hsv);
         // System.out.println(hsv[1]+" "+egal[(int) (hsv[1]*100)]/100);
         hsvToRgb(hsv[0], egal[(int) (hsv[1]*100)]/100, hsv[2], rgb);
@@ -177,28 +177,28 @@ public class ColorProcessing {
     }
   }
 
-  private static float[] getHSVfromRgb(int x, int y, Planar<GrayU8> image) {
+  private static double[] getHSVfromRgb(int x, int y, Planar<GrayU8> image) {
     int rgb[] = { image.getBand(0).get(x, y), image.getBand(1).get(x, y), image.getBand(2).get(x, y) };
-    float[] hsv = new float[3];
+    double[] hsv = new double[3];
     rgbToHsv(rgb[0], rgb[1], rgb[2], hsv);
     return hsv;
   }
 
-  private static float getVfromRgb(int x, int y, Planar<GrayU8> image) {
-    float[] hsv = getHSVfromRgb(x, y, image);
+  private static double getVfromRgb(int x, int y, Planar<GrayU8> image) {
+    double[] hsv = getHSVfromRgb(x, y, image);
     return hsv[2];
   }
 
-  private static float getSfromRgb(int x, int y, Planar<GrayU8> image) {
-    float[] hsv = getHSVfromRgb(x, y, image);
+  private static double getSfromRgb(int x, int y, Planar<GrayU8> image) {
+    double[] hsv = getHSVfromRgb(x, y, image);
     return hsv[1];
   }
 
-  public static float minV(Planar<GrayU8> image) {
-    float min = 255;
+  public static double minV(Planar<GrayU8> image) {
+    double min = 255;
     for (int y = 0; y < image.height; ++y) {
       for (int x = 0; x < image.width; ++x) {
-        float v = getVfromRgb(x, y, image);
+        double v = getVfromRgb(x, y, image);
         if (min > v)
           min = v;
       }
@@ -206,11 +206,11 @@ public class ColorProcessing {
     return min;
   }
 
-  public static float maxV(Planar<GrayU8> image) {
-    float max = 0;
+  public static double maxV(Planar<GrayU8> image) {
+    double max = 0;
     for (int y = 0; y < image.height; ++y) {
       for (int x = 0; x < image.width; ++x) {
-        float v = getVfromRgb(x, y, image);
+        double v = getVfromRgb(x, y, image);
         if (max < v)
           max = v;
       }
@@ -218,11 +218,11 @@ public class ColorProcessing {
     return max;
   }
 
-  public static float minS(Planar<GrayU8> image) {
-    float min = 255;
+  public static double minS(Planar<GrayU8> image) {
+    double min = 255;
     for (int y = 0; y < image.height; ++y) {
       for (int x = 0; x < image.width; ++x) {
-        float v = getSfromRgb(x, y, image);
+        double v = getSfromRgb(x, y, image);
         if (min > v)
           min = v;
       }
@@ -230,11 +230,11 @@ public class ColorProcessing {
     return min;
   }
 
-  public static float maxS(Planar<GrayU8> image) {
-    float max = 0;
+  public static double maxS(Planar<GrayU8> image) {
+    double max = 0;
     for (int y = 0; y < image.height; ++y) {
       for (int x = 0; x < image.width; ++x) {
-        float v = getSfromRgb(x, y, image);
+        double v = getSfromRgb(x, y, image);
         if (max < v)
           max = v;
       }
@@ -246,7 +246,7 @@ public class ColorProcessing {
     int values[] = new int[256];
     for (int y = 0; y < image.height; ++y) {
       for (int x = 0; x < image.width; ++x) {
-        float v = getVfromRgb(x, y, image);
+        double v = getVfromRgb(x, y, image);
         values[(int) v]++;
       }
     }
@@ -257,7 +257,7 @@ public class ColorProcessing {
     int values[] = new int[101];
     for (int y = 0; y < image.height; ++y) {
       for (int x = 0; x < image.width; ++x) {
-        float v = getSfromRgb(x, y, image);
+        double v = getSfromRgb(x, y, image);
         int test = (int) (v*100);
         values[test]++;
       }
@@ -284,16 +284,16 @@ public class ColorProcessing {
   }
 
   public static void contrastHSV(Planar<GrayU8> image, int min, int max) {
-    float minHisto = minV(image);
-    float maxHisto = maxV(image);
-    float LUT[] = new float[256];
+    double minHisto = minV(image);
+    double maxHisto = maxV(image);
+    double LUT[] = new double[256];
     for (int i = 0; i < 256; i++) {
       LUT[i] = ((max - min) * (i - minHisto) / (maxHisto - minHisto)) + min;
     }
     for (int y = 0; y < image.height; ++y) {
       for (int x = 0; x < image.width; ++x) {
         int rgb[] = { image.getBand(0).get(x, y), image.getBand(1).get(x, y), image.getBand(2).get(x, y) };
-        float[] hsv = new float[3];
+        double[] hsv = new double[3];
         rgbToHsv(rgb[0], rgb[1], rgb[2], hsv);
         hsvToRgb(hsv[0], hsv[1], LUT[(int) hsv[2]], rgb);
         for (int i = 0; i < 3; i++) {
@@ -331,12 +331,12 @@ public class ColorProcessing {
 
   private static void testConversionHSV(int r, int g, int b) {
     int[] rgb = { r, g, b };
-    float[] hsv = new float[3];
+    double[] hsv = new double[3];
     System.out.println("*** fonction à tester ***");
     System.out.println("- rgb to hsv");
     // RGBtoHSV(rgb[0], rgb[1], rgb[2], hsv);
     rgbToHsv(r, g, b, hsv);
-    for (float f : hsv)
+    for (double f : hsv)
       System.out.println(f);
     System.out.println("- hsv to rgb");
     hsvToRgb(hsv[0], hsv[1], hsv[2], rgb);
@@ -346,7 +346,7 @@ public class ColorProcessing {
     rgb[0] = r; rgb[1]= g; rgb[2]=b;
     System.out.println("- rgb to hsv");
     ColorHsv.rgbToHsv(rgb[0], rgb[1], rgb[2], hsv);
-    for (float f : hsv)
+    for (double f : hsv)
       System.out.println(f);
     System.out.println("- hsv to rgb");
     ColorHsv.hsvToRgb(hsv[0], hsv[1], hsv[2]);

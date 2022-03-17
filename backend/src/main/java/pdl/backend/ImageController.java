@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.io.image.ConvertRaster;
+import boofcv.struct.border.BorderType;
 import boofcv.struct.image.GrayU8;
 import boofcv.struct.image.Planar;
 import pdl.imageprocessing.ImageProcessing;
@@ -62,39 +63,74 @@ public class ImageController<Item> {
   // HttpStatus.NOT_FOUND);
   // }
 
+  private Planar<GrayU8> imgProcessing(Planar<GrayU8> img, String algo,
+      Optional<Double> p1, Optional<Double> p2, Optional<Double> p3, Optional<String> BT) {
+    switch (algo) {
+      case "filter":
+        if (p1.isPresent() && p2.isPresent() && p3.isPresent()) {
+          ImageProcessing.filter(img, p1.get(), p2.get(), p3.get());
+        }
+        break;
+      case "gaussianBlur":
+        if (p1.isPresent() && p2.isPresent() && BT.isPresent()) {
+          ImageProcessing.flouGaussien(img, p1.get(), p2.get(), stringToBorderType(BT.get()));
+        }
+        break;
+      case "meanBlur":
+        if (p1.isPresent() && BT.isPresent()) {
+          ImageProcessing.meanFilterWithBorders(img, p1.get(), stringToBorderType(BT.get()));
+        }
+        break;
+      case "luminosity":
+        if (p1.isPresent()) {
+          ImageProcessing.luminositeImage(img, p1.get());
+        }
+        break;
+      case "sobel":
+        ImageProcessing.contoursImage(img);
+        break;
+      case "egalisationV":
+        ImageProcessing.egalisationS(img);
+        break;
+      case "egalisationS":
+        ImageProcessing.egalisationV(img);
+        break;
+    }
+    return img;
+  }
+
+  private BorderType stringToBorderType(String BT) {
+    switch (BT) {
+      case "NORMALIZED":
+        return BorderType.NORMALIZED;
+      case "EXTENDED":
+        return BorderType.EXTENDED;
+      case "REFLECT":
+        return BorderType.REFLECT;
+      default:
+        return BorderType.SKIP;
+    }
+  }
+
   @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
-  // @ResponseBody Item getItem(@RequestParam("itemid") Optional<Integer> itemid)
   public @ResponseBody ResponseEntity<?> getImageProcessing(@PathVariable("id") long id,
-      @RequestParam(value = "algorithm", required=false) String algo,
-      @RequestParam(value = "i", required=false) Integer p1,
-      @RequestParam("p2") Optional<Integer> p2) {
+      @RequestParam("algorithm") Optional<String> algo,
+      @RequestParam("p1") Optional<Double> p1,
+      @RequestParam("p2") Optional<Double> p2,
+      @RequestParam("p3") Optional<Double> p3,
+      @RequestParam("BT") Optional<String> BT) {
+
     Optional<Image> image = imageDao.retrieve(id);
 
     if (image.isPresent()) {
       InputStream inputStream = new ByteArrayInputStream(image.get().getData());
-      System.out.println("tototoImg");
-      // if (algo!=null) {
-        System.out.println("tototoAlgo");
+      if (algo.isPresent()) {
         try {
-          System.out.println("tototo0");
           BufferedImage imBuff = ImageIO.read(inputStream);
           Planar<GrayU8> img = ConvertBufferedImage.convertFromPlanar(imBuff, null, true, GrayU8.class);
-          ////////
 
-          if (p1!=null && p2.isPresent()) {
-            System.out.println("tototo1");
-            ImageProcessing.flouGaussien(img, p1, p2.get());
+          img = imgProcessing(img, algo.get(), p1, p2, p3, BT);
 
-          } else if (p1!=null) {
-            System.out.println("tototo2");
-  
-          } else {
-            System.out.println("tototo3");
-            ImageProcessing.contoursImage(img);
-            // ImageProcessing.egalisationS(img);
-            // ImageProcessing.egalisationV(img);
-          }
-          ///////
           ConvertRaster.planarToBuffered_U8(img, imBuff);
           ByteArrayOutputStream os = new ByteArrayOutputStream();
           ImageIO.write(imBuff, "jpeg", os);
@@ -102,9 +138,9 @@ public class ImageController<Item> {
         } catch (IOException e) {
           // TODO Auto-generated catch block
           System.out.println("tototoCatch");
-          e.printStackTrace();
+          return new ResponseEntity<>("Image id=" + id + " not found.", HttpStatus.NOT_FOUND);
         }
-      // }
+      }
       return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(new InputStreamResource(inputStream));
     }
     return new ResponseEntity<>("Image id=" + id + " not found.", HttpStatus.NOT_FOUND);
