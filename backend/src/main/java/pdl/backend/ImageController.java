@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,27 +65,38 @@ public class ImageController<Item> {
   // HttpStatus.NOT_FOUND);
   // }
 
-  private Planar<GrayU8> imgProcessing(Planar<GrayU8> img, String algo,
-      Optional<Double> p1, Optional<Double> p2, Optional<Double> p3, Optional<String> BT) {
+  private static void imgProcessing(Planar<GrayU8> img, String algo,
+  ArrayList<String> p1l, ArrayList<String> p2l, ArrayList<String> p3l) {
     switch (algo) {
       case "filter":
-        if (p1.isPresent() && p2.isPresent() && p3.isPresent()) {
-          ImageProcessing.filter(img, p1.get(), p2.get(), p3.get());
+        if (p1l.size()>0 && p2l.size()>0 && p3l.size()>0) {
+          ImageProcessing.filter(img, Double.parseDouble(p1l.get(0)), Double.parseDouble(p2l.get(0)), Double.parseDouble(p3l.get(0)));
+          p1l.remove(0);
+          p2l.remove(0);
+          p3l.remove(0);
         }
         break;
       case "gaussianBlur":
-        if (p1.isPresent() && p2.isPresent() && BT.isPresent()) {
-          ImageProcessing.flouGaussien(img, p1.get(), p2.get(), stringToBorderType(BT.get()));
+        if (p1l.size()>0 && p2l.size()>0 && p3l.size()>0) {
+          ImageProcessing.flouGaussien(img, Double.parseDouble(p1l.get(0)), Double.parseDouble(p2l.get(0)), stringToBorderType(p3l.get(0)));
+          System.out.println("GB= "+p1l.get(0)+" "+p2l.get(0)+" "+p3l.get(0));
+          p1l.remove(0);
+          p2l.remove(0);
+          p3l.remove(0);
         }
         break;
       case "meanBlur":
-        if (p1.isPresent() && BT.isPresent()) {
-          ImageProcessing.meanFilterWithBorders(img, p1.get(), stringToBorderType(BT.get()));
+        if (p1l.size()>0 && p2l.size()>0) {
+          ImageProcessing.meanFilterWithBorders(img, Double.parseDouble(p1l.get(0)), stringToBorderType(p2l.get(0)));
+          System.out.println("MB= "+p1l.get(0)+" "+p2l.get(0));
+          p1l.remove(0);
+          p2l.remove(0);
         }
         break;
       case "luminosity":
-        if (p1.isPresent()) {
-          ImageProcessing.luminositeImage(img, p1.get());
+        if (p1l.size()>0) {
+          ImageProcessing.luminositeImage(img, Double.parseDouble(p1l.get(0)));
+          p1l.remove(0);
         }
         break;
       case "sobel":
@@ -96,10 +109,9 @@ public class ImageController<Item> {
         ImageProcessing.egalisationV(img);
         break;
     }
-    return img;
   }
 
-  private BorderType stringToBorderType(String BT) {
+  private static BorderType stringToBorderType(String BT) {
     switch (BT) {
       case "NORMALIZED":
         return BorderType.NORMALIZED;
@@ -115,21 +127,26 @@ public class ImageController<Item> {
   @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
   public @ResponseBody ResponseEntity<?> getImageProcessing(@PathVariable("id") long id,
       @RequestParam("algorithm") Optional<String> algo,
-      @RequestParam("p1") Optional<Double> p1,
-      @RequestParam("p2") Optional<Double> p2,
-      @RequestParam("p3") Optional<Double> p3,
-      @RequestParam("BT") Optional<String> BT) {
+      @RequestParam("p1") Optional<String> p1,
+      @RequestParam("p2") Optional<String> p2,
+      @RequestParam("p3") Optional<String> p3) {
 
     Optional<Image> image = imageDao.retrieve(id);
 
     if (image.isPresent()) {
       InputStream inputStream = new ByteArrayInputStream(image.get().getData());
       if (algo.isPresent()) {
+        ArrayList<String> algos = new ArrayList<String>(Arrays.asList(algo.get().split("-")));
+        ArrayList<String> p1l = (p1.isPresent())? new ArrayList<String>(Arrays.asList(p1.get().split("-"))):new ArrayList<String>();
+        ArrayList<String> p2l = (p2.isPresent())? new ArrayList<String>(Arrays.asList(p2.get().split("-"))):new ArrayList<String>();
+        ArrayList<String> p3l = (p3.isPresent())? new ArrayList<String>(Arrays.asList(p3.get().split("-"))):new ArrayList<String>();
         try {
           BufferedImage imBuff = ImageIO.read(inputStream);
           Planar<GrayU8> img = ConvertBufferedImage.convertFromPlanar(imBuff, null, true, GrayU8.class);
 
-          img = imgProcessing(img, algo.get(), p1, p2, p3, BT);
+          for(String alg : algos){
+            imgProcessing(img, alg, p1l, p2l, p3l);
+          }
 
           ConvertRaster.planarToBuffered_U8(img, imBuff);
           ByteArrayOutputStream os = new ByteArrayOutputStream();
