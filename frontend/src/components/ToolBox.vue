@@ -6,11 +6,13 @@
   const props = defineProps<{ selectedImage: number }>()
 
   interface IDropBox{
+    text: string
     name: string
     param:string[]
   }
 
   interface ICursors{
+    text: string
     name: string
     param: string[]
   }
@@ -20,80 +22,118 @@
     cursors:ICursors[]
   }
 
-  interface IEffect{
-    name: string
-    param: Params
-  }
+  class Params{
+    private dropBoxes: IDropBox[]
+    private cursors: ICursors[]
 
-  function DropBox(name:string, param: string[]){
+    constructor(dropBoxes: IDropBox[] | null, cursors: ICursors[] | null) {
+      if(dropBoxes === null) this.dropBoxes = Array<IDropBox>()
+      else this.dropBoxes = dropBoxes
+
+      if(cursors === null) this.cursors = Array<ICursors>()
+      else this.cursors = cursors
+    }
+  }
+  function DropBox(text:string, name:string, param: string[]){
+    this.text = text;
     this.name = name;
     this.param = param;
   }
 
-  function Cursors(name:string, param: string[]){
+  function Cursors(text:string, name:string, param: string[]){
+    this.text = text;
     this.name = name;
     this.param = param;
   }
 
- function Effect(name:string, param: Params){
-    this.name = name;
-    this.param = param;
+
+  class Effect {
+    get type(): string {
+      return this._type;
+    }
+    get params(): Params {
+      return this._params;
+    }
+    get text(): string {
+      return this._text;
+    }
+
+    private readonly _text: string
+    private readonly _type: string
+    private readonly _params : Params
+
+    constructor(type:string) {
+      this._type = type
+
+      switch(type){
+        case "filter":
+            this._text = "Filtre de teinte"
+            this._params = new Params(null, [
+              new Cursors("Teinte", "hue", ["0", "255"]),
+              new Cursors("min", "smin", ["0", "255"]),
+              new Cursors("max", "smax", ["0", "255"])
+            ] as ICursors[])
+          break;
+
+        case "gaussianBlur":
+            this._text = "Filtre gaussien"
+            this._params = new Params(
+                [new DropBox("Type", "BT",["Skip", "Normalized", "Extended", "Reflect"])] as IDropBox[],
+                [ new Cursors("Taille", "size", ["0", "255"]),
+                  new Cursors("Ecart type","sigma", ["0", "255"])
+                ] as ICursors[])
+          break;
+
+        case "meanBlur":
+            this._text = "Filtre moyenneur"
+            this._params = new Params(
+                [new DropBox("Type", "BT",["Skip", "Normalized", "Extended", "Reflect"])] as IDropBox[],
+                [new Cursors("Taille", "size", ["0", "255"])] as ICursors[]
+            )
+          break;
+
+        case "luminosity":
+            this._text = "Luminosité"
+            this._params = new Params(null, [new Cursors("Delta", "delta",["-255", "255"])] as ICursors[])
+          break
+
+        case "sobel":
+            this._text = "Sobel"
+            this._params = new Params(null, null)
+          break;
+
+        case "egalisation":
+            this._text = "Egalisation"
+            this._params = new Params([new DropBox("HSV", "SV", ["S", "V"])] as IDropBox[], null)
+          break;
+
+        default:
+            this._text = ""
+            this._params = new Params(null, null)
+          break;
+      }
+    }
   }
 
   const state = reactive({
     slide: false,
 
-    selectedEffect: new Effect("", {
-        dropBoxes: [] as IDropBox[],
-        cursors:[] as ICursors[]
-      } as Params) as IEffect,
+    selectedEffect: new Effect(""),
 
     listEffect: [
-        new Effect("outline", {
-          dropBoxes: [] as IDropBox[],
-          cursors: [] as ICursors[]
-        } as Params),
-
-        new Effect("egalisation", {
-          dropBoxes: [new DropBox("HSV", ["S", "V"])],
-          cursors: [] as ICursors[]
-        } as Params),
-
-        new Effect("luminosity", {
-          dropBoxes: [] as IDropBox[],
-          cursors: [new Cursors("Delta", ["-255", "255"])],
-        } as Params),
-
-        new Effect("Tean filter", {
-          dropBoxes: [] as IDropBox[],
-          cursors: [
-              new Cursors("name", ["0", "255"]),
-              new Cursors("min", ["0", "255"]),
-              new Cursors("max", ["0", "255"])
-              ]
-        } as Params),
-
-        new Effect("Gaussian Blur", {
-          dropBoxes:[new DropBox("Type", ["Skip", "Normalized", "Extended", "Reflect"])],
-          cursors: [
-            new Cursors("Taille", ["0", "255"]),
-            new Cursors("Ecart type", ["0", "255"]),
-          ]
-        } as Params),
-
-        new Effect("Mean Filter", {
-          dropBoxes:[new DropBox("Type", ["Skip", "Normalized", "Extended", "Reflect"])],
-          cursors: [
-            new Cursors("Taille", ["0", "255"]),
-          ]
-        } as Params),
+        new Effect("sobel"),
+        new Effect("luminosity"),
+        new Effect("filter"),
+        new Effect("gaussianBlur"),
+        new Effect("meanBlur"),
+        new Effect("egalisation"),
       ]
   })
 
   let slide = ref(false)
   const getClassSlide = () => slide.value ? 'slide' : ''
 
-  const slider = (e:UnwrapRef<IEffect> ) => {
+  const slider = (e:UnwrapRef<Effect> ) => {
     state.selectedEffect = e
     let slideItem =  document.getElementById('container-options')
     if(!slide.value){
@@ -114,25 +154,25 @@
 </script>
 
 <template>
-  {{state.selectedEffect.param.cursors}}
   <div id="container-tool-box">
     <ul id="tool-box" class="neumorphism">
-      <li v-for="effect in state.listEffect" :key="effect.name">
+      <li v-for="effect in state.listEffect" :key="effect.type">
         <tool-box-button class="tool-box-item-appear item" @click="slider(effect)">
-          {{ effect.name }}
+          {{ effect.type }}
         </tool-box-button>
       </li>
     </ul>
 
     <div id="container-options">
       <ul id="options" class="neumorphism">
-        <li v-for="c in state.selectedEffect.param.cursors" :key="c">
-          {{ c.name }}
-          <input type="range" :min="c.param[0]" :max="c.param[1]" @mouseup="performEffect($event, state.selectedEffect.name, c.name)"/>
+        <li>{{ state.selectedEffect.text }}</li>
+        <li v-for="c in state.selectedEffect.params.cursors" :key="c">
+          {{ c.text }}
+          <input type="range" :min="c.param[0]" :max="c.param[1]" @mouseup="performEffect($event, state.selectedEffect.type, c.name)"/>
         </li>
-        <li v-for="dB in state.selectedEffect.param.dropBoxes" :key="dB">
-          <select name="pets" id="pet-select" @change="performEffect($event, state.selectedEffect.name)">
-            <option value="">--Please choose an option--</option>
+        <li v-for="dB in state.selectedEffect.params.dropBoxes" :key="dB">
+          <select name="pets" @change="performEffect($event, state.selectedEffect.type)">
+            <option value="">Choisir un {{ dB.text }}</option>
             <option  v-for="v in dB.param" :value="v">{{ v }}</option>
           </select>
         </li>
