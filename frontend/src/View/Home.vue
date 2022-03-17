@@ -56,7 +56,7 @@ const updateImageListUpload = async () => {
   <nav-bar @updated="updateImageListUpload" name="Home" :selectedImage="state.selectedImage"></nav-bar>
   <div id="main-content">
     <div id="toolBox">
-      <tool-box></tool-box>
+      <tool-box :selected-image="state.selectedImage.id" ></tool-box>
     </div>
     <div id="img-box-selected">
       <div class="img-box" :key="state.selectedImage.id">
