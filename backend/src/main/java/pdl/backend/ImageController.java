@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,27 +83,17 @@ public class ImageController {
 
   @RequestMapping(value = "/images", method = RequestMethod.GET, produces = "application/json")
   @ResponseBody
-  public ArrayNode getImageList() {
-    List<Image> images = imageDao.retrieveAll();
-    ArrayNode nodes = mapper.createArrayNode();
-    for (Image image : images) {
-      ObjectNode objectNode = mapper.createObjectNode();
-      objectNode.put("id", image.getId());
-      objectNode.put("name", image.getName());
-      objectNode.put("type", image.getType().toString());
-      objectNode.put("size", image.getSize());
-      nodes.add(objectNode);
-    }
-    return nodes;
-  }
-
-  @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = "application/json")
-  @ResponseBody
-  public ArrayNode getNImages(@PathVariable("id") long id,
+  public ArrayNode getImageList(
       @RequestParam("index") Optional<Long> index,
       @RequestParam("size") Optional<Integer> size) {
 
-    List<Image> images = imageDao.retrieveGroup(index.get(), size.get());
+    List<Image> images = new ArrayList<>();
+    if (index.isPresent() && size.isPresent()) {
+      images = imageDao.retrieveGroup(index.get(), size.get());
+    } else {
+      images = imageDao.retrieveAll();
+    }
+
     ArrayNode nodes = mapper.createArrayNode();
     for (Image image : images) {
       ObjectNode objectNode = mapper.createObjectNode();
@@ -114,5 +105,25 @@ public class ImageController {
     }
     return nodes;
   }
+
+  /*
+   * @RequestMapping(value = "/images", method = RequestMethod.GET, produces =
+   * "application/json")
+   * 
+   * @ResponseBody
+   * public ArrayNode getImageList() {
+   * List<Image> images = imageDao.retrieveAll();
+   * ArrayNode nodes = mapper.createArrayNode();
+   * for (Image image : images) {
+   * ObjectNode objectNode = mapper.createObjectNode();
+   * objectNode.put("id", image.getId());
+   * objectNode.put("name", image.getName());
+   * objectNode.put("type", image.getType().toString());
+   * objectNode.put("size", image.getSize());
+   * nodes.add(objectNode);
+   * }
+   * return nodes;
+   * }
+   */
 
 }
