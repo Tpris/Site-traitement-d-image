@@ -49,39 +49,35 @@ public class ImageProcessing {
     }
   }
 
-  public static void luminositeImage(Planar<GrayU8> input, double delta) {
-    int deltaN = (int) delta;
+  public static void luminositeImage(Planar<GrayU8> input, int delta) {
     int nbCanaux = input.getNumBands();
     for (int i = 0; i < nbCanaux; ++i) {
-      GrayLevelProcessing.luminosite(input.getBand(i), deltaN);
+      GrayLevelProcessing.luminosite(input.getBand(i), delta);
     }
   }
 
-  public static void meanFilterWithBorders(Planar<GrayU8> image, double size, BorderType borderType) {
-    int sizeN = (int)size;
+  public static void meanFilterWithBorders(Planar<GrayU8> image, int size, BorderType borderType) {
     int nbCanaux = image.getNumBands();
     Planar<GrayU8> input = image.clone();
     for (int i = 0; i < nbCanaux; ++i) {
-      Convolution.meanFilterWithBorders(input.getBand(i), image.getBand(i), sizeN, borderType);
+      Convolution.meanFilterWithBorders(input.getBand(i), image.getBand(i), size, borderType);
     }
   }
 
-  public static void flouGaussien(Planar<GrayU8> image, double size, double sigma, BorderType borderType) {
-    int sizeN = (int) size;
-    int sigmaN = (int) sigma;
-    if (sizeN % 2 == 1) {
+  public static void flouGaussien(Planar<GrayU8> image, int size, int sigma, BorderType borderType) {
+    if (size % 2 == 1) {
       int nbCanaux = image.getNumBands();
       Planar<GrayU8> input = image.clone();
-      double [][]kernel = Convolution.gaussianKernel(sizeN, sigmaN);
+      double [][]kernel = Convolution.gaussianKernel(size, sigma);
       for (int i = 0; i < nbCanaux; ++i) {
-        Convolution.flouGaussienGrayU8(input.getBand(i), image.getBand(i), sizeN, kernel);
+        Convolution.flouGaussienGrayU8(input.getBand(i), image.getBand(i), size, kernel);
       }
     }
   }
 
-  public static void filter(Planar<GrayU8> input, double h, double smin, double smax) {
+  public static void filter(Planar<GrayU8> input, float h, float smin, float smax) {
     int[] rgb = new int[3];
-    double[] hsv = new double[3];
+    float[] hsv = new float[3];
 
     input = grayToRGB(input);
     int nbCanaux = input.getNumBands();

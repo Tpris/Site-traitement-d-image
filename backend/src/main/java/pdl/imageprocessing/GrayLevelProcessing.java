@@ -7,9 +7,9 @@ import boofcv.io.image.UtilImageIO;
 import boofcv.struct.image.GrayU8;
 import boofcv.struct.image.Planar;
 
-public class GrayLevelProcessing {
+class GrayLevelProcessing {
 
-	public static void threshold(GrayU8 input, int t) {
+	static void threshold(GrayU8 input, int t) {
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
 				int gl = input.get(x, y);
@@ -23,7 +23,7 @@ public class GrayLevelProcessing {
 		}
 	}
 
-	public static void luminosite(GrayU8 input, int delta) {
+	static void luminosite(GrayU8 input, int delta) {
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
 				int gl = input.get(x, y) + delta;
@@ -36,7 +36,7 @@ public class GrayLevelProcessing {
 		}
 	}
 
-	public static int min(GrayU8 input) {
+	static int min(GrayU8 input) {
 		int min = 255;
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
@@ -48,7 +48,7 @@ public class GrayLevelProcessing {
 		return min;
 	}
 
-	public static int max(GrayU8 input) {
+	static int max(GrayU8 input) {
 		int max = 0;
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
@@ -60,7 +60,7 @@ public class GrayLevelProcessing {
 		return max;
 	}
 
-	public static void contrast(GrayU8 input, int min, int max) {
+	static void contrast(GrayU8 input, int min, int max) {
 		int minHisto = min(input);
 		int maxHisto = max(input);
 		if (min > max) {
@@ -76,7 +76,7 @@ public class GrayLevelProcessing {
 		}
 	}
 
-	public static void contrastLUT(GrayU8 input, int min, int max) {
+	static void contrastLUT(GrayU8 input, int min, int max) {
 		int minHisto = min(input);
 		int maxHisto = max(input);
 		if (min > max) {
@@ -96,7 +96,7 @@ public class GrayLevelProcessing {
 		}
 	}
 
-	public static void contrastParallele(GrayU8 input, int min, int max) {
+	static void contrastParallele(GrayU8 input, int min, int max) {
 		int minHisto = min(input);
 		int maxHisto = max(input);
 		if (min > max) {
@@ -116,7 +116,7 @@ public class GrayLevelProcessing {
 		}
 	}
 
-	public static int[] histogram(GrayU8 input) {
+	static int[] histogram(GrayU8 input) {
 		int values[] = new int[256];
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
@@ -126,7 +126,7 @@ public class GrayLevelProcessing {
 		return values;
 	}
 
-	public static int[] histogramCumul(GrayU8 input){
+	static int[] histogramCumul(GrayU8 input){
 		int[] histo = histogram(input);
 		int histoCum[] = new int[256];
 		histoCum[0] = histo[0];
@@ -136,7 +136,7 @@ public class GrayLevelProcessing {
 		return histoCum;
 	}
 
-	public static void egalisation(GrayU8 input) {
+	static void egalisation(GrayU8 input) {
 		int[] egal = new int[256];
 		int[] histoCumul =  histogramCumul(input);
 		for (int i = 0; i < 256; i++) {
@@ -149,7 +149,7 @@ public class GrayLevelProcessing {
 		}
 	}
 
-	public static void luminositeColor(Planar<GrayU8> input, int delta) {
+	static void luminositeColor(Planar<GrayU8> input, int delta) {
 		for(int i =0; i<3; ++i){
 			GrayLevelProcessing.luminosite(input.getBand(i), delta);
 		}

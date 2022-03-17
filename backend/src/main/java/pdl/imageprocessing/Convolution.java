@@ -7,9 +7,9 @@ import boofcv.struct.border.BorderType;
 import boofcv.struct.convolve.Kernel2D_S32;
 import boofcv.struct.image.GrayU8;
 
-public class Convolution {
+class Convolution {
 
-  public static void meanFilterSimple(GrayU8 input, GrayU8 output, int size) {
+  static void meanFilterSimple(GrayU8 input, GrayU8 output, int size) {
     if (size % 2 == 1) {
       int bord = (size - 1) / 2;
       for (int y = 0; y < input.height; ++y) {
@@ -36,7 +36,7 @@ public class Convolution {
     output.set(x, y, val / (size * size));
   }
 
-  public static void meanFilterWithBorders(GrayU8 input, GrayU8 output, int size, BorderType borderType) {
+  static void meanFilterWithBorders(GrayU8 input, GrayU8 output, int size, BorderType borderType) {
     if (size % 2 == 1) {
       int bord = (size - 1) / 2;
       for (int y = 0; y < input.height; ++y) {
@@ -133,7 +133,7 @@ public class Convolution {
     output.set(x, y, valE / (size * size));
   }
 
-  public static void convolution(GrayU8 input, GrayU8 output, int[][] kernel) {
+  static void convolution(GrayU8 input, GrayU8 output, int[][] kernel) {
     if ((kernel.length) % 2 == 1 && (kernel[0].length) % 2 == 1) {
       int bordh = (kernel.length - 1) / 2;
       int bordw = (kernel[0].length - 1) / 2;
@@ -159,7 +159,7 @@ public class Convolution {
     }
   }
 
-  public static void flouGaussienGrayU8(GrayU8 input, GrayU8 output, int size, double[][] kernel) {
+  static void flouGaussienGrayU8(GrayU8 input, GrayU8 output, int size, double[][] kernel) {
     if (size % 2 == 1) {
       int bord = (size - 1) / 2;
       for (int y = 0; y < input.height; ++y) {
@@ -182,7 +182,7 @@ public class Convolution {
     }
   }
 
-  public static double[][] gaussianKernel(int size, int sigma){
+  static double[][] gaussianKernel(int size, int sigma){
       double[][] kernel = new double [size][size];
       int bord = (size - 1) / 2;
       double denominateur1 = 2*sigma*sigma;
@@ -195,7 +195,7 @@ public class Convolution {
       return kernel;
   }
 
-  public static void convolutionParallele(GrayU8 input, GrayU8 output, int[][] kernel) {
+  static void convolutionParallele(GrayU8 input, GrayU8 output, int[][] kernel) {
     if ((kernel.length) % 2 == 1 && (kernel[0].length) % 2 == 1) {
       int bordh = (kernel.length - 1) / 2;
       int bordw = (kernel[0].length - 1) / 2;
@@ -221,7 +221,7 @@ public class Convolution {
     }
   }
 
-  public static void testConvolution(GrayU8 input, GrayU8 output){
+  static void testConvolution(GrayU8 input, GrayU8 output){
     int[] data = { 1, 2, 3, 2, 1 ,
                     2, 6, 8, 6, 2 ,
                     3, 8, 10, 8, 3,
@@ -231,7 +231,7 @@ public class Convolution {
     GConvolveImageOps.convolveNormalized(kernel, input, output);
   }
 
-  public static void gradientImageSobel(GrayU8 input, GrayU8 output) {
+  static void gradientImageSobel(GrayU8 input, GrayU8 output) {
     int h1[][] = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
     int h2[][] = { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
     int bord = 1;

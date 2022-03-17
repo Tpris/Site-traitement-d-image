@@ -80,25 +80,25 @@ public class ImageController<Item> {
     switch (algo) {
       case "filter":
         if (lenValue(listParam,"hue")>0 && lenValue(listParam,"smin")>0 && lenValue(listParam,"smax")>0) {
-          ImageProcessing.filter(img, Double.parseDouble(getAndPopValue(listParam,"hue")), 
-              Double.parseDouble(getAndPopValue(listParam,"smin")), Double.parseDouble(getAndPopValue(listParam,"smax")));
+          ImageProcessing.filter(img, Float.parseFloat(getAndPopValue(listParam,"hue")), 
+            Float.parseFloat(getAndPopValue(listParam,"smin")), Float.parseFloat(getAndPopValue(listParam,"smax")));
         }
         break;
       case "gaussianBlur":
         if (lenValue(listParam,"size")>0 && lenValue(listParam,"sigma")>0 && lenValue(listParam,"BT")>0) {
-          ImageProcessing.flouGaussien(img, Double.parseDouble(getAndPopValue(listParam,"size")), 
-              Double.parseDouble(getAndPopValue(listParam,"sigma")), stringToBorderType(getAndPopValue(listParam,"BT")));
+          ImageProcessing.flouGaussien(img, Integer.parseInt(getAndPopValue(listParam,"size")), 
+              Integer.parseInt(getAndPopValue(listParam,"sigma")), stringToBorderType(getAndPopValue(listParam,"BT")));
         }
         break;
       case "meanBlur":
         if (lenValue(listParam,"size")>0 && lenValue(listParam,"BT")>0) {
-          ImageProcessing.meanFilterWithBorders(img, Double.parseDouble(getAndPopValue(listParam,"size")), 
+          ImageProcessing.meanFilterWithBorders(img, Integer.parseInt(getAndPopValue(listParam,"size")), 
               stringToBorderType(getAndPopValue(listParam,"BT")));
         }
         break;
       case "luminosity":
         if (lenValue(listParam,"delta")>0) {
-          ImageProcessing.luminositeImage(img, Double.parseDouble(getAndPopValue(listParam,"delta")));
+          ImageProcessing.luminositeImage(img, Integer.parseInt(getAndPopValue(listParam,"delta")));
         }
         break;
       case "sobel":
