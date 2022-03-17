@@ -146,8 +146,8 @@
   }
 
   const performEffectCursor = (e: any, name: string, nameField: string) => {
-    console.log(e.target.value)
-    /*api.getImageEffect(props.selectedImage, name, [e.target.value])
+  /*  console.log(e.target.value)
+    api.getImageEffect(props.selectedImage, name, [e.target.value])
         .catch(() => console.log(e))*/
   }
 

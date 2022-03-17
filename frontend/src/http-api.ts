@@ -19,7 +19,15 @@ export const api = {
   getImageList: (): Promise<ImageType[]> => requests.get('images', {}),
   getImageListByNumber: (index: number, size: number): Promise<ImageType[]> => requests.get('images', { index: index, size:size }),
   getImage: (id: number): Promise<Blob> => requests.get(`images/${id}`, { responseType: "blob" }),
-  getImageEffect: (id: number, algorithm:string, p1:string, p2:string, p3:string): Promise<Blob> => requests.get(`images/${id}`, { responseType: "blob", alogorithm: algorithm, p1: p1, p2:p2, p3:p3 }),
+
+  getImageEffect: (id: number, algorithm:string, p: {name: string, value:string}): Promise<Blob> => {
+    let param = {responseType: "blob", algorithm:algorithm}
+    for (let pKey in p) {
+      param[pKey] = p
+    }
+    return requests.get(`images/${id}`, param)
+  },
+
   createImage: (form: FormData): Promise<ImageType> => requests.post('images', form),
   deleteImage: (id: number): Promise<void> => requests.delete(`images/${id}`),
 };
