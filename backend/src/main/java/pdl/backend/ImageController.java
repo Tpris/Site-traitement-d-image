@@ -96,4 +96,23 @@ public class ImageController {
     return nodes;
   }
 
+  @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = "application/json")
+  @ResponseBody
+  public ArrayNode getNImages(@PathVariable("id") long id,
+      @RequestParam("index") Optional<Long> index,
+      @RequestParam("size") Optional<Integer> size) {
+
+    List<Image> images = imageDao.retrieveGroup(index.get(), size.get());
+    ArrayNode nodes = mapper.createArrayNode();
+    for (Image image : images) {
+      ObjectNode objectNode = mapper.createObjectNode();
+      objectNode.put("id", image.getId());
+      objectNode.put("name", image.getName());
+      objectNode.put("type", image.getType().toString());
+      objectNode.put("size", image.getSize());
+      nodes.add(objectNode);
+    }
+    return nodes;
+  }
+
 }
