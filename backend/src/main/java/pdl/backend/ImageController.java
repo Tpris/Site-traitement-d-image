@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,38 +66,39 @@ public class ImageController<Item> {
   // HttpStatus.NOT_FOUND);
   // }
 
-  private static void imgProcessing(Planar<GrayU8> img, String algo,
-  ArrayList<String> p1l, ArrayList<String> p2l, ArrayList<String> p3l) {
+  private static int lenValue(HashMap<String,ArrayList<String>> listParam, String param){
+    return listParam.get(param).size();
+  }
+
+  private static String getAndPopValue(HashMap<String,ArrayList<String>> listParam, String param){
+    String val = listParam.get(param).get(0);
+    listParam.get(param).remove(0);
+    return val;
+  }
+
+  private static void imgProcessing(Planar<GrayU8> img, String algo, HashMap<String,ArrayList<String>> listParam) {
     switch (algo) {
       case "filter":
-        if (p1l.size()>0 && p2l.size()>0 && p3l.size()>0) {
-          ImageProcessing.filter(img, Double.parseDouble(p1l.get(0)), Double.parseDouble(p2l.get(0)), Double.parseDouble(p3l.get(0)));
-          p1l.remove(0);
-          p2l.remove(0);
-          p3l.remove(0);
+        if (lenValue(listParam,"hue")>0 && lenValue(listParam,"smin")>0 && lenValue(listParam,"smax")>0) {
+          ImageProcessing.filter(img, Double.parseDouble(getAndPopValue(listParam,"hue")), 
+              Double.parseDouble(getAndPopValue(listParam,"smin")), Double.parseDouble(getAndPopValue(listParam,"smax")));
         }
         break;
       case "gaussianBlur":
-        if (p1l.size()>0 && p2l.size()>0 && p3l.size()>0) {
-          ImageProcessing.flouGaussien(img, Double.parseDouble(p1l.get(0)), Double.parseDouble(p2l.get(0)), stringToBorderType(p3l.get(0)));
-          System.out.println("GB= "+p1l.get(0)+" "+p2l.get(0)+" "+p3l.get(0));
-          p1l.remove(0);
-          p2l.remove(0);
-          p3l.remove(0);
+        if (lenValue(listParam,"size")>0 && lenValue(listParam,"sigma")>0 && lenValue(listParam,"BT")>0) {
+          ImageProcessing.flouGaussien(img, Double.parseDouble(getAndPopValue(listParam,"size")), 
+              Double.parseDouble(getAndPopValue(listParam,"sigma")), stringToBorderType(getAndPopValue(listParam,"BT")));
         }
         break;
       case "meanBlur":
-        if (p1l.size()>0 && p2l.size()>0) {
-          ImageProcessing.meanFilterWithBorders(img, Double.parseDouble(p1l.get(0)), stringToBorderType(p2l.get(0)));
-          System.out.println("MB= "+p1l.get(0)+" "+p2l.get(0));
-          p1l.remove(0);
-          p2l.remove(0);
+        if (lenValue(listParam,"size")>0 && lenValue(listParam,"BT")>0) {
+          ImageProcessing.meanFilterWithBorders(img, Double.parseDouble(getAndPopValue(listParam,"size")), 
+              stringToBorderType(getAndPopValue(listParam,"BT")));
         }
         break;
       case "luminosity":
-        if (p1l.size()>0) {
-          ImageProcessing.luminositeImage(img, Double.parseDouble(p1l.get(0)));
-          p1l.remove(0);
+        if (lenValue(listParam,"delta")>0) {
+          ImageProcessing.luminositeImage(img, Double.parseDouble(getAndPopValue(listParam,"delta")));
         }
         break;
       case "sobel":
@@ -124,12 +126,20 @@ public class ImageController<Item> {
     }
   }
 
+  private ArrayList<String> createList(Optional<String> requestParam){
+    return (requestParam.isPresent())? new ArrayList<String>(Arrays.asList(requestParam.get().split("-"))):new ArrayList<String>();
+  }
+
   @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
   public @ResponseBody ResponseEntity<?> getImageProcessing(@PathVariable("id") long id,
       @RequestParam("algorithm") Optional<String> algo,
-      @RequestParam("p1") Optional<String> p1,
-      @RequestParam("p2") Optional<String> p2,
-      @RequestParam("p3") Optional<String> p3) {
+      @RequestParam("delta") Optional<String> delta,
+      @RequestParam("size") Optional<String> size,
+      @RequestParam("sigma") Optional<String> sigma,
+      @RequestParam("BT") Optional<String> BT,
+      @RequestParam("hue") Optional<String> hue,
+      @RequestParam("smin") Optional<String> smin,
+      @RequestParam("smax") Optional<String> smax) {
 
     Optional<Image> image = imageDao.retrieve(id);
 
@@ -137,15 +147,21 @@ public class ImageController<Item> {
       InputStream inputStream = new ByteArrayInputStream(image.get().getData());
       if (algo.isPresent()) {
         ArrayList<String> algos = new ArrayList<String>(Arrays.asList(algo.get().split("-")));
-        ArrayList<String> p1l = (p1.isPresent())? new ArrayList<String>(Arrays.asList(p1.get().split("-"))):new ArrayList<String>();
-        ArrayList<String> p2l = (p2.isPresent())? new ArrayList<String>(Arrays.asList(p2.get().split("-"))):new ArrayList<String>();
-        ArrayList<String> p3l = (p3.isPresent())? new ArrayList<String>(Arrays.asList(p3.get().split("-"))):new ArrayList<String>();
+        HashMap<String, ArrayList<String>> listParam = new HashMap<String, ArrayList<String>>(){{ 
+          put("delta", createList(delta));
+          put("size", createList(size));
+          put("sigma", createList(sigma));
+          put("BT", createList(BT));
+          put("hue", createList(hue));
+          put("smin", createList(smin));
+          put("smax", createList(smax));
+        }};
         try {
           BufferedImage imBuff = ImageIO.read(inputStream);
           Planar<GrayU8> img = ConvertBufferedImage.convertFromPlanar(imBuff, null, true, GrayU8.class);
 
           for(String alg : algos){
-            imgProcessing(img, alg, p1l, p2l, p3l);
+            imgProcessing(img, alg, listParam);
           }
 
           ConvertRaster.planarToBuffered_U8(img, imBuff);
