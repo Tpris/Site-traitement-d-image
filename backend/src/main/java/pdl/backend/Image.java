@@ -47,6 +47,10 @@ public class Image {
     return id;
   }
 
+  public void setId(long newId) {
+    this.id = newId;
+  }
+
   public String getName() {
     return name;
   }
@@ -79,6 +83,10 @@ public class Image {
       extension = "jpg";
 
     return extension.equals("jpg") ? MediaType.IMAGE_JPEG : MediaType.IMAGE_PNG;
+  }
+
+  public static void updateCount(int i) {
+    count = count + i;
   }
 
 }

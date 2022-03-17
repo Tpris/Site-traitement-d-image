@@ -103,7 +103,25 @@ public class ImageDao implements Dao<Image> {
 
   @Override
   public void delete(final Image img) {
-    images.remove(img.getId());
+    long idRemoved = img.getId();
+    images.remove(idRemoved);
+
+    // POUR REINIT LE COUNT ID DES IMAGES
+    /*
+     * Image.updateCount(-1);
+     * for (Image image : images.values()) {
+     * if (image.getId() > idRemoved) {
+     * image.setId(image.getId() - 1);
+     * }
+     * }
+     * 
+     * long limit = images.size();
+     * for (long i = idRemoved + 1; i <= limit; i++) {
+     * images.put(images.get(i).getId(), images.get(i));
+     * images.remove(i);
+     * }
+     */
+
   }
 
 }
