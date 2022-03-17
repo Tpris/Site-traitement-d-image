@@ -81,8 +81,12 @@ public class ImageDao implements Dao<Image> {
   }
 
   @Override
-  public List<Image> retrieveGroup(final long id, final int size) {
-    return new ArrayList<Image>(images.values());
+  public List<Image> retrieveGroup(final long idStart, final int size) {
+    ArrayList<Image> imagesList = new ArrayList<>();
+    for (long index = idStart; index < index + size; index++) {
+      imagesList.add(images.get(index));
+    }
+    return imagesList;
   }
 
   @Override
