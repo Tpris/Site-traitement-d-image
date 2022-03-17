@@ -2,6 +2,8 @@ package pdl.backend;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 
@@ -17,16 +19,24 @@ public class Image {
   private MediaType type;
   private String size;
 
-  public Image(final File file, MediaType type) throws IOException {
+  public Image(final String name, final byte[] data) throws IOException {
     id = count++;
-    this.name = file.getName();
-    this.data = Files.readAllBytes(file.toPath());
-    this.type = type;
-    BufferedImage img = ImageIO.read(file);
-    this.size = createSize(img);
+    this.name = name;
+    this.data = data;
+    this.type = getType(name);
+    this.size = createSize();
   }
 
-  private String createSize(BufferedImage img) {
+  private String createSize() throws IOException {
+
+    File file = new File(this.name);
+
+    FileOutputStream fos = new FileOutputStream(file);
+    fos.write(this.data);
+    fos.close();
+
+    BufferedImage img = ImageIO.read(file);
+
     String width = String.valueOf(img.getWidth());
     String height = String.valueOf(img.getHeight());
 
@@ -55,6 +65,20 @@ public class Image {
 
   public String getSize() {
     return size;
+  }
+
+  private MediaType getType(String fileName) {
+
+    int index = fileName.lastIndexOf('.');
+    String extension = "";
+    if (index > 0) {
+      extension = fileName.substring(index + 1);
+    }
+
+    if (extension.equals("jpeg"))
+      extension = "jpg";
+
+    return extension.equals("jpg") ? MediaType.IMAGE_JPEG : MediaType.IMAGE_PNG;
   }
 
 }

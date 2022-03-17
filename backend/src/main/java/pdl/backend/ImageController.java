@@ -66,14 +66,12 @@ public class ImageController {
   public ResponseEntity<?> addImage(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
 
     String contentType = file.getContentType();
-    if (!contentType.equals(MediaType.IMAGE_JPEG.toString())) {
-      return new ResponseEntity<>("Only JPEG file format supported", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    if (!contentType.equals(MediaType.IMAGE_JPEG.toString()) && !contentType.equals(MediaType.IMAGE_PNG.toString())) {
+      return new ResponseEntity<>("Only JPEG and PNG file format supported", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
     try {
-      imageDao.save(file.getOriginalFilename(), file.getBytes());
-      // File img = new File(file, file.getContentType());
-      // imageDao.create(new Image(file.getOriginalFilename(), file.getBytes()));
+      imageDao.create(new Image(file.getOriginalFilename(), file.getBytes()));
     } catch (IOException e) {
       return new ResponseEntity<>("Failure to read file", HttpStatus.NO_CONTENT);
     } catch (Exception e) {
@@ -97,39 +95,5 @@ public class ImageController {
     }
     return nodes;
   }
-
-  /*
-   * @RequestMapping(value = "/images", method = RequestMethod.GET, produces =
-   * "application/json")
-   * 
-   * @ResponseBody
-   * public ArrayNode getImageList() {
-   * List<Image> images = imageDao.retrieveAll();
-   * ArrayNode nodes = mapper.createArrayNode();
-   * for (Image image : images) {
-   * ObjectNode objectNode = mapper.createObjectNode();
-   * objectNode.put("id", image.getId());
-   * objectNode.put("name", image.getName());
-   * objectNode.put("type", image.getType().toString());
-   * objectNode.put("size", image.getSize());
-   * nodes.add(objectNode);
-   * }
-   * return nodes;
-   * }
-   * /**
-   * 
-   * @RequestMapping(value = "/images/{id}", method = RequestMethod.DELETE)
-   * public ResponseEntity<?> deleteImage(@PathVariable("id") long id) {
-   * 
-   * Optional<Image> image = imageDao.retrieve(id);
-   * 
-   * if (image.isPresent()) {
-   * imageDao.delete(image.get());
-   * return new ResponseEntity<>("Image id=" + id + " deleted.", HttpStatus.OK);
-   * }
-   * return new ResponseEntity<>("Image id=" + id + " not found.",
-   * HttpStatus.NOT_FOUND);
-   * }
-   */
 
 }

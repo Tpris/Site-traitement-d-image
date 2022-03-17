@@ -1,7 +1,6 @@
 package pdl.backend;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,8 +12,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -42,12 +39,13 @@ public class ImageDao implements Dao<Image> {
         File[] files = currentDirectory.listFiles();
 
         for (File file : files) {
-
+          byte[] fileContent;
           if (file.isDirectory()) {
             directories.add(file);
           } else if (file.isFile()) {
             if (isImage(file)) {
-              Image img = new Image(file, getType(file));
+              fileContent = Files.readAllBytes(file.toPath());
+              Image img = new Image(file.getName(), fileContent);
               images.put(img.getId(), img);
             }
           }
@@ -59,21 +57,6 @@ public class ImageDao implements Dao<Image> {
     } catch (final IOException e) {
       e.printStackTrace();
     }
-  }
-
-  private MediaType getType(File file) {
-    String fileName = file.toString();
-
-    int index = fileName.lastIndexOf('.');
-    String extension = "";
-    if (index > 0) {
-      extension = fileName.substring(index + 1);
-    }
-
-    if (extension.equals("jpeg"))
-      extension = "jpg";
-
-    return extension.equals("jpg") ? MediaType.IMAGE_JPEG : MediaType.IMAGE_PNG;
   }
 
   private boolean isImage(File file) {
@@ -113,34 +96,4 @@ public class ImageDao implements Dao<Image> {
     images.remove(img.getId());
   }
 
-  public void save(String filename, byte[] bytes) throws IOException {
-    ClassLoader classLoader = getClass().getClassLoader();
-    System.out.println("---------------------------------------");
-    System.out.println("---------------------------------------");
-    System.out.println("---------------------------------------");
-    System.out.println(classLoader.getResource("images") + "/" + filename);
-    System.out.println("---------------------------------------");
-    System.out.println("---------------------------------------");
-    System.out.println("---------------------------------------");
-
-    File file = new File(classLoader.getResource("images") + "/" + filename);
-    System.out.println(file);
-    /*
-     * try (FileOutputStream fos = new FileOutputStream(file)) {
-     * fos.write(bytes);
-     * }
-     */
-
-    /*
-     * FileOutputStream fos = new FileOutputStream(file);
-     * fos.write(bytes);
-     * fos.close();
-     */
-    if (file.createNewFile()) {
-      System.out.println("File is created!");
-    } else {
-      System.out.println("File is already existed!");
-    }
-    create(new Image(file, getType(file)));
-  }
 }
