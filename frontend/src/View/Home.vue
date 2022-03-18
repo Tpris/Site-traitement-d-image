@@ -12,6 +12,10 @@ const state = reactive({
     id: -1,
     source : '',
   },
+  effects: {
+    type:'',
+    param:[{ name:'', value:''}]
+  },
   imageList: Array<ImageType>(),
   updated: false,
 })
@@ -26,29 +30,17 @@ const getImageList = async () => {
 
 getImageList();
 
-watch(() => state.selectedImage.id, (newId => {
-          if(newId !== -1){
-            api.getImage(newId)
-                .then((data: Blob) => {
-                  const reader = new window.FileReader();
-                  reader.readAsDataURL(data);
-                  reader.onload = () => {
-                    if (reader.result as string)
-                      state.selectedImage = {id: newId, source: reader.result as string }
-                  };
-                })
-                .catch(e => {
-                  console.log(e.message);
-                });
-          }
-    })
-)
-
 const updateImageListUpload = async () => {
   await getImageList();
   const imagesData = state.imageList
   state.selectedImage.id = imagesData.length != 0 ? imagesData[imagesData.length - 1].id : -1
   state.updated = true
+}
+
+const performFilter = (type:string, param: [{ name:string, value:string }]) => {
+  state.effects.type = type
+  state.effects.param = param
+  console.log(state.effects)
 }
 </script>
 
@@ -56,11 +48,11 @@ const updateImageListUpload = async () => {
   <nav-bar @updated="updateImageListUpload" name="Home" :selectedImage="state.selectedImage"></nav-bar>
   <div id="main-content">
     <div id="toolBox">
-      <tool-box :selected-image="state.selectedImage.id" ></tool-box>
+      <tool-box :selected-image="state.selectedImage.id" @applyFilter="(type, param) => performFilter(type, param)"></tool-box>
     </div>
     <div id="img-box-selected">
       <div class="img-box" :key="state.selectedImage.id">
-        <Image v-if="state.selectedImage.id !== -1" :id="state.selectedImage.id"></Image>
+        <Image v-if="state.selectedImage.id !== -1" :id="state.selectedImage.id" :effects="state.effects"></Image>
       </div>
     </div>
   </div>
