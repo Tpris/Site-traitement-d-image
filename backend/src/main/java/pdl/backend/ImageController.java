@@ -105,10 +105,10 @@ public class ImageController<Item> {
         ImageProcessing.contoursImage(img);
         break;
       case "egalisationV":
-        ImageProcessing.egalisationS(img);
+        ImageProcessing.egalisationV(img);
         break;
       case "egalisationS":
-        ImageProcessing.egalisationV(img);
+        ImageProcessing.egalisationS(img);
         break;
     }
   }
@@ -126,8 +126,8 @@ public class ImageController<Item> {
     }
   }
 
-  private ArrayList<String> createList(Optional<String> requestParam){
-    return (requestParam.isPresent())? new ArrayList<String>(Arrays.asList(requestParam.get().split("-"))):new ArrayList<String>();
+  private ArrayList<String> createList(Optional<String> requestParam, String separator){
+    return (requestParam.isPresent())? new ArrayList<String>(Arrays.asList(requestParam.get().split(separator))):new ArrayList<String>();
   }
 
   @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
@@ -146,15 +146,16 @@ public class ImageController<Item> {
     if (image.isPresent()) {
       InputStream inputStream = new ByteArrayInputStream(image.get().getData());
       if (algo.isPresent()) {
-        ArrayList<String> algos = new ArrayList<String>(Arrays.asList(algo.get().split("-")));
+        String separator = "_";
+        ArrayList<String> algos = new ArrayList<String>(Arrays.asList(algo.get().split(separator)));
         HashMap<String, ArrayList<String>> listParam = new HashMap<String, ArrayList<String>>(){{ 
-          put("delta", createList(delta));
-          put("size", createList(size));
-          put("sigma", createList(sigma));
-          put("BT", createList(BT));
-          put("hue", createList(hue));
-          put("smin", createList(smin));
-          put("smax", createList(smax));
+          put("delta", createList(delta, separator));
+          put("size", createList(size, separator));
+          put("sigma", createList(sigma, separator));
+          put("BT", createList(BT, separator));
+          put("hue", createList(hue, separator));
+          put("smin", createList(smin, separator));
+          put("smax", createList(smax, separator));
         }};
         try {
           BufferedImage imBuff = ImageIO.read(inputStream);

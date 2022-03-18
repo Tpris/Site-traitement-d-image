@@ -351,11 +351,11 @@ public class ColorProcessing {
 
     // ImageProcessing.contoursImage(image);
     // ImageProcessing.luminositeImage(image, 80);
-    // ImageProcessing.filter(image, 0, (float) 0.5, (float) 0.5);
+    ImageProcessing.filter(image, 0, (float) 0.5, (float) 0.5);
     // ImageProcessing.meanFilterWithBorders(image, 11, BorderType.NORMALIZED);
     // ImageProcessing.egalisationV(image);
 
-    ImageProcessing.flouGaussien(image, 5, 1);
+    // ImageProcessing.flouGaussien(image, 5, 1);
 
     // System.out.println("min =" + minS(image) + " max = " + maxS(image));
     // ImageProcessing.egalisationS(image);
