@@ -22,8 +22,9 @@
 
   watch(() => props.id, () =>{
     closeSlider()
+    state.appliedEffects.length = 0
     state.selectedEffect = new Effect("") as IEffect
-    state.appliedEffects.forEach((e) => removeEffect(e.type))
+    reloadEffectsImage()
   })
 
   const hasParam = (e: IEffect) => e.params.dropBoxes.length !== 0 || e.params.cursors.length !== 0
