@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import {defineProps, onMounted, reactive, ref, toRefs, watch} from 'vue';
+import {defineProps, onMounted, reactive, ref, toRefs, watch, watchEffect} from 'vue';
 import { api } from '@/http-api';
+import {IEffect} from "@/composables/Effects";
 
 const props = defineProps<{
   id: number,
-  effects?: { type:string, param:{ name:string, value:string} } }>()
+  effects?:  IEffect[]
+}>()
+
 let source = ref("")
 
-//Peut être factoriser dans un composable
 const getImage = (id) => {
   api.getImage(id)
       .then((data: Blob) => {
@@ -24,8 +26,10 @@ const getImage = (id) => {
       });
 }
 
-const getImageEffect = (id, type:string, param: [{name:string, value:string}]) =>{
-  api.getImageEffect(id, type, param)
+const getImageEffect = (id, effects: IEffect[] | undefined) =>{
+  console.log(effects)
+  if(!effects) return
+  api.getImageEffect(id, effects)
       .then((data: Blob) => {
         const reader = new window.FileReader();
         reader.readAsDataURL(data);
@@ -43,7 +47,10 @@ onMounted(() => getImage(props.id))
 
 watch(() => props.id , (newId) => getImage(newId))
 
-watch(() => props.effects?.param , (newParam) => props.effects && newParam && getImageEffect(props.id, props.effects.type, newParam))
+watchEffect(() => {
+  getImageEffect(props.id, props.effects)
+});
+
 
 </script>
 

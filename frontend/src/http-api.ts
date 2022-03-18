@@ -1,5 +1,6 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { ImageType } from '@/image';
+import {IEffect, IParams, ICursors, IDropBox} from "@/composables/Effects";
 
 const instance = axios.create({
   baseURL: "/",
@@ -20,17 +21,25 @@ export const api = {
   getImageListByNumber: (index: number, size: number): Promise<ImageType[]> => requests.get('images', { index: index, size:size }),
   getImage: (id: number): Promise<Blob> => requests.get(`images/${id}`, { responseType: "blob" }),
 
-  getImageEffect: (id: number, algorithm:string, p: [{name: string, value:string}]): Promise<Blob> => {
-    let params = {algorithm:algorithm}
-    p.forEach((pa) =>{
-      params[pa.name] = pa.value
+  getImageEffect: (id: number, effects:IEffect[]): Promise<Blob> => {
+    let params = {}
+    let algorithm : string = ""
+
+    effects.forEach((e, index) => {
+      if (index !== 0) algorithm += '-'
+      algorithm += e.type
+      for (let paramsKey in e.params) {
+        e.params[paramsKey].forEach((p) => {
+          if (params[p.name]) params[p.name] += "-" + p.value
+          else params[p.name] = p.value
+        })
+      }
     })
-    let config = {
+
+    return requests.get(`images/${id}`, {
       responseType: "blob",
-      params
-    }
-    console.log(params)
-    return requests.get(`images/${id}`, config)
+      params : { algorithm, ...params }
+    })
   },
 
   createImage: (form: FormData): Promise<ImageType> => requests.post('images', form),

@@ -6,16 +6,14 @@ import ToolBox from '@/components/ToolBox.vue'
 import Carrousel from '@/components/HomeCaroussel.vue'
 import Image from "@/components/ImageGetter.vue"
 import NavBar from '@/components/NavBar.vue'
+import {IEffect} from "@/composables/Effects";
 
 const state = reactive({
   selectedImage: {
     id: -1,
     source : '',
   },
-  effects: {
-    type:'',
-    param:[{ name:'', value:''}]
-  },
+  effects: [] as IEffect[],
   imageList: Array<ImageType>(),
   updated: false,
 })
@@ -37,10 +35,8 @@ const updateImageListUpload = async () => {
   state.updated = true
 }
 
-const performFilter = (type:string, param: [{ name:string, value:string }]) => {
-  state.effects.type = type
-  state.effects.param = param
-  console.log(state.effects)
+const performFilter = (effects: IEffect[]) => {
+  state.effects = effects
 }
 </script>
 
@@ -48,7 +44,7 @@ const performFilter = (type:string, param: [{ name:string, value:string }]) => {
   <nav-bar @updated="updateImageListUpload" name="Home" :selectedImage="state.selectedImage"></nav-bar>
   <div id="main-content">
     <div id="toolBox">
-      <tool-box :selected-image="state.selectedImage.id" @applyFilter="(type, param) => performFilter(type, param)"></tool-box>
+      <tool-box :selected-image="state.selectedImage.id" :id="state.selectedImage.id" @applyFilter="(effects) => performFilter(effects)"></tool-box>
     </div>
     <div id="img-box-selected">
       <div class="img-box" :key="state.selectedImage.id">
