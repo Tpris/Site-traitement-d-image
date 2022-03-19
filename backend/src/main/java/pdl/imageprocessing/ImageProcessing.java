@@ -1,9 +1,5 @@
 package pdl.imageprocessing;
 
-import java.awt.image.BufferedImage;
-
-import boofcv.io.image.ConvertBufferedImage;
-import boofcv.io.image.UtilImageIO;
 import boofcv.struct.border.BorderType;
 import boofcv.struct.image.GrayU8;
 import boofcv.struct.image.Planar;
