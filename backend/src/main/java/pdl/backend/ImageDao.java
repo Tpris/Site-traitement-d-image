@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -84,9 +86,21 @@ public class ImageDao implements Dao<Image> {
   public List<Image> retrieveGroup(final long idStart, final int size) {
     ArrayList<Image> imagesList = new ArrayList<>();
 
-    for (long index = idStart; index < idStart + size; index++) {
-      imagesList.add(images.get(index));
+    long cpt = 0;
+    long index = idStart;
+    while (cpt != size && index <= Image.getCount()) {
+      if (images.containsKey(index)) {
+        imagesList.add(images.get(index));
+        cpt++;
+      }
+      index++;
     }
+
+    /*
+     * for (long index = idStart; index < idStart + size; index++) {
+     * imagesList.add(images.get(index));
+     * }
+     */
     return imagesList;
   }
 
@@ -122,6 +136,10 @@ public class ImageDao implements Dao<Image> {
      * }
      */
 
+  }
+
+  public int getNumberImages() {
+    return images.size();
   }
 
 }
