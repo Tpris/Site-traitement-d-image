@@ -104,11 +104,49 @@ class Convolution {
     output.set(x, y, val / (size * size));
   }
 
+  private static void borderTreatement(int x, int y, int bord, int size, GrayU8 input, GrayU8 output,
+      BorderType borderType) {
+    switch (borderType) {
+      case SKIP:
+      default:
+        skip(x, y, input, output);
+        break;
+      case NORMALIZED:
+        normalizedMean(x, y, bord, input, output);
+        break;
+      case EXTENDED:
+        extendedMean(x, y, bord, size, input, output);
+        break;
+      case REFLECT:
+        reflect(x, y, bord, size, input, output);
+        break;
+    }
+  }
+
+  private static void gaussBorderTreatement(int x, int y, int bord, int size, double[][] kernel, double sigma,
+      GrayU8 input, GrayU8 output, BorderType borderType) {
+    switch (borderType) {
+      case SKIP:
+      default:
+        skip(x, y, input, output);
+        break;
+      case NORMALIZED:
+        normalizedGaussian(x, y, bord, input, output, kernel, sigma);
+        break;
+      case EXTENDED:
+        extendedGaussian(x, y, bord, size, input, output, kernel);
+        break;
+      case REFLECT:
+        reflectGaussian(x, y, bord, size, input, output, kernel);
+        break;
+    }
+  }
+
   private static void skip(int x, int y, GrayU8 input, GrayU8 output) {
     output.set(x, y, input.get(x, y));
   }
 
-  private static void normalized(int x, int y, int bord, GrayU8 input, GrayU8 output) {
+  private static void normalizedMean(int x, int y, int bord, GrayU8 input, GrayU8 output) {
     int val = 0;
     int nbPix = 0;
     for (int ky = -bord; ky <= bord; ky++) {
@@ -124,7 +162,32 @@ class Convolution {
     output.set(x, y, val / nbPix);
   }
 
-  private static void extended(int x, int y, int bord, int size, GrayU8 input, GrayU8 output) {
+  private static void normalizedGaussian(int x, int y, int bord, GrayU8 input, GrayU8 output, double[][] kernel,
+      double sigma) {
+    double coefEntierKernel = 1 / kernel[bord][bord];
+    int size = kernel.length;
+    double[][] kernel2 = new double[size][size];
+    for (int ky = 0; ky < size; ky++) {
+      for (int kx = 0; kx < size; kx++) {
+        kernel2[ky][kx] = kernel[ky][kx] * coefEntierKernel;
+      }
+    }
+    int val = 0;
+    double coef = 0;
+    for (int ky = -bord; ky <= bord; ky++) {
+      if (y + ky >= 0 && y + ky < input.height) {
+        for (int kx = -bord; kx <= bord; kx++) {
+          if (x + kx >= 0 && x + kx < input.width) {
+            val += input.get(x + kx, y + ky) * kernel2[ky + bord][kx + bord];
+            coef += kernel2[ky + bord][kx + bord];
+          }
+        }
+      }
+    }
+    output.set(x, y, (int) (val / coef));
+  }
+
+  private static void extendedMean(int x, int y, int bord, int size, GrayU8 input, GrayU8 output) {
     int valE = 0;
     int xE, yE = 0;
     for (int ky = -bord; ky <= bord; ky++) {
@@ -144,55 +207,6 @@ class Convolution {
       }
     }
     output.set(x, y, valE / (size * size));
-  }
-
-  private static void reflect(int x, int y, int bord, int size, GrayU8 input, GrayU8 output) {
-    int valE = 0;
-    int xE, yE = 0;
-    for (int ky = -bord; ky <= bord; ky++) {
-      yE = y + ky;
-      if (yE < 0)
-        yE = -yE;
-      else if (yE >= input.height) {
-        yE = input.height - 1 - (yE - input.height);
-      }
-      for (int kx = -bord; kx <= bord; kx++) {
-        xE = x + kx;
-        if (xE < 0)
-          xE = -xE;
-        else if (xE >= input.width)
-          xE = input.width - 1 - (xE - input.width);
-        valE += input.get(xE, yE);
-
-      }
-    }
-    output.set(x, y, valE / (size * size));
-  }
-
-  private static void normalizedGauss(int x, int y, int bord, GrayU8 input, GrayU8 output, double[][] kernel,
-      double sigma) {
-    double coefEntierKernel = 1 / kernel[bord][bord];
-    int size = kernel.length;
-    double[][] kernel2 = new double[size][size];
-    for (int ky = 0; ky < size; ky++) {
-      for (int kx = 0; kx < size; kx++) {
-        kernel2[ky][kx] = kernel[ky][kx] * coefEntierKernel;
-      }
-    }
-
-    int val = 0;
-    double coef = 0;
-    for (int ky = -bord; ky <= bord; ky++) {
-      if (y + ky >= 0 && y + ky < input.height) {
-        for (int kx = -bord; kx <= bord; kx++) {
-          if (x + kx >= 0 && x + kx < input.width) {
-            val += input.get(x + kx, y + ky) * kernel2[ky + bord][kx + bord];
-            coef += kernel2[ky + bord][kx + bord];
-          }
-        }
-      }
-    }
-    output.set(x, y, (int) (val / coef));
   }
 
   private static void extendedGaussian(int x, int y, int bord, int size, GrayU8 input, GrayU8 output,
@@ -218,6 +232,29 @@ class Convolution {
     output.set(x, y, valE);
   }
 
+  private static void reflect(int x, int y, int bord, int size, GrayU8 input, GrayU8 output) {
+    int valE = 0;
+    int xE, yE = 0;
+    for (int ky = -bord; ky <= bord; ky++) {
+      yE = y + ky;
+      if (yE < 0)
+        yE = -yE;
+      else if (yE >= input.height) {
+        yE = input.height - 1 - (yE - input.height);
+      }
+      for (int kx = -bord; kx <= bord; kx++) {
+        xE = x + kx;
+        if (xE < 0)
+          xE = -xE;
+        else if (xE >= input.width)
+          xE = input.width - 1 - (xE - input.width);
+        valE += input.get(xE, yE);
+
+      }
+    }
+    output.set(x, y, valE / (size * size));
+  }
+
   private static void reflectGaussian(int x, int y, int bord, int size, GrayU8 input, GrayU8 output,
       double[][] kernel) {
     int valE = 0;
@@ -240,43 +277,5 @@ class Convolution {
       }
     }
     output.set(x, y, valE);
-  }
-
-  private static void borderTreatement(int x, int y, int bord, int size, GrayU8 input, GrayU8 output,
-      BorderType borderType) {
-    switch (borderType) {
-      case SKIP:
-      default:
-        skip(x, y, input, output);
-        break;
-      case NORMALIZED:
-        normalized(x, y, bord, input, output);
-        break;
-      case EXTENDED:
-        extended(x, y, bord, size, input, output);
-        break;
-      case REFLECT:
-        reflect(x, y, bord, size, input, output);
-        break;
-    }
-  }
-
-  private static void gaussBorderTreatement(int x, int y, int bord, int size, double[][] kernel, double sigma,
-      GrayU8 input, GrayU8 output, BorderType borderType) {
-    switch (borderType) {
-      case SKIP:
-      default:
-        skip(x, y, input, output);
-        break;
-      case NORMALIZED:
-        normalizedGauss(x, y, bord, input, output, kernel, sigma);
-        break;
-      case EXTENDED:
-        extendedGaussian(x, y, bord, size, input, output, kernel);
-        break;
-      case REFLECT:
-        reflectGaussian(x, y, bord, size, input, output, kernel);
-        break;
-    }
   }
 }

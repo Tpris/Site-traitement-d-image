@@ -102,7 +102,10 @@ public class ImageController<Item> {
         }
         break;
       case "sobel":
-        ImageProcessing.contoursImage(img);
+        ImageProcessing.contoursImage(img, false);
+        break;
+      case "sobelColor":
+        ImageProcessing.contoursImage(img, true);
         break;
       case "egalisationV":
         ImageProcessing.egalisationV(img);

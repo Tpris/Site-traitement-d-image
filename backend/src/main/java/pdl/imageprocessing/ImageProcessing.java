@@ -35,9 +35,9 @@ public class ImageProcessing {
       System.err.println("error : unsupported type");
   }
 
-  public static void contoursImage(Planar<GrayU8> image) {
+  public static void contoursImage(Planar<GrayU8> image, boolean color) {
     int nbCanaux = image.getNumBands();
-    if (nbCanaux != 1)
+    if (nbCanaux != 1 && !color)
       ColorProcessing.RGBtoGray(image);
     Planar<GrayU8> input = image.clone();
     for (int i = 0; i < nbCanaux; ++i) {
