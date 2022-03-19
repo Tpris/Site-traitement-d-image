@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {reactive, ref, watch} from 'vue';
+import {reactive, ref, UnwrapRef, watch} from 'vue';
 import { api } from '@/http-api';
 import { ImageType } from '@/image'
 import ToolBox from '@/components/ToolBox.vue'
@@ -12,6 +12,7 @@ const state = reactive({
   selectedImage: {
     id: -1,
     source : '',
+    name: '',
   },
   effects: [] as IEffect[],
   imageList: Array<ImageType>(),
@@ -20,7 +21,7 @@ const state = reactive({
 
 const getImageList = async () => {
   return api.getImageList().then((data) => {
-    state.imageList = data;
+    state.imageList = data as Array<UnwrapRef<ImageType>> ;
   }).catch(e => {
     console.log(e.message);
   });
@@ -48,12 +49,16 @@ const performFilter = (effects: IEffect[]) => {
     </div>
     <div id="img-box-selected">
       <div class="img-box" :key="state.selectedImage.id">
-        <Image v-if="state.selectedImage.id !== -1" :id="state.selectedImage.id" :effects="state.effects"></Image>
+        <Image v-if="state.selectedImage.id !== -1" v-model="state.selectedImage.source" :id="state.selectedImage.id" :effects="state.effects"></Image>
       </div>
     </div>
   </div>
   <div id="carrousel-box">
-    <carrousel v-model="state.selectedImage.id" :id="state.selectedImage.id" :images="state.imageList" :updated="state.updated" @updated="(e) => state.updated=e"></carrousel>
+    <carrousel v-model="state.selectedImage"
+               :id="state.selectedImage.id"
+               :images="state.imageList"
+               :updated="state.updated">
+    </carrousel>
   </div>
 </template>
 

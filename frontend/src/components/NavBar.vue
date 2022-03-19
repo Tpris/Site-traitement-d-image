@@ -4,7 +4,7 @@ import NavBarDeleteButton from "@/components/buttons/NavBarDeleteButton.vue";
 import NavBarDownloadButton from "@/components/buttons/NavBarDownloadButton.vue"
 import NavBarRouterButton from "@/components/buttons/NavBarRouterButton.vue";
 
-defineProps<{ name: "", selectedImage: { id:number, source:string }}>()
+defineProps<{ name: "", selectedImage: { id:number, source:string, name:string }}>()
 defineEmits(['updated'])
 </script>
 

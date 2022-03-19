@@ -4,7 +4,7 @@ import {defineProps, onMounted, reactive, ref, watch} from "vue";
 import Image from '@/components/ImageGetter.vue';
 
 const props = defineProps<{ images: ImageType[], id: number, updated: boolean}>()
-const emit  = defineEmits(['update:modelValue', 'updated'])
+const emit  = defineEmits(['update:modelValue', 'updated', 'nameChanged'])
 
 const state = reactive({
   index: 0,
@@ -33,9 +33,7 @@ const getNextImages = () =>{
     state.index++;
 }
 
-const imageClick = (id : number) => {
-  emit('update:modelValue', id)
-}
+const imageClick = (image: ImageType) => emit('update:modelValue', image)
 
 watch(() => props.id, (newId => {
       if(props.updated){
@@ -52,7 +50,7 @@ watch(() => props.id, (newId => {
     })
 )
 watch(() => props.images, (newImages => resetCurrentImages(newImages)))
-watch(() => state.index, (newIndex => resetCurrentImages(props.images)))
+watch(() => state.index, () => resetCurrentImages(props.images))
 </script>
 
 <template>
@@ -60,7 +58,7 @@ watch(() => state.index, (newIndex => resetCurrentImages(props.images)))
     <a id="arrow-left" class="arrow neumorphism neumorphism-push" @click="getPreviousImages">&lt;</a>
     <div class="container-images">
       <div class="img" v-for="image in state.currentImages" :key="image.id">
-          <Image class="neumorphism appear" :class="props.id === image.id ? 'selected-image' : 'neumorphism-push'" @click="imageClick(image.id)" :id="image.id" />
+          <Image class="neumorphism appear" :class="props.id === image.id ? 'selected-image' : 'neumorphism-push'" @click="imageClick(image)" :id="image.id" />
       </div>
     </div>
       <a id="arrow-right" class="arrow neumorphism neumorphism-push" @click="getNextImages">&gt;</a>

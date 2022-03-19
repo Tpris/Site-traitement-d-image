@@ -1,6 +1,5 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
-import { ImageType } from '@/image';
-import {IEffect, IParams, ICursors, IDropBox} from "@/composables/Effects";
+import {IEffect} from "@/composables/Effects";
 
 const instance = axios.create({
   baseURL: "/",
@@ -17,20 +16,21 @@ const requests = {
 };
 
 export const api = {
-  getImageList: (): Promise<ImageType[]> => requests.get('images', {}),
-  getImageListByNumber: (index: number, size: number): Promise<ImageType[]> => requests.get('images', { index: index, size:size }),
-  getImage: (id: number): Promise<Blob> => requests.get(`images/${id}`, { responseType: "blob" }),
+  getImageList: (): Promise<AxiosResponse<any>> => requests.get('images', {}),
+  getImageListByNumber: (index: number, size: number): Promise<AxiosResponse<any>> => requests.get('images', { index: index, size:size }),
+  getImage: (id: number): Promise<AxiosResponse<any>> => requests.get(`images/${id}`, { responseType: "blob" }),
 
-  getImageEffect: (id: number, effects:IEffect[]): Promise<Blob> => {
+  getImageEffect: (id: number, effects:IEffect[]): Promise<AxiosResponse<any>> => {
     let params = {}
     let algorithm : string = ""
+    let separator = "_"
 
     effects.forEach((e, index) => {
-      if (index !== 0) algorithm += '-'
+      if (index !== 0) algorithm += separator
       algorithm += e.type
       for (let paramsKey in e.params) {
         e.params[paramsKey].forEach((p) => {
-          if (params[p.name]) params[p.name] += "-" + p.value
+          if (params[p.name]) params[p.name] += separator + p.value
           else params[p.name] = p.value
         })
       }
@@ -42,6 +42,6 @@ export const api = {
     })
   },
 
-  createImage: (form: FormData): Promise<ImageType> => requests.post('images', form),
-  deleteImage: (id: number): Promise<void> => requests.delete(`images/${id}`),
+  createImage: (form: FormData): Promise<AxiosResponse<any>> => requests.post('images', form),
+  deleteImage: (id: number): Promise<AxiosResponse<any>> => requests.delete(`images/${id}`),
 };

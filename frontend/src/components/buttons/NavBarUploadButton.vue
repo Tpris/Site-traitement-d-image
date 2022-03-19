@@ -14,7 +14,7 @@ const submitFile = ()  =>{
     formData.append("file", file);
     api.createImage(formData).then(() => {
       if (target.value !== undefined)
-        target.value.value = '';
+        target.valu.value = '';
       emit('updated')
     }).catch(e => {
       console.log(e.message);

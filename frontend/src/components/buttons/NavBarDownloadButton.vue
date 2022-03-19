@@ -1,12 +1,12 @@
 <script setup lang="ts">
-defineProps<{ selectedImage: { id:number, source:string }}>()
+  defineProps<{ selectedImage: { id:number, source:string, name:string}}>()
 </script>
 
 <template>
   <a class="button neumorphism neumorphism-push"
-     v-if="selectedImage.source && selectedImage.id !== -1"
+     v-if="selectedImage.source !== '' && selectedImage.id !== -1"
      :href="selectedImage.source"
-     :download="selectedImage.id">
+     :download="selectedImage.name">
     Download
   </a>
   <a class="button neumorphism neumorphism-push" v-else>Download</a>

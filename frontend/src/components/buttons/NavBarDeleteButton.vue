@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { api } from '@/http-api';
-defineProps<{selectedImage: { id:number, source:string }}>()
+defineProps<{selectedImage: { id:number, source:string, name:string }}>()
 const emit = defineEmits(['updated'])
 
 const deleteImage = (id) => {
