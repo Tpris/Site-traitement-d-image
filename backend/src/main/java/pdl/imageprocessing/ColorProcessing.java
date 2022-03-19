@@ -1,9 +1,5 @@
 package pdl.imageprocessing;
 
-import java.awt.image.BufferedImage;
-
-import boofcv.io.image.ConvertBufferedImage;
-import boofcv.io.image.UtilImageIO;
 import boofcv.struct.border.BorderType;
 import boofcv.struct.image.GrayU8;
 import boofcv.struct.image.Planar;
@@ -14,12 +10,6 @@ class ColorProcessing {
   static void luminositeColor(Planar<GrayU8> input, int delta) {
     for (int i = 0; i < 3; ++i) {
       GrayLevelProcessing.luminosite(input.getBand(i), delta);
-    }
-  }
-
-  static void convolutionColor(Planar<GrayU8> input, Planar<GrayU8> output, int[][] kernel) {
-    for (int i = 0; i < 3; ++i) {
-      Convolution.convolution(input.getBand(i), output.getBand(i), kernel);
     }
   }
 

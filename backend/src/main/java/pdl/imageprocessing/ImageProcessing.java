@@ -1,9 +1,5 @@
 package pdl.imageprocessing;
 
-import java.awt.image.BufferedImage;
-
-import boofcv.io.image.ConvertBufferedImage;
-import boofcv.io.image.UtilImageIO;
 import boofcv.struct.border.BorderType;
 import boofcv.struct.image.GrayU8;
 import boofcv.struct.image.Planar;
@@ -39,9 +35,9 @@ public class ImageProcessing {
       System.err.println("error : unsupported type");
   }
 
-  public static void contoursImage(Planar<GrayU8> image) {
+  public static void contoursImage(Planar<GrayU8> image, boolean color) {
     int nbCanaux = image.getNumBands();
-    if (nbCanaux != 1)
+    if (nbCanaux != 1 && !color)
       ColorProcessing.RGBtoGray(image);
     Planar<GrayU8> input = image.clone();
     for (int i = 0; i < nbCanaux; ++i) {
@@ -70,7 +66,7 @@ public class ImageProcessing {
       Planar<GrayU8> input = image.clone();
       double [][]kernel = Convolution.gaussianKernel(size, sigma);
       for (int i = 0; i < nbCanaux; ++i) {
-        Convolution.flouGaussienGrayU8(input.getBand(i), image.getBand(i), size, kernel);
+        Convolution.flouGaussienGrayU8(input.getBand(i), image.getBand(i), size, sigma, kernel, borderType);
       }
     }
   }
