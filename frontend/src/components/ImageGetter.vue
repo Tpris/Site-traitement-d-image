@@ -27,7 +27,6 @@ const getImage = (id) => {
 }
 
 const getImageEffect = (id, effects: IEffect[] | undefined) =>{
-  console.log(effects)
   if(!effects) return
   api.getImageEffect(id, effects)
       .then((data: Blob) => {

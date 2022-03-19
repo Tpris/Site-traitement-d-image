@@ -50,11 +50,11 @@ export default function useEffects() {
         this.value = "";
     }
 
-    function Cursors(text:string, name:string, param: string[], step: number){
+    function Cursors(text:string, name:string, param: string[], step: number, value: number){
         this.text = text;
         this.name = name;
         this.param = param;
-        this.value = 0;
+        this.value = value;
         this.step = step
     }
 
@@ -66,9 +66,9 @@ export default function useEffects() {
             case EffectTypes.Filter:
                 this.text = "Filtre de teinte"
                 this.params = new Params(null, [
-                    new Cursors("Teinte", "hue", ["0", "255"], 1),
-                    new Cursors("min", "smin", ["0", "1"], 0.01),
-                    new Cursors("max", "smax", ["0", "1"], 0.01)
+                    new Cursors("Teinte", "hue", ["0", "255"], 1, 0),
+                    new Cursors("min", "smin", ["0", "1"], 0.01 ,0),
+                    new Cursors("max", "smax", ["0", "1"], 0.01, 0)
                 ] as ICursors[])
                 break;
 
@@ -76,8 +76,8 @@ export default function useEffects() {
                 this.text = "Filtre gaussien"
                 this.params = new Params(
                     [new DropBox("Type", "BT",["Skip", "Normalized", "Extended", "Reflect"])] as IDropBox[],
-                    [ new Cursors("Taille", "size", ["1", "255"],2),
-                        new Cursors("Ecart type","sigma", ["0", "7"], 1)
+                    [ new Cursors("Taille", "size", ["1", "255"],2, 1),
+                        new Cursors("Ecart type","sigma", ["0", "7"], 1,0)
                     ] as ICursors[])
                 break;
 
@@ -85,13 +85,13 @@ export default function useEffects() {
                 this.text = "Filtre moyenneur"
                 this.params = new Params(
                     [new DropBox("Type", "BT",["Skip", "Normalized", "Extended", "Reflect"])] as IDropBox[],
-                    [new Cursors("Taille", "size", ["1", "255"],2)] as ICursors[]
+                    [new Cursors("Taille", "size", ["1", "255"],2, 1)] as ICursors[]
                 )
                 break;
 
             case EffectTypes.Luminosity:
                 this.text = "Luminosité"
-                this.params = new Params(null, [new Cursors("Delta", "delta",["-255", "255"], 1)] as ICursors[])
+                this.params = new Params(null, [new Cursors("Delta", "delta",["-255", "255"], 1, 0)] as ICursors[])
                 break
 
             case EffectTypes.Sobel:
