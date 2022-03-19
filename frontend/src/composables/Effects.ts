@@ -1,3 +1,13 @@
+export enum EffectTypes {
+    Filter = "filter",
+    GaussianBlur = "gaussianBlur",
+    MeanBlur = "meanBlur",
+    Luminosity = "luminosity",
+    Sobel = "sobel",
+    EgalisationS = "egalisationS",
+    EgalisationV = "egalisationV"
+}
+
 export interface IEffect{
     type: string
     text: string
@@ -21,6 +31,7 @@ export interface ICursors{
     name: string
     param: string[]
     value: number
+    step: number
 }
 
 export default function useEffects() {
@@ -39,11 +50,12 @@ export default function useEffects() {
         this.value = "";
     }
 
-    function Cursors(text:string, name:string, param: string[]){
+    function Cursors(text:string, name:string, param: string[], step: number){
         this.text = text;
         this.name = name;
         this.param = param;
         this.value = 0;
+        this.step = step
     }
 
     function Effect(type:string) {
@@ -51,45 +63,50 @@ export default function useEffects() {
         this.isActive = false
 
         switch(type){
-            case "filter":
+            case EffectTypes.Filter:
                 this.text = "Filtre de teinte"
                 this.params = new Params(null, [
-                    new Cursors("Teinte", "hue", ["0", "255"]),
-                    new Cursors("min", "smin", ["0", "255"]),
-                    new Cursors("max", "smax", ["0", "255"])
+                    new Cursors("Teinte", "hue", ["0", "255"], 1),
+                    new Cursors("min", "smin", ["0", "1"], 0.01),
+                    new Cursors("max", "smax", ["0", "1"], 0.01)
                 ] as ICursors[])
                 break;
 
-            case "gaussianBlur":
+            case EffectTypes.GaussianBlur:
                 this.text = "Filtre gaussien"
                 this.params = new Params(
                     [new DropBox("Type", "BT",["Skip", "Normalized", "Extended", "Reflect"])] as IDropBox[],
-                    [ new Cursors("Taille", "size", ["0", "255"]),
-                        new Cursors("Ecart type","sigma", ["0", "255"])
+                    [ new Cursors("Taille", "size", ["1", "255"],2),
+                        new Cursors("Ecart type","sigma", ["0", "7"], 1)
                     ] as ICursors[])
                 break;
 
-            case "meanBlur":
+            case EffectTypes.MeanBlur:
                 this.text = "Filtre moyenneur"
                 this.params = new Params(
                     [new DropBox("Type", "BT",["Skip", "Normalized", "Extended", "Reflect"])] as IDropBox[],
-                    [new Cursors("Taille", "size", ["0", "255"])] as ICursors[]
+                    [new Cursors("Taille", "size", ["1", "255"],2)] as ICursors[]
                 )
                 break;
 
-            case "luminosity":
+            case EffectTypes.Luminosity:
                 this.text = "Luminosité"
-                this.params = new Params(null, [new Cursors("Delta", "delta",["-255", "255"])] as ICursors[])
+                this.params = new Params(null, [new Cursors("Delta", "delta",["-255", "255"], 1)] as ICursors[])
                 break
 
-            case "sobel":
+            case EffectTypes.Sobel:
                 this.text = "Sobel"
                 this.params = new Params(null, null)
                 break;
 
-            case "egalisation":
-                this.text = "Egalisation"
-                this.params = new Params([new DropBox("HSV", "SV", ["S", "V"])] as IDropBox[], null)
+            case EffectTypes.EgalisationS:
+                this.text = "Egalisation S"
+                this.params = new Params(null, null)
+                break;
+
+            case EffectTypes.EgalisationV:
+                this.text = "Egalisation V"
+                this.params = new Params(null, null)
                 break;
 
             default:

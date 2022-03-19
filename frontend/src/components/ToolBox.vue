@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import ToolBoxButton from "@/components/buttons/ToolBoxButton.vue";
   import {reactive, watch} from "vue";
-  import useEffects, {ICursors, IDropBox, IEffect} from "@/composables/Effects";
+  import useEffects, {EffectTypes, ICursors, IDropBox, IEffect} from "@/composables/Effects";
 
   const {Effect} = useEffects()
   const props = defineProps<{ id: number }>()
@@ -11,12 +11,13 @@
     selectedEffect: new Effect("") as IEffect,
     appliedEffects: Array<IEffect>(),
     listEffect: [
-        new Effect("sobel"),
-        new Effect("luminosity"),
-        new Effect("filter"),
-        new Effect("gaussianBlur"),
-        new Effect("meanBlur"),
-        new Effect("egalisation"),
+        new Effect(EffectTypes.Sobel),
+        new Effect(EffectTypes.Luminosity),
+        new Effect(EffectTypes.Filter),
+        new Effect(EffectTypes.GaussianBlur),
+        new Effect(EffectTypes.MeanBlur),
+        new Effect(EffectTypes.EgalisationS),
+        new Effect(EffectTypes.EgalisationV),
       ] as IEffect[],
   })
 
@@ -48,7 +49,7 @@
     if(props.id === -1) return
     openSlider()
     selectEffect(effect)
-    performEffect(effect, null, null)
+    if(!isAppliedEffect(effect)) performEffect(effect, null, null)
   }
 
   const handleEffectNoParam = (effect: IEffect) => {
@@ -62,8 +63,6 @@
 
   const performEffect = (effect: IEffect, e: any | null, param: ICursors | IDropBox| null) => {
     if (param) param.value = e.target.value
-    if(effect.type === "egalisation" && e !== null)
-      effect.type += e.target.value
     removeEffect(effect.type)
     addEffects(effect)
     reloadEffectsImage()
@@ -86,11 +85,11 @@
 
     <div id="container-options">
       <ul id="options" class="neumorphism">
-        <li>{{ state.selectedEffect.text }}</li>
+        <li v-if="hasParam(state.selectedEffect)">{{ state.selectedEffect.text }}</li>
 
         <li v-for="c in state.selectedEffect.params.cursors" :key="c">
-          {{ c.text }}
-          <input type="range" :min="c.param[0]" :max="c.param[1]" @mouseup="performEffect(state.selectedEffect, $event, c)"/>
+          <p>{{ c.text }}</p>
+          <input type="range" :min="c.param[0]" :max="c.param[1]" :step="c.step" @mouseup="performEffect(state.selectedEffect, $event, c)"/>
         </li>
         <li v-for="dB in state.selectedEffect.params.dropBoxes" :key="dB">
           <select name="pets" v-model="dB.value" @change="performEffect(state.selectedEffect, $event, dB)">
@@ -99,7 +98,7 @@
           </select>
         </li>
         <li>
-          <tool-box-button @click="removeEffectAndRefresh(state.selectedEffect.type)" >Enlever le filtre</tool-box-button>
+          <tool-box-button v-if="hasParam(state.selectedEffect)" @click="removeEffectAndRefresh(state.selectedEffect.type)" >Enlever le filtre</tool-box-button>
         </li>
       </ul>
       <a id="arrow-left" class="neumorphism neumorphism-push" @click="closeSlider()" >&lt;</a>
