@@ -351,11 +351,18 @@ public class ColorProcessing {
 
     // ImageProcessing.contoursImage(image);
     // ImageProcessing.luminositeImage(image, 80);
-    ImageProcessing.filter(image, 0, (float) 0.5, (float) 0.5);
+    // ImageProcessing.filter(image, 0, (float) 0.5, (float) 0.5);
     // ImageProcessing.meanFilterWithBorders(image, 11, BorderType.NORMALIZED);
     // ImageProcessing.egalisationV(image);
 
-    // ImageProcessing.flouGaussien(image, 5, 1);
+    long begin2 = System.nanoTime();
+    for(int i = 0; i<10; ++i){
+      ImageProcessing.flouGaussien(image, 5, 1);
+    }
+    long end2 = System.nanoTime();
+    System.out.println("Durée = " + (end2 - begin2)/1000000 + " millisecondes");
+
+    
 
     // System.out.println("min =" + minS(image) + " max = " + maxS(image));
     // ImageProcessing.egalisationS(image);

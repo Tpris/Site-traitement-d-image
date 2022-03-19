@@ -162,7 +162,7 @@ public class Convolution {
   public static void flouGaussienGrayU8(GrayU8 input, GrayU8 output, int size, double[][] kernel) {
     if (size % 2 == 1) {
       int bord = (size - 1) / 2;
-      for (int y = 0; y < input.height; ++y) {
+      BoofConcurrency.loopFor(0, input.height, y -> {
         for (int x = 0; x < input.width; ++x) {
           if (x < bord || x >= input.width - bord || y < bord || y >= input.height - bord) {
             skip(x, y, input, output);
@@ -176,7 +176,7 @@ public class Convolution {
             output.set(x, y, val);
           }
         }
-      }
+      });
     } else {
       System.err.println("la taille du noyau doit être impair");
     }
@@ -186,10 +186,16 @@ public class Convolution {
       double[][] kernel = new double [size][size];
       int bord = (size - 1) / 2;
       double denominateur1 = 2*sigma*sigma;
-      double denominateur2 = denominateur1*Math.PI;
+      double sumCoef = 0;
       for (int ky = -bord; ky <= bord; ky++) {
         for (int kx = -bord; kx <= bord; kx++) {
-          kernel[ky+bord][kx+bord] = Math.exp(-(((kx*kx)+(ky*ky))/denominateur1)) /denominateur2;
+          kernel[ky+bord][kx+bord] = Math.exp(-(((kx*kx)+(ky*ky))/denominateur1));
+          sumCoef += kernel[ky+bord][kx+bord];
+        }
+      }
+      for (int ky = -bord; ky <= bord; ky++) {
+        for (int kx = -bord; kx <= bord; kx++) {
+          kernel[ky+bord][kx+bord] /= sumCoef;
         }
       }
       return kernel;

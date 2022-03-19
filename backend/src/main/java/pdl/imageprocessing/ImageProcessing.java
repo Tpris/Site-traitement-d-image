@@ -70,7 +70,7 @@ public class ImageProcessing {
       Planar<GrayU8> input = image.clone();
       double [][]kernel = Convolution.gaussianKernel(size, sigma);
       for (int i = 0; i < nbCanaux; ++i) {
-        Convolution.flouGaussienGrayU8(input.getBand(i), image.getBand(i), size, kernel);
+        Convolution.flouGaussienGrayU8(input.getBand(i), image.getBand(i), size, sigma, kernel, borderType);
       }
     }
   }
