@@ -67,6 +67,8 @@
     addEffects(effect)
     reloadEffectsImage()
   }
+
+  //watch min et max filter
 </script>
 
 <template>
@@ -86,11 +88,10 @@
     <div id="container-options">
       <ul id="options" class="neumorphism">
         <li v-if="hasParam(state.selectedEffect)">{{ state.selectedEffect.text }}</li>
-
-        <li v-for="c in state.selectedEffect.params.cursors" :key="c">
-          <p>{{ c.text }}</p>
-          <input type="range" :min="c.param[0]" :max="c.param[1]" :step="c.step" @mouseup="performEffect(state.selectedEffect, $event, c)"/>
-        </li>
+          <li v-for="c in state.selectedEffect.params.cursors" :key="c">
+            <p>{{ c.text }}</p>
+            <input type="range" :min="c.param[0]" :max="c.param[1]" :step="c.step" @mouseup="performEffect(state.selectedEffect, $event, c)"/>
+          </li>
         <li v-for="dB in state.selectedEffect.params.dropBoxes" :key="dB">
           <select name="pets" v-model="dB.value" @change="performEffect(state.selectedEffect, $event, dB)">
             <option value="">Choisir un {{ dB.text }}</option>
