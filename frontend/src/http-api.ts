@@ -17,7 +17,7 @@ const requests = {
 
 export const api = {
   getImageList: (): Promise<AxiosResponse<any>> => requests.get('images', {}),
-  getImageListByNumber: (index: number, size: number): Promise<AxiosResponse<any>> => requests.get('images', { index: index, size:size }),
+  getImageListByNumber: (index: number, size: number): Promise<AxiosResponse<any>> => requests.get('images', {params: { index: index, size:size }}),
   getImage: (id: number): Promise<AxiosResponse<any>> => requests.get(`images/${id}`, { responseType: "blob" }),
 
   getImageEffect: (id: number, effects:IEffect[]): Promise<AxiosResponse<any>> => {

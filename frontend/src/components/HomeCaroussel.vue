@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import {ImageType} from "@/image";
-import {defineProps, onMounted, reactive, ref, watch} from "vue";
+import {defineProps, onMounted, reactive, ref, UnwrapRef, watch} from "vue";
 import Image from '@/components/ImageGetter.vue';
+import {api} from "@/http-api";
+import {stat} from "fs";
 
 const props = defineProps<{ images: ImageType[], id: number, updated: boolean}>()
 const emit  = defineEmits(['update:modelValue', 'updated', 'nameChanged'])
@@ -12,12 +14,21 @@ const state = reactive({
   currentImages: Array<ImageType>()
 })
 
+const getCurrentImages = () => {
+  api.getImageListByNumber(state.index, state.nbImg).then((data) => {
+    state.currentImages = data as Array<UnwrapRef<ImageType>>;
+  }).catch(e =>
+    console.log(e.message));
+}
+
 onMounted(() => {
-  for (let i = 0; i < state.nbImg && props.images[i]; i++)
-    state.currentImages[i] = props.images[i * state.index + i]
+  getCurrentImages()
+  /* for (let i = 0; i < state.nbImg && props.images[i]; i++)
+    state.currentImages[i] = props.images[i * state.index + i]*/
 })
 
 const resetCurrentImages = (newImages) => {
+  getCurrentImages()
   state.currentImages = Array()
   for (let i = 0; i < state.nbImg && newImages[(state.nbImg * state.index) + i]; i++)
     state.currentImages[i] = newImages[(state.nbImg * state.index) + i]
@@ -49,8 +60,12 @@ watch(() => props.id, (newId => {
       }
     })
 )
-watch(() => props.images, (newImages => resetCurrentImages(newImages)))
-watch(() => state.index, () => resetCurrentImages(props.images))
+
+//watch(() => props.images, (newImages => resetCurrentImages(newImages)))
+watch(() => state.index, () => getCurrentImages())
+
+//watch(() => props.images, (newImages => resetCurrentImages(newImages)))
+//watch(() => state.index, () => resetCurrentImages(props.images))
 </script>
 
 <template>

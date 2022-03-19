@@ -18,7 +18,7 @@ const state = reactive({
   imageList: Array<ImageType>(),
   updated: false,
 })
-
+/*
 const getImageList = async () => {
   return api.getImageList().then((data) => {
     state.imageList = data as Array<UnwrapRef<ImageType>> ;
@@ -35,14 +35,13 @@ const updateImageListUpload = async () => {
   state.selectedImage.id = imagesData.length != 0 ? imagesData[imagesData.length - 1].id : -1
   state.updated = true
 }
+*/
+const performFilter = (effects: IEffect[]) => state.effects = effects
 
-const performFilter = (effects: IEffect[]) => {
-  state.effects = effects
-}
 </script>
 
 <template>
-  <nav-bar @updated="updateImageListUpload" name="Home" :selectedImage="state.selectedImage"></nav-bar>
+  <nav-bar @updated="state.updated = true" name="Home" :selectedImage="state.selectedImage"></nav-bar>
   <div id="main-content">
     <div id="toolBox">
       <tool-box :selected-image="state.selectedImage.id" :id="state.selectedImage.id" @applyFilter="(effects) => performFilter(effects)"></tool-box>
