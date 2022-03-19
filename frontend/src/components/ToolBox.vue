@@ -106,8 +106,9 @@
             <option  v-for="v in dB.param" :value="v">{{ v }}</option>
           </select>
         </li>
-        <li>
-          <tool-box-button v-if="hasParam(state.selectedEffect)" @click="removeEffectAndRefresh(state.selectedEffect.type)" >Enlever le filtre</tool-box-button>
+        <li v-if="hasParam(state.selectedEffect)">
+          <tool-box-button v-if="isAppliedEffect(state.selectedEffect.type)" @click="removeEffectAndRefresh(state.selectedEffect.type)">Enlever le filtre</tool-box-button>
+          <tool-box-button v-else @click="performEffect(state.selectedEffect,null, null)">Appliquer le filtre</tool-box-button>
         </li>
       </ul>
       <a id="arrow-left" class="neumorphism neumorphism-push" @click="closeSlider()" >&lt;</a>
