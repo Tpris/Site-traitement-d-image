@@ -2,25 +2,9 @@ package pdl.imageprocessing;
 
 import boofcv.alg.enhance.EnhanceImageOps;
 import boofcv.alg.misc.ImageStatistics;
-import boofcv.concurrency.BoofConcurrency;
 import boofcv.struct.image.GrayU8;
-import boofcv.struct.image.Planar;
 
 class GrayLevelProcessing {
-
-	static void threshold(GrayU8 input, int t) {
-		for (int y = 0; y < input.height; ++y) {
-			for (int x = 0; x < input.width; ++x) {
-				int gl = input.get(x, y);
-				if (gl < t) {
-					gl = 0;
-				} else {
-					gl = 255;
-				}
-				input.set(x, y, gl);
-			}
-		}
-	}
 
 	static void luminosite(GrayU8 input, int delta) {
 		for (int y = 0; y < input.height; ++y) {
@@ -32,86 +16,6 @@ class GrayLevelProcessing {
 					gl = 0;
 				input.set(x, y, gl);
 			}
-		}
-	}
-
-	static int min(GrayU8 input) {
-		int min = 255;
-		for (int y = 0; y < input.height; ++y) {
-			for (int x = 0; x < input.width; ++x) {
-				int gl = input.get(x, y);
-				if (gl < min)
-					min = gl;
-			}
-		}
-		return min;
-	}
-
-	static int max(GrayU8 input) {
-		int max = 0;
-		for (int y = 0; y < input.height; ++y) {
-			for (int x = 0; x < input.width; ++x) {
-				int gl = input.get(x, y);
-				if (gl > max)
-					max = gl;
-			}
-		}
-		return max;
-	}
-
-	static void contrast(GrayU8 input, int min, int max) {
-		int minHisto = min(input);
-		int maxHisto = max(input);
-		if (min > max) {
-			System.err.println("min est superieur à max");
-		} else if (minHisto == maxHisto) {
-			System.err.println("un contraste ne peut pas être appliqué à une image à couleur unie");
-		} else {
-			for (int y = 0; y < input.height; ++y) {
-				for (int x = 0; x < input.width; ++x) {
-					input.set(x, y, ((max - min) * (input.get(x, y) - minHisto) / (maxHisto - minHisto)) + min);
-				}
-			}
-		}
-	}
-
-	static void contrastLUT(GrayU8 input, int min, int max) {
-		int minHisto = min(input);
-		int maxHisto = max(input);
-		if (min > max) {
-			System.err.println("min est superieur à max");
-		} else if (minHisto == maxHisto) {
-			System.err.println("un contraste ne peut pas être appliqué à une image à couleur unie");
-		} else {
-			int LUT[] = new int[256];
-			for (int i = 0; i < 256; i++) {
-				LUT[i] = ((max - min) * (i - minHisto) / (maxHisto - minHisto)) + min;
-			}
-			for (int y = 0; y < input.height; ++y) {
-				for (int x = 0; x < input.width; ++x) {
-					input.set(x, y, LUT[input.get(x, y)]);
-				}
-			}
-		}
-	}
-
-	static void contrastParallele(GrayU8 input, int min, int max) {
-		int minHisto = min(input);
-		int maxHisto = max(input);
-		if (min > max) {
-			System.err.println("min est superieur à max");
-		} else if (minHisto == maxHisto) {
-			System.err.println("un contraste ne peut pas être appliqué à une image à couleur unie");
-		} else {
-			int LUT[] = new int[256];
-			for (int i = 0; i < 256; i++) {
-				LUT[i] = ((max - min) * (i - minHisto) / (maxHisto - minHisto)) + min;
-			}
-			BoofConcurrency.loopFor(0, input.height, y -> {
-				for (int x = 0; x < input.width; ++x) {
-					input.set(x, y, LUT[input.get(x, y)]);
-				}
-			});
 		}
 	}
 
@@ -145,12 +49,6 @@ class GrayLevelProcessing {
 			for (int x = 0; x < input.width; ++x) {
 				input.set(x, y, egal[input.get(x, y)]);
 			}
-		}
-	}
-
-	static void luminositeColor(Planar<GrayU8> input, int delta) {
-		for(int i =0; i<3; ++i){
-			GrayLevelProcessing.luminosite(input.getBand(i), delta);
 		}
 	}
 

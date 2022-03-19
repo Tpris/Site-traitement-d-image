@@ -6,6 +6,34 @@ import boofcv.struct.image.GrayU8;
 
 class Convolution {
 
+  static void gradientImageSobel(GrayU8 input, GrayU8 output) {
+    int h1[][] = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
+    int h2[][] = { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
+    int bord = 1;
+    for (int y = 0; y < input.height; ++y) {
+      for (int x = 0; x < input.width; ++x) {
+        if (x < bord || x >= input.width - bord || y < bord || y >= input.height - bord) {
+          output.set(x, y, input.get(x, y));
+        } else {
+          int valx = 0;
+          int valy = 0;
+          for (int ky = -bord; ky <= bord; ky++) {
+            for (int kx = -bord; kx <= bord; kx++) {
+              valx += input.get(x + kx, y + ky) * h1[ky + bord][kx + bord];
+              valy += input.get(x + kx, y + ky) * h2[ky + bord][kx + bord];
+            }
+          }
+          int v = (int) Math.sqrt(valx * valx + valy * valy);
+          if (v < 0)
+            v = 0;
+          else if (v > 255)
+            v = 255;
+          output.set(x, y, v);
+        }
+      }
+    }
+  }
+
   public static void flouGaussienGrayU8(GrayU8 input, GrayU8 output, int size, double sigma, double[][] kernel,
       BorderType borderType) {
     if (size % 2 == 1) {
@@ -47,34 +75,6 @@ class Convolution {
       }
     }
     return kernel;
-  }
-
-  static void gradientImageSobel(GrayU8 input, GrayU8 output) {
-    int h1[][] = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
-    int h2[][] = { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
-    int bord = 1;
-    for (int y = 0; y < input.height; ++y) {
-      for (int x = 0; x < input.width; ++x) {
-        if (x < bord || x >= input.width - bord || y < bord || y >= input.height - bord) {
-          output.set(x, y, input.get(x, y));
-        } else {
-          int valx = 0;
-          int valy = 0;
-          for (int ky = -bord; ky <= bord; ky++) {
-            for (int kx = -bord; kx <= bord; kx++) {
-              valx += input.get(x + kx, y + ky) * h1[ky + bord][kx + bord];
-              valy += input.get(x + kx, y + ky) * h2[ky + bord][kx + bord];
-            }
-          }
-          int v = (int) Math.sqrt(valx * valx + valy * valy);
-          if (v < 0)
-            v = 0;
-          else if (v > 255)
-            v = 255;
-          output.set(x, y, v);
-        }
-      }
-    }
   }
 
   static void meanFilterWithBorders(GrayU8 input, GrayU8 output, int size, BorderType borderType) {

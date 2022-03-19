@@ -72,29 +72,13 @@ public class ImageProcessing {
   }
 
   public static void filter(Planar<GrayU8> input, float h, float smin, float smax) {
-    int[] rgb = new int[3];
-    float[] hsv = new float[3];
-
     input = grayToRGB(input);
     int nbCanaux = input.getNumBands();
 
     for (int y = 0; y < input.height; ++y) {
       for (int x = 0; x < input.width; ++x) {
         if (nbCanaux == 3) {
-          ColorProcessing.rgbToHsv(input.getBand(0).get(x, y),
-              input.getBand(1).get(x, y),
-              input.getBand(2).get(x, y), hsv);
-
-          if (hsv[1] < smin)
-            hsv[1] = smin;
-          else if (hsv[1] > smax)
-            hsv[1] = smax;
-
-          ColorProcessing.hsvToRgb(h, hsv[1], hsv[2], rgb);
-
-          for (int i = 0; i < 3; ++i) {
-            input.getBand(i).set(x, y, rgb[i]);
-          }
+          ColorProcessing.filter(input, h, smin, smax, x, y);
         } else
           System.err.println("error : unsupported type");
 
