@@ -199,27 +199,40 @@ public class ImageController<Item> {
   public ResponseEntity<?> addImage(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
 
     String contentType = file.getContentType();
-    if (!contentType.equals(MediaType.IMAGE_JPEG.toString())) {
-      return new ResponseEntity<>("Only JPEG file format supported", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    if (!contentType.equals(MediaType.IMAGE_JPEG.toString()) && !contentType.equals(MediaType.IMAGE_PNG.toString())) {
+      return new ResponseEntity<>("Only JPEG and PNG file format supported", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
     try {
       imageDao.create(new Image(file.getOriginalFilename(), file.getBytes()));
     } catch (IOException e) {
       return new ResponseEntity<>("Failure to read file", HttpStatus.NO_CONTENT);
+    } catch (Exception e) {
+      return new ResponseEntity<>(e, HttpStatus.NO_CONTENT);
     }
     return new ResponseEntity<>("Image uploaded", HttpStatus.OK);
   }
 
   @RequestMapping(value = "/images", method = RequestMethod.GET, produces = "application/json")
   @ResponseBody
-  public ArrayNode getImageList() {
-    List<Image> images = imageDao.retrieveAll();
+  public ArrayNode getImageList(
+      @RequestParam("index") Optional<Long> index,
+      @RequestParam("size") Optional<Integer> size) {
+
+    List<Image> images = new ArrayList<>();
+    if (index.isPresent() && size.isPresent()) {
+      images = imageDao.retrieveGroup(index.get(), size.get());
+    } else {
+      images = imageDao.retrieveAll();
+    }
+
     ArrayNode nodes = mapper.createArrayNode();
     for (Image image : images) {
       ObjectNode objectNode = mapper.createObjectNode();
       objectNode.put("id", image.getId());
       objectNode.put("name", image.getName());
+      objectNode.put("type", image.getType().toString());
+      objectNode.put("size", image.getSize());
       nodes.add(objectNode);
     }
     return nodes;
