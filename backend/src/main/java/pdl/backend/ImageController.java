@@ -86,7 +86,7 @@ public class ImageController<Item> {
         break;
       case "gaussianBlur":
         if (lenValue(listParam,"size")>0 && lenValue(listParam,"sigma")>0 && lenValue(listParam,"BT")>0) {
-          ImageProcessing.flouGaussien(img, Integer.parseInt(getAndPopValue(listParam,"size")), 
+          ImageProcessing.gaussianBlur(img, Integer.parseInt(getAndPopValue(listParam,"size")), 
               Integer.parseInt(getAndPopValue(listParam,"sigma")), stringToBorderType(getAndPopValue(listParam,"BT")));
         }
         break;
@@ -98,14 +98,14 @@ public class ImageController<Item> {
         break;
       case "luminosity":
         if (lenValue(listParam,"delta")>0) {
-          ImageProcessing.luminositeImage(img, Integer.parseInt(getAndPopValue(listParam,"delta")));
+          ImageProcessing.luminosityImage(img, Integer.parseInt(getAndPopValue(listParam,"delta")));
         }
         break;
       case "sobel":
-        ImageProcessing.contoursImage(img, false);
+        ImageProcessing.sobelImage(img, false);
         break;
       case "sobelColor":
-        ImageProcessing.contoursImage(img, true);
+        ImageProcessing.sobelImage(img, true);
         break;
       case "egalisationV":
         ImageProcessing.egalisationV(img);
