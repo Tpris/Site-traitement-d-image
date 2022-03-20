@@ -76,43 +76,41 @@ public class ImageController<Item> {
     return val;
   }
 
-  private static void imgProcessing(Planar<GrayU8> img, String algo, HashMap<String,ArrayList<String>> listParam) {
+  private static ResponseEntity<?> imgProcessing(Planar<GrayU8> img, String algo, HashMap<String,ArrayList<String>> listParam) {
     switch (algo) {
       case "filter":
         if (lenValue(listParam,"hue")>0 && lenValue(listParam,"smin")>0 && lenValue(listParam,"smax")>0) {
-          ImageProcessing.filter(img, Float.parseFloat(getAndPopValue(listParam,"hue")), 
-            Float.parseFloat(getAndPopValue(listParam,"smin")), Float.parseFloat(getAndPopValue(listParam,"smax")));
+          return ImageProcessing.filter(img, Float.parseFloat(getAndPopValue(listParam,"hue")), 
+            Float.parseFloat(getAndPopValue(listParam,"smin")), Float.parseFloat(getAndPopValue(listParam,"smax")));  
         }
-        break;
+        return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "gaussianBlur":
         if (lenValue(listParam,"size")>0 && lenValue(listParam,"sigma")>0 && lenValue(listParam,"BT")>0) {
-          ImageProcessing.gaussianBlur(img, Integer.parseInt(getAndPopValue(listParam,"size")), 
+          return ImageProcessing.gaussianBlur(img, Integer.parseInt(getAndPopValue(listParam,"size")), 
               Integer.parseInt(getAndPopValue(listParam,"sigma")), stringToBorderType(getAndPopValue(listParam,"BT")));
         }
-        break;
+        return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "meanBlur":
         if (lenValue(listParam,"size")>0 && lenValue(listParam,"BT")>0) {
-          ImageProcessing.meanFilterWithBorders(img, Integer.parseInt(getAndPopValue(listParam,"size")), 
+          return ImageProcessing.meanFilterWithBorders(img, Integer.parseInt(getAndPopValue(listParam,"size")), 
               stringToBorderType(getAndPopValue(listParam,"BT")));
         }
-        break;
+        return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "luminosity":
         if (lenValue(listParam,"delta")>0) {
-          ImageProcessing.luminosityImage(img, Integer.parseInt(getAndPopValue(listParam,"delta")));
-        }
-        break;
+          return ImageProcessing.luminosityImage(img, Integer.parseInt(getAndPopValue(listParam,"delta")));
+        } 
+        return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "sobel":
-        ImageProcessing.sobelImage(img, false);
-        break;
+        return ImageProcessing.sobelImage(img, false);
       case "sobelColor":
-        ImageProcessing.sobelImage(img, true);
-        break;
+        return ImageProcessing.sobelImage(img, true);
       case "egalisationV":
-        ImageProcessing.egalisationV(img);
-        break;
+        return ImageProcessing.egalisationV(img);
       case "egalisationS":
-        ImageProcessing.egalisationS(img);
-        break;
+        return ImageProcessing.egalisationS(img);
+      default :
+        return new ResponseEntity<>("The algorithm "+algo+" doesn't exist", HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -165,7 +163,13 @@ public class ImageController<Item> {
           Planar<GrayU8> img = ConvertBufferedImage.convertFromPlanar(imBuff, null, true, GrayU8.class);
 
           for(String alg : algos){
-            imgProcessing(img, alg, listParam);
+            ResponseEntity<?> res = imgProcessing(img, alg, listParam);
+            if(res.getStatusCode()==HttpStatus.BAD_REQUEST){
+              return res;
+            }
+          }
+          for(ArrayList<String> param : listParam.values()){
+            if(!param.isEmpty()) return new ResponseEntity<>("parameter not used", HttpStatus.BAD_REQUEST);
           }
 
           ConvertRaster.planarToBuffered_U8(img, imBuff);
@@ -173,7 +177,7 @@ public class ImageController<Item> {
           ImageIO.write(imBuff, "jpeg", os);
           inputStream = new ByteArrayInputStream(os.toByteArray());
         } catch (IOException e) {
-          return new ResponseEntity<>("Image id=" + id + " can't be treated", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+          return new ResponseEntity<>("Image id=" + id + " can't be treated", HttpStatus.BAD_REQUEST);
         }
       }
       return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(new InputStreamResource(inputStream));

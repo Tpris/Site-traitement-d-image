@@ -1,5 +1,8 @@
 package pdl.imageprocessing;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import boofcv.struct.border.BorderType;
 import boofcv.struct.image.GrayU8;
 import boofcv.struct.image.Planar;
@@ -17,25 +20,25 @@ public class ImageProcessing {
     return input;
   }
 
-  public static void egalisationV(Planar<GrayU8> input) {
+  public static ResponseEntity<?> egalisationV(Planar<GrayU8> input) {
     input = grayToPlanarRGB(input);
     int nbCanaux = input.getNumBands();
-    if (nbCanaux == 3)
-      ColorProcessing.equalizationColorV(input);
-    else
-      System.err.println("error : unsupported type");
+    if (nbCanaux != 3)
+      return new ResponseEntity<>("unsupported type", HttpStatus.BAD_REQUEST);
+    ColorProcessing.equalizationColorV(input);
+    return new ResponseEntity<>("ok", HttpStatus.ACCEPTED);
   }
 
-  public static void egalisationS(Planar<GrayU8> input) {
+  public static ResponseEntity<?> egalisationS(Planar<GrayU8> input) {
     input = grayToPlanarRGB(input);
     int nbCanaux = input.getNumBands();
-    if (nbCanaux == 3)
-      ColorProcessing.equalizationColorS(input);
-    else
-      System.err.println("error : unsupported type");
+    if (nbCanaux != 3)
+      return new ResponseEntity<>("unsupported type", HttpStatus.BAD_REQUEST);
+    ColorProcessing.equalizationColorS(input);
+    return new ResponseEntity<>("ok", HttpStatus.ACCEPTED);
   }
 
-  public static void sobelImage(Planar<GrayU8> image, boolean color) {
+  public static ResponseEntity<?> sobelImage(Planar<GrayU8> image, boolean color) {
     int nbCanaux = image.getNumBands();
     if (nbCanaux != 1 && !color)
       ColorProcessing.RGBtoGray(image);
@@ -43,19 +46,21 @@ public class ImageProcessing {
     for (int i = 0; i < nbCanaux; ++i) {
       Convolution.gradientImageSobel(input.getBand(i), image.getBand(i));
     }
+    return new ResponseEntity<>("ok", HttpStatus.ACCEPTED);
   }
 
-  public static void luminosityImage(Planar<GrayU8> input, int delta) {
+  public static ResponseEntity<?> luminosityImage(Planar<GrayU8> input, int delta) {
     if (delta >= -255 && delta <= 255) {
       int nbCanaux = input.getNumBands();
       for (int i = 0; i < nbCanaux; ++i) {
         GrayLevelProcessing.luminosity(input.getBand(i), delta);
       }
+      return new ResponseEntity<>("ok", HttpStatus.ACCEPTED);
     } else
-      System.err.println("** error : the parameter must be between -255 and 255");
+      return new ResponseEntity<>("the parameter must be between -255 and 255", HttpStatus.BAD_REQUEST);
   }
 
-  public static void meanFilterWithBorders(Planar<GrayU8> image, int size, BorderType borderType) {
+  public static ResponseEntity<?> meanFilterWithBorders(Planar<GrayU8> image, int size, BorderType borderType) {
     if (size % 2 == 1) {
       if (size < image.height && size < image.width) {
         int nbCanaux = image.getNumBands();
@@ -63,13 +68,14 @@ public class ImageProcessing {
         for (int i = 0; i < nbCanaux; ++i) {
           Convolution.meanFilterWithBorders(input.getBand(i), image.getBand(i), size, borderType);
         }
+        return new ResponseEntity<>("ok", HttpStatus.ACCEPTED);
       } else
-        System.err.println("** error : the size of the kernel is too large");
+        return new ResponseEntity<>("the size of the kernel is too large", HttpStatus.BAD_REQUEST);
     } else
-      System.err.println("** error : the kernel size must be odd");
+      return new ResponseEntity<>("the kernel size must be odd", HttpStatus.BAD_REQUEST);
   }
 
-  public static void gaussianBlur(Planar<GrayU8> image, int size, float sigma, BorderType borderType) {
+  public static ResponseEntity<?> gaussianBlur(Planar<GrayU8> image, int size, float sigma, BorderType borderType) {
     if (size % 2 == 1) {
       if (size < image.height && size < image.width) {
         int nbCanaux = image.getNumBands();
@@ -78,30 +84,32 @@ public class ImageProcessing {
         for (int i = 0; i < nbCanaux; ++i) {
           Convolution.gaussianBlurGrayU8(input.getBand(i), image.getBand(i), size, sigma, kernel, borderType);
         }
+        return new ResponseEntity<>("ok", HttpStatus.ACCEPTED);
       } else
-        System.err.println("** error : the size of the kernel is too large");
+        return new ResponseEntity<>("the size of the kernel is too large", HttpStatus.BAD_REQUEST);
     } else
-      System.err.println("** error : the kernel size must be odd");
+      return new ResponseEntity<>("the kernel size must be odd", HttpStatus.BAD_REQUEST);
   }
 
-  public static void filter(Planar<GrayU8> input, float h, float smin, float smax) {
+  public static ResponseEntity<?> filter(Planar<GrayU8> input, float h, float smin, float smax) {
     if (h >= 0 && h <= 360) {
       if (smin <= smax && smin >= 0 && smin <= 1 && smax >= 0 && smax <= 1) {
         input = grayToPlanarRGB(input);
         int nbCanaux = input.getNumBands();
-
-        for (int y = 0; y < input.height; ++y) {
-          for (int x = 0; x < input.width; ++x) {
-            if (nbCanaux == 3) {
+        if (nbCanaux == 3) {
+          for (int y = 0; y < input.height; ++y) {
+            for (int x = 0; x < input.width; ++x) {
               ColorProcessing.filter(input, h, smin, smax, x, y);
-            } else
-              System.err.println("error : unsupported type");
+            }
           }
-        }
+          return new ResponseEntity<>("ok", HttpStatus.ACCEPTED);
+        } else
+          return new ResponseEntity<>("unsupported type", HttpStatus.BAD_REQUEST);
       } else
-        System.err.println("** error : smin must be inferior or equal to smax and they must be between 0 and 1");
+        return new ResponseEntity<>("smin must be inferior or equal to smax and they must be between 0 and 1",
+            HttpStatus.BAD_REQUEST);
     } else
-      System.err.println("** error : hue must be between 0 and 360");
+      return new ResponseEntity<>("hue must be between 0 and 360", HttpStatus.BAD_REQUEST);
   }
 
 }
