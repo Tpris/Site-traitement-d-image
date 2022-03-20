@@ -11,20 +11,22 @@ const emit  = defineEmits(['update:modelValue', 'updated', 'nameChanged'])
 const state = reactive({
   index: 0,
   nbImg: 5,
+  nbImages: 0,
   currentImages: Array<ImageType>()
 })
 
 const getCurrentImages = () => {
   api.getImageListByNumber(state.index, state.nbImg).then((data) => {
+    state.nbImages = (data[0] as { nbImages:number }).nbImages as number
+    (data as []).shift()
     state.currentImages = data as Array<UnwrapRef<ImageType>>;
+    console.log(state.currentImages)
   }).catch(e =>
     console.log(e.message));
 }
 
 onMounted(() => {
   getCurrentImages()
-  /* for (let i = 0; i < state.nbImg && props.images[i]; i++)
-    state.currentImages[i] = props.images[i * state.index + i]*/
 })
 
 const resetCurrentImages = (newImages) => {
@@ -40,7 +42,7 @@ const getPreviousImages = () =>{
 }
 
 const getNextImages = () =>{
-  if(((state.index + 1) * state.nbImg)  + state.nbImg < props.images.length + state.nbImg)
+ // if(((state.index + 1) * state.nbImg)  + state.nbImg < props.images.length + state.nbImg)
     state.index++;
 }
 
