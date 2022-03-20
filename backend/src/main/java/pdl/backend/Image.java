@@ -89,4 +89,8 @@ public class Image {
     count = count + i;
   }
 
+  public static long getCount() {
+    return count;
+  }
+
 }
