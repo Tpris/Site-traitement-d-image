@@ -34,7 +34,7 @@ class Convolution {
     }
   }
 
-  public static void flouGaussienGrayU8(GrayU8 input, GrayU8 output, int size, double sigma, double[][] kernel,
+  public static void flouGaussienGrayU8(GrayU8 input, GrayU8 output, int size, float sigma, double[][] kernel,
       BorderType borderType) {
     if (size % 2 == 1) {
       int bord = (size - 1) / 2;
@@ -58,7 +58,7 @@ class Convolution {
     }
   }
 
-  public static double[][] gaussianKernel(int size, double sigma) {
+  public static double[][] gaussianKernel(int size, float sigma) {
     double[][] kernel = new double[size][size];
     int bord = (size - 1) / 2;
     double denominateur1 = 2 * sigma * sigma;

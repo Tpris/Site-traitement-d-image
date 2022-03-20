@@ -356,7 +356,7 @@ public class ColorProcessing {
     // ImageProcessing.luminositeImage(image, 80);
     // ImageProcessing.filter(image, 0, (float) 0.5, (float) 0.5);
     // ImageProcessing.meanFilterWithBorders(image, 11, BorderType.NORMALIZED);
-    ImageProcessing.egalisationV(image);
+    // ImageProcessing.egalisationV(image);
 
     // long begin2 = System.nanoTime();
     // for(int i = 0; i<10; ++i){
@@ -365,7 +365,7 @@ public class ColorProcessing {
     // long end2 = System.nanoTime();
     // System.out.println("Durée = " + (end2 - begin2)/1000000 + " millisecondes");
 
-    
+    testConversionHSV(100, 125, 31);
 
     // System.out.println("min =" + minS(image) + " max = " + maxS(image));
     // ImageProcessing.egalisationS(image);

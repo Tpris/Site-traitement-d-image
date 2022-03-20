@@ -2,7 +2,6 @@ package pdl.imageprocessing;
 
 import boofcv.struct.image.GrayU8;
 import boofcv.struct.image.Planar;
-import boofcv.alg.color.ColorHsv;
 
 class ColorProcessing {
 
@@ -82,23 +81,6 @@ class ColorProcessing {
     }
   }
 
-  static void egalisationRGB(Planar<GrayU8> image) {
-    Planar<GrayU8> input = image.clone();
-    RGBtoGray(input);
-    int[] egal = new int[256];
-    int[] histoCumul = GrayLevelProcessing.histogramCumul(input.getBand(0));
-    for (int i = 0; i < 256; i++) {
-      egal[i] = histoCumul[i] * 255 / (input.height * input.width);
-    }
-    for (int y = 0; y < image.height; ++y) {
-      for (int x = 0; x < image.width; ++x) {
-        for (int i = 0; i < 3; ++i) {
-          image.getBand(i).set(x, y, egal[image.getBand(i).get(x, y)]);
-        }
-      }
-    }
-  }
-
   static void egalisationColorV(Planar<GrayU8> image) {
     int[] egal = new int[256];
     int[] histoCumul = histogramCumulV(image);
@@ -119,7 +101,6 @@ class ColorProcessing {
   }
 
   static void egalisationColorS(Planar<GrayU8> image) {
-    // egalisationColorHSV(image, histogramCumulS(image));
     float[] egal = new float[101];
     int[] histoCumul = histogramCumulS(image);
     for (int i = 0; i < 101; i++) {
@@ -136,46 +117,6 @@ class ColorProcessing {
         }
       }
     }
-  }
-
-  private static float[] getHSVfromRgb(int x, int y, Planar<GrayU8> image) {
-    int rgb[] = { image.getBand(0).get(x, y), image.getBand(1).get(x, y), image.getBand(2).get(x, y) };
-    float[] hsv = new float[3];
-    rgbToHsv(rgb[0], rgb[1], rgb[2], hsv);
-    return hsv;
-  }
-
-  private static float getVfromRgb(int x, int y, Planar<GrayU8> image) {
-    float[] hsv = getHSVfromRgb(x, y, image);
-    return hsv[2];
-  }
-
-  private static float getSfromRgb(int x, int y, Planar<GrayU8> image) {
-    float[] hsv = getHSVfromRgb(x, y, image);
-    return hsv[1];
-  }
-
-  private static int[] histogramV(Planar<GrayU8> image) {
-    int values[] = new int[256];
-    for (int y = 0; y < image.height; ++y) {
-      for (int x = 0; x < image.width; ++x) {
-        float v = getVfromRgb(x, y, image);
-        values[Math.round(v)]++;
-      }
-    }
-    return values;
-  }
-
-  private static int[] histogramS(Planar<GrayU8> image) {
-    int values[] = new int[101];
-    for (int y = 0; y < image.height; ++y) {
-      for (int x = 0; x < image.width; ++x) {
-        float v = getSfromRgb(x, y, image);
-        int test = (int) (v * 100);
-        values[test]++;
-      }
-    }
-    return values;
   }
 
   private static int[] histogramCumulHSV(Planar<GrayU8> input, int[] hist, int tailleTab) {
@@ -196,31 +137,42 @@ class ColorProcessing {
     return histogramCumulHSV(input, histogramS(input), 101);
   }
 
-  private static void testConversionHSV(int r, int g, int b) {
-    int[] rgb = { r, g, b };
-    float[] hsv = new float[3];
-    System.out.println("*** fonction à tester ***");
-    System.out.println("- rgb to hsv");
-    // RGBtoHSV(rgb[0], rgb[1], rgb[2], hsv);
-    rgbToHsv(r, g, b, hsv);
-    for (float f : hsv)
-      System.out.println(f);
-    System.out.println("- hsv to rgb");
-    hsvToRgb(hsv[0], hsv[1], hsv[2], rgb);
-    for (int i : rgb)
-      System.out.println(i);
-    System.out.println("*** ColorHsv ***");
-    rgb[0] = r;
-    rgb[1] = g;
-    rgb[2] = b;
-    System.out.println("- rgb to hsv");
-    ColorHsv.rgbToHsv(rgb[0], rgb[1], rgb[2], hsv);
-    for (float f : hsv)
-      System.out.println(f);
-    System.out.println("- hsv to rgb");
-    ColorHsv.hsvToRgb(hsv[0], hsv[1], hsv[2]);
-    for (int f : rgb)
-      System.out.println(f);
+  private static int[] histogramV(Planar<GrayU8> image) {
+    int values[] = new int[256];
+    for (int y = 0; y < image.height; ++y) {
+      for (int x = 0; x < image.width; ++x) {
+        float v = getVfromRgb(x, y, image);
+        values[Math.round(v)]++;
+      }
+    }
+    return values;
   }
 
+  private static int[] histogramS(Planar<GrayU8> image) {
+    int values[] = new int[101];
+    for (int y = 0; y < image.height; ++y) {
+      for (int x = 0; x < image.width; ++x) {
+        float s = getSfromRgb(x, y, image);
+        values[Math.round(s*100)]++;
+      }
+    }
+    return values;
+  }
+
+  private static float[] getHSVfromRgb(int x, int y, Planar<GrayU8> image) {
+    int rgb[] = { image.getBand(0).get(x, y), image.getBand(1).get(x, y), image.getBand(2).get(x, y) };
+    float[] hsv = new float[3];
+    rgbToHsv(rgb[0], rgb[1], rgb[2], hsv);
+    return hsv;
+  }
+
+  private static float getVfromRgb(int x, int y, Planar<GrayU8> image) {
+    float[] hsv = getHSVfromRgb(x, y, image);
+    return hsv[2];
+  }
+
+  private static float getSfromRgb(int x, int y, Planar<GrayU8> image) {
+    float[] hsv = getHSVfromRgb(x, y, image);
+    return hsv[1];
+  }
 }

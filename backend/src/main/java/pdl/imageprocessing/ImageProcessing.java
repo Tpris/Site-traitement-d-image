@@ -16,7 +16,7 @@ public class ImageProcessing {
     }
     return input;
   }
-  
+
   public static void egalisationV(Planar<GrayU8> input) {
     input = grayToRGB(input);
     int nbCanaux = input.getNumBands();
@@ -46,44 +46,62 @@ public class ImageProcessing {
   }
 
   public static void luminositeImage(Planar<GrayU8> input, int delta) {
-    int nbCanaux = input.getNumBands();
-    for (int i = 0; i < nbCanaux; ++i) {
-      GrayLevelProcessing.luminosite(input.getBand(i), delta);
-    }
+    if (delta >= -255 && delta <= 255) {
+      int nbCanaux = input.getNumBands();
+      for (int i = 0; i < nbCanaux; ++i) {
+        GrayLevelProcessing.luminosite(input.getBand(i), delta);
+      }
+    } else
+      System.err.println("** error : the parameter must be between -255 and 255");
   }
 
   public static void meanFilterWithBorders(Planar<GrayU8> image, int size, BorderType borderType) {
-    int nbCanaux = image.getNumBands();
-    Planar<GrayU8> input = image.clone();
-    for (int i = 0; i < nbCanaux; ++i) {
-      Convolution.meanFilterWithBorders(input.getBand(i), image.getBand(i), size, borderType);
-    }
+    if (size % 2 == 1) {
+      if (size < image.height && size < image.width) {
+        int nbCanaux = image.getNumBands();
+        Planar<GrayU8> input = image.clone();
+        for (int i = 0; i < nbCanaux; ++i) {
+          Convolution.meanFilterWithBorders(input.getBand(i), image.getBand(i), size, borderType);
+        }
+      } else
+        System.err.println("** error : the size of the kernel is too large");
+    } else
+      System.err.println("** error : the kernel size must be odd");
   }
 
-  public static void flouGaussien(Planar<GrayU8> image, int size, int sigma, BorderType borderType) {
+  public static void flouGaussien(Planar<GrayU8> image, int size, float sigma, BorderType borderType) {
     if (size % 2 == 1) {
-      int nbCanaux = image.getNumBands();
-      Planar<GrayU8> input = image.clone();
-      double [][]kernel = Convolution.gaussianKernel(size, sigma);
-      for (int i = 0; i < nbCanaux; ++i) {
-        Convolution.flouGaussienGrayU8(input.getBand(i), image.getBand(i), size, sigma, kernel, borderType);
-      }
-    }
+      if (size < image.height && size < image.width) {
+        int nbCanaux = image.getNumBands();
+        Planar<GrayU8> input = image.clone();
+        double[][] kernel = Convolution.gaussianKernel(size, sigma);
+        for (int i = 0; i < nbCanaux; ++i) {
+          Convolution.flouGaussienGrayU8(input.getBand(i), image.getBand(i), size, sigma, kernel, borderType);
+        }
+      } else
+        System.err.println("** error : the size of the kernel is too large");
+    } else
+      System.err.println("** error : the kernel size must be odd");
   }
 
   public static void filter(Planar<GrayU8> input, float h, float smin, float smax) {
-    input = grayToRGB(input);
-    int nbCanaux = input.getNumBands();
+    if (h >= 0 && h <= 360) {
+      if (smin <= smax && smin >= 0 && smin <= 1 && smax >= 0 && smax <= 1) {
+        input = grayToRGB(input);
+        int nbCanaux = input.getNumBands();
 
-    for (int y = 0; y < input.height; ++y) {
-      for (int x = 0; x < input.width; ++x) {
-        if (nbCanaux == 3) {
-          ColorProcessing.filter(input, h, smin, smax, x, y);
-        } else
-          System.err.println("error : unsupported type");
-
-      }
-    }
+        for (int y = 0; y < input.height; ++y) {
+          for (int x = 0; x < input.width; ++x) {
+            if (nbCanaux == 3) {
+              ColorProcessing.filter(input, h, smin, smax, x, y);
+            } else
+              System.err.println("error : unsupported type");
+          }
+        }
+      } else
+        System.err.println("** error : smin must be inferior or equal to smax and they must be between 0 and 1");
+    } else
+      System.err.println("** error : hue must be between 0 and 360");
   }
 
 }

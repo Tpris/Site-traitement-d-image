@@ -173,9 +173,7 @@ public class ImageController<Item> {
           ImageIO.write(imBuff, "jpeg", os);
           inputStream = new ByteArrayInputStream(os.toByteArray());
         } catch (IOException e) {
-          // TODO Auto-generated catch block
-          System.out.println("tototoCatch");
-          return new ResponseEntity<>("Image id=" + id + " not found.", HttpStatus.NOT_FOUND);
+          return new ResponseEntity<>("Image id=" + id + " can't be treated", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
         }
       }
       return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(new InputStreamResource(inputStream));
