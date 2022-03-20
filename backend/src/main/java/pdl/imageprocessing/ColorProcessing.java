@@ -81,7 +81,7 @@ class ColorProcessing {
     }
   }
 
-  static void egalisationColorV(Planar<GrayU8> image) {
+  static void equalizationColorV(Planar<GrayU8> image) {
     int[] egal = new int[256];
     int[] histoCumul = histogramCumulV(image);
     for (int i = 0; i < 256; i++) {
@@ -100,7 +100,7 @@ class ColorProcessing {
     }
   }
 
-  static void egalisationColorS(Planar<GrayU8> image) {
+  static void equalizationColorS(Planar<GrayU8> image) {
     float[] egal = new float[101];
     int[] histoCumul = histogramCumulS(image);
     for (int i = 0; i < 101; i++) {

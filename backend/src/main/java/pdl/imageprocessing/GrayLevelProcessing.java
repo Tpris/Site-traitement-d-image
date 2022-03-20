@@ -4,7 +4,7 @@ import boofcv.struct.image.GrayU8;
 
 class GrayLevelProcessing {
 
-	static void luminosite(GrayU8 input, int delta) {
+	static void luminosity(GrayU8 input, int delta) {
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
 				int gl = input.get(x, y) + delta;
