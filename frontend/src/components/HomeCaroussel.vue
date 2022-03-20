@@ -3,71 +3,83 @@ import {ImageType} from "@/image";
 import {defineProps, onMounted, reactive, ref, UnwrapRef, watch} from "vue";
 import Image from '@/components/ImageGetter.vue';
 import {api} from "@/http-api";
-import {stat} from "fs";
 
-const props = defineProps<{ images: ImageType[], id: number, updated: boolean}>()
-const emit  = defineEmits(['update:modelValue', 'updated', 'nameChanged'])
+const props = defineProps<{ images: ImageType[], id: number, uploaded: boolean, deleted: boolean}>()
+const emit  = defineEmits(['update:modelValue', 'uploaded', 'deleted', 'nameChanged'])
 
 const state = reactive({
-  index: 0,
+  prevIndex: 0,
+  nextIndex: 0,
   nbImg: 5,
   nbImages: 0,
   currentImages: Array<ImageType>()
 })
 
-const getCurrentImages = () => {
-  api.getImageListByNumber(state.index, state.nbImg).then((data) => {
+const getCurrentImages = async (index:number, nbImg:number) => {
+  return api.getImageListByNumber(index, nbImg).then((data) => {
     state.nbImages = (data[0] as { nbImages:number }).nbImages as number
     (data as []).shift()
-    state.currentImages = data as Array<UnwrapRef<ImageType>>;
-    console.log(state.currentImages)
-  }).catch(e =>
-    console.log(e.message));
+    return data as Array<UnwrapRef<ImageType>>;
+  }).catch(e => {
+    console.log(e.message)
+    return
+  })
 }
 
-onMounted(() => {
-  getCurrentImages()
+onMounted(async () => {
+  state.currentImages = await getCurrentImages(state.prevIndex, state.nbImg)
+  state.prevIndex = 0
+  state.nextIndex = state.nbImg - 1
 })
 
-const resetCurrentImages = (newImages) => {
-  getCurrentImages()
-  state.currentImages = Array()
-  for (let i = 0; i < state.nbImg && newImages[(state.nbImg * state.index) + i]; i++)
-    state.currentImages[i] = newImages[(state.nbImg * state.index) + i]
+const incrementIndexes = (value: number) => {
+  state.prevIndex += value
+  state.nextIndex += value
 }
 
-const getPreviousImages = () =>{
-  if(state.index !== 0)
-    state.index--
+const getPreviousImages = async () => {
+  if(state.currentImages.length === 0) return
+  incrementIndexes(-1)
+  if(state.prevIndex < 0)
+    state.prevIndex = state.nbImages + state.prevIndex
+  if(state.nextIndex < 0)
+    state.nextIndex = state.nbImages + state.nextIndex
+  state.currentImages.pop()
+  state.currentImages.unshift(...await getCurrentImages(state.prevIndex, 1))
 }
 
-const getNextImages = () =>{
- // if(((state.index + 1) * state.nbImg)  + state.nbImg < props.images.length + state.nbImg)
-    state.index++;
+const getNextImages = async () => {
+  if(state.currentImages.length === 0) return
+  incrementIndexes(1)
+  if(state.nextIndex > state.nbImages - 1)
+    state.nextIndex = 0
+  if(state.prevIndex > state.nbImages - 1)
+    state.prevIndex = 0
+  state.currentImages.shift()
+  state.currentImages.push(...await getCurrentImages(state.nextIndex, 1))
 }
 
 const imageClick = (image: ImageType) => emit('update:modelValue', image)
 
-watch(() => props.id, (newId => {
-      if(props.updated){
-        let newIndex = props.images.findIndex((img) => img.id == newId)
-        if(props.images.length - 1 < (state.index) * state.nbImg) {
-          state.index--
-          emit('updated', false)
-          return
-        }
-        while (newIndex >= (state.index + 1) * state.nbImg)
-          state.index++
-        emit('updated', false)
-      }
-    })
-)
+const handleUploaded = async () => {
+    emit('uploaded', false)
+    state.currentImages.length = 0
+    state.currentImages = await getCurrentImages(state.nbImages+1 - state.nbImg, state.nbImg)
+    state.prevIndex = state.nbImages - state.nbImg
+    state.nextIndex = state.nbImages
+  emit('update:modelValue', state.currentImages[state.currentImages.length - 1])
+}
 
-//watch(() => props.images, (newImages => resetCurrentImages(newImages)))
-watch(() => state.index, () => getCurrentImages())
+const handleDeleted = async () => {
+  emit('deleted', false)
+  state.currentImages.length = 0
+  state.prevIndex = 0
+  state.nextIndex = state.nbImg-1
+  state.currentImages = await getCurrentImages(state.prevIndex, state.nbImg)
+}
 
-//watch(() => props.images, (newImages => resetCurrentImages(newImages)))
-//watch(() => state.index, () => resetCurrentImages(props.images))
+watch(() => props.uploaded, ((newState) => newState && handleUploaded()))
+watch(() => props.deleted, ((newState) => newState && handleDeleted()))
 </script>
 
 <template>

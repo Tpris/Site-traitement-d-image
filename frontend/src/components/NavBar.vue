@@ -5,7 +5,7 @@ import NavBarDownloadButton from "@/components/buttons/NavBarDownloadButton.vue"
 import NavBarRouterButton from "@/components/buttons/NavBarRouterButton.vue";
 
 defineProps<{ name: "", selectedImage: { id:number, source:string, name:string }}>()
-defineEmits(['updated'])
+defineEmits(['uploaded', 'deleted'])
 </script>
 
 <template>
@@ -14,8 +14,8 @@ defineEmits(['updated'])
     <div id="items">
       <NavBarRouterButton :name="name">Accueil</NavBarRouterButton>
       <NavBarDownloadButton :selected-image="selectedImage"></NavBarDownloadButton>
-      <NavBarUploadButton @updated="$emit('updated')"></NavBarUploadButton>
-      <NavBarDeleteButton @updated="$emit('updated')" :selected-image="selectedImage"></NavBarDeleteButton>
+      <NavBarUploadButton @updated="$emit('uploaded')"></NavBarUploadButton>
+      <NavBarDeleteButton @updated="$emit('deleted')" :selected-image="selectedImage"></NavBarDeleteButton>
     </div>
   </nav>
 </template>

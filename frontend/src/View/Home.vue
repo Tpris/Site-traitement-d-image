@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import {reactive, ref, UnwrapRef, watch} from 'vue';
-import { api } from '@/http-api';
+import {reactive} from 'vue';
 import { ImageType } from '@/image'
 import ToolBox from '@/components/ToolBox.vue'
 import Carrousel from '@/components/HomeCaroussel.vue'
@@ -16,32 +15,20 @@ const state = reactive({
   },
   effects: [] as IEffect[],
   imageList: Array<ImageType>(),
-  updated: false,
+  uploaded: false,
+  deleted: false,
 })
-/*
-const getImageList = async () => {
-  return api.getImageList().then((data) => {
-    state.imageList = data as Array<UnwrapRef<ImageType>> ;
-  }).catch(e => {
-    console.log(e.message);
-  });
-}
 
-getImageList();
-
-const updateImageListUpload = async () => {
-  await getImageList();
-  const imagesData = state.imageList
-  state.selectedImage.id = imagesData.length != 0 ? imagesData[imagesData.length - 1].id : -1
-  state.updated = true
-}
-*/
 const performFilter = (effects: IEffect[]) => state.effects = effects
+const handleDeleted = () => {
+  state.selectedImage = {id: -1, source : '', name: ''}
+  state.deleted = true
+}
 
 </script>
 
 <template>
-  <nav-bar @updated="state.updated = true" name="Home" :selectedImage="state.selectedImage"></nav-bar>
+  <nav-bar @uploaded="state.uploaded = true" @deleted="handleDeleted" name="Home" :selectedImage="state.selectedImage"></nav-bar>
   <div id="main-content">
     <div id="toolBox">
       <tool-box :selected-image="state.selectedImage.id" :id="state.selectedImage.id" @applyFilter="(effects) => performFilter(effects)"></tool-box>
@@ -56,7 +43,11 @@ const performFilter = (effects: IEffect[]) => state.effects = effects
     <carrousel v-model="state.selectedImage"
                :id="state.selectedImage.id"
                :images="state.imageList"
-               :updated="state.updated">
+               :uploaded="state.uploaded"
+               :deleted="state.deleted"
+                @uploaded="state.uploaded = false"
+                @deleted="state.deleted = false"
+    >
     </carrousel>
   </div>
 </template>

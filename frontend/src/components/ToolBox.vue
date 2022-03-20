@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import ToolBoxButton from "@/components/buttons/ToolBoxButton.vue";
-  import {effect, onMounted, reactive, ref, watch} from "vue";
+  import { reactive, watch} from "vue";
   import useEffects, {EffectTypes, ICursors, IDropBox, IEffect} from "@/composables/Effects";
 
   const {Effect} = useEffects()
