@@ -88,7 +88,7 @@
             :class="isAppliedEffect(effect.type) && activeButton()"
             @click="hasParam(effect) ? handleEffect(effect): handleEffectNoParam(effect)"
         >
-          {{ effect.type }}
+          {{ effect.text }}
         </tool-box-button>
       </li>
     </ul>
@@ -136,6 +136,7 @@
   flex-direction: column;
   overflow-y: scroll ;
   z-index: 2;
+  scrollbar-width: none;
 }
 
 #tool-box::-webkit-scrollbar {

@@ -64,7 +64,7 @@ export default function useEffects() {
 
         switch(type){
             case EffectTypes.Filter:
-                this.text = "Filtre de teinte"
+                this.text = "Teinte"
                 this.params = new Params(null, [
                     new Cursors("Teinte", "hue", ["0", "255"], 1, 0),
                     new Cursors("min", "smin", ["0", "1"], 0.01 ,0),
@@ -73,7 +73,7 @@ export default function useEffects() {
                 break;
 
             case EffectTypes.GaussianBlur:
-                this.text = "Filtre gaussien"
+                this.text = "Gauss."
                 this.params = new Params(
                     [new DropBox("Type", "BT",["Skip", "Normalized", "Extended", "Reflect"])] as IDropBox[],
                     [ new Cursors("Taille", "size", ["1", "255"],2, 1),
@@ -82,7 +82,7 @@ export default function useEffects() {
                 break;
 
             case EffectTypes.MeanBlur:
-                this.text = "Filtre moyenneur"
+                this.text = "Flou"
                 this.params = new Params(
                     [new DropBox("Type", "BT",["Skip", "Normalized", "Extended", "Reflect"])] as IDropBox[],
                     [new Cursors("Taille", "size", ["1", "255"],2, 1)] as ICursors[]
@@ -90,7 +90,7 @@ export default function useEffects() {
                 break;
 
             case EffectTypes.Luminosity:
-                this.text = "Luminosité"
+                this.text = "Lum."
                 this.params = new Params(null, [new Cursors("Delta", "delta",["-255", "255"], 1, 0)] as ICursors[])
                 break
 
@@ -100,12 +100,12 @@ export default function useEffects() {
                 break;
 
             case EffectTypes.EgalisationS:
-                this.text = "Egalisation S"
+                this.text = "Egal° S"
                 this.params = new Params(null, null)
                 break;
 
             case EffectTypes.EgalisationV:
-                this.text = "Egalisation V"
+                this.text = "Egal° V"
                 this.params = new Params(null, null)
                 break;
 

@@ -86,9 +86,12 @@ watch(() => props.deleted, ((newState) => newState && handleDeleted()))
   <div class="neumorphism container">
     <a id="arrow-left" class="arrow neumorphism neumorphism-push" @click="getPreviousImages">&lt;</a>
     <div class="container-images">
-      <div class="img" v-for="image in state.currentImages" :key="image.id">
-          <Image class="neumorphism appear" :class="props.id === image.id ? 'selected-image' : 'neumorphism-push'" @click="imageClick(image)" :id="image.id" />
-      </div>
+      <Image v-for="image in state.currentImages"
+             :key="image.id"
+             class="img neumorphism neumorphism-push appear "
+             :class="props.id === image.id ? 'selected-image' : 'neumorphism-push'"
+             @click="imageClick(image)" :id="image.id"
+      />
     </div>
       <a id="arrow-right" class="arrow neumorphism neumorphism-push" @click="getNextImages">&gt;</a>
   </div>
@@ -112,7 +115,7 @@ watch(() => props.deleted, ((newState) => newState && handleDeleted()))
   opacity: 50%;
 }
 
-.img img{
+.img{
   max-height: 90%;
   border-radius: 10px;
 }
@@ -168,15 +171,15 @@ watch(() => props.deleted, ((newState) => newState && handleDeleted()))
   animation: appear 650ms ease-in-out;
 }
 .img{
+  display: flex;
+  align-self: center;
+  cursor: pointer;
   margin-left: 2vw;
   margin-right: 2vw;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
   transition: opacity 199ms ease-in-out;
 }
 
-.img .neumorphism-push:hover{
+.img:hover{
   transition: opacity 199ms ease-in-out;
   opacity: 70%;
 }

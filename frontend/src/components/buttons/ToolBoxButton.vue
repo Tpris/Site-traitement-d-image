@@ -21,5 +21,6 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  color: #2c3e50;
 }
 </style>

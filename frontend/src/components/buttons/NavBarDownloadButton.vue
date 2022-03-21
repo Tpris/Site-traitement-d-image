@@ -7,9 +7,9 @@
      v-if="selectedImage.source !== '' && selectedImage.id !== -1"
      :href="selectedImage.source"
      :download="selectedImage.name">
-    Download
+    Télécharger
   </a>
-  <a class="button neumorphism neumorphism-push" v-else>Download</a>
+  <a class="button neumorphism neumorphism-push" v-else>Télécharger</a>
 </template>
 
 <style scoped>
