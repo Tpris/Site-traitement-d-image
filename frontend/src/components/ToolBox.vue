@@ -94,11 +94,11 @@
     </ul>
     <div id="container-options">
       <ul id="options" class="neumorphism">
-        <li v-if="hasParam(state.selectedEffect)">{{ state.selectedEffect.text }}</li>
-          <li v-for="(c) in state.selectedEffect.params.cursors" :key="c">
-            {{ c.text }}
-            <input type="range" :min="c.param[0]" :max="c.param[1]" :value="c.value" :step="c.step" @mouseup="performEffect(state.selectedEffect, $event, c)"/>
-            {{ c.value }}
+        <li class="title-option" v-if="hasParam(state.selectedEffect)">{{ state.selectedEffect.text }}</li>
+          <li class="option-cursor" v-for="(c) in state.selectedEffect.params.cursors" :key="c">
+              <span>{{ c.text }}</span>
+              <input type="range" :min="c.param[0]" :max="c.param[1]" :value="c.value" :step="c.step" @mouseup="performEffect(state.selectedEffect, $event, c)"/>
+              <span>{{ c.value }}</span>
           </li>
         <li v-for="dB in state.selectedEffect.params.dropBoxes" :key="dB">
           <select name="pets" v-model="dB.value" @change="performEffect(state.selectedEffect, $event, dB)">
@@ -107,8 +107,8 @@
           </select>
         </li>
         <li v-if="hasParam(state.selectedEffect)">
-          <tool-box-button v-if="isAppliedEffect(state.selectedEffect.type)" @click="removeEffectAndRefresh(state.selectedEffect.type)">Enlever le filtre</tool-box-button>
-          <tool-box-button v-else @click="performEffect(state.selectedEffect,null, null)">Appliquer le filtre</tool-box-button>
+          <tool-box-button class="apply-filter" v-if="isAppliedEffect(state.selectedEffect.type)" @click="removeEffectAndRefresh(state.selectedEffect.type)">Enlever</tool-box-button>
+          <tool-box-button class="apply-filter" v-else @click="performEffect(state.selectedEffect,null, null)">Appliquer</tool-box-button>
         </li>
       </ul>
       <a id="arrow-left" class="neumorphism neumorphism-push" @click="closeSlider()" >&lt;</a>
@@ -121,6 +121,8 @@
 <style scoped>
 .item{
   margin-top: 20px;
+  width: 25px;
+  height: 25px;
 }
 
 #container-tool-box{
@@ -141,6 +143,25 @@
 
 #tool-box::-webkit-scrollbar {
   display: none;
+}
+
+.option-cursor{
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: 5vw;
+}
+
+.apply-filter{
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1vw;
+  width: 80px;
+  height: 5px;
+}
+
+.title-option{
+  margin-top:2vh;
+  margin-bottom: 2vh;
 }
 
 #options{

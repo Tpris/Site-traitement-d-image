@@ -66,7 +66,7 @@ export default function useEffects() {
             case EffectTypes.Filter:
                 this.text = "Teinte"
                 this.params = new Params(null, [
-                    new Cursors("Teinte", "hue", ["0", "255"], 1, 0),
+                    new Cursors("Teinte", "hue", ["0", "359"], 1, 0),
                     new Cursors("min", "smin", ["0", "1"], 0.01 ,0),
                     new Cursors("max", "smax", ["0", "1"], 0.01, 0)
                 ] as ICursors[])
@@ -76,8 +76,8 @@ export default function useEffects() {
                 this.text = "Gauss."
                 this.params = new Params(
                     [new DropBox("Type", "BT",["Skip", "Normalized", "Extended", "Reflect"])] as IDropBox[],
-                    [ new Cursors("Taille", "size", ["1", "255"],2, 1),
-                        new Cursors("Ecart type","sigma", ["0", "7"], 1,0)
+                    [ new Cursors("Taille", "size", ["1", "255"], 2, 1),
+                        new Cursors("Ecart type","sigma", ["0.1", "7"], 0.01,0.1)
                     ] as ICursors[])
                 break;
 
