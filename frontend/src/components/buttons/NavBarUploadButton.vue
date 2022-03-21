@@ -54,8 +54,4 @@ const handleFileUpload = (event: Event) => {
   height: 35px;
   cursor: pointer;
 }
-
-#button:hover{
-  color: #0777D9;
-}
 </style>

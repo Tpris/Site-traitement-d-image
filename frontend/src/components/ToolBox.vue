@@ -88,7 +88,7 @@
             :class="isAppliedEffect(effect.type) && activeButton()"
             @click="hasParam(effect) ? handleEffect(effect): handleEffectNoParam(effect)"
         >
-          {{ effect.text }}
+          <span class="effect-icon">{{ effect.text }}</span>
         </tool-box-button>
       </li>
     </ul>
@@ -197,5 +197,9 @@
   align-items: center;
   cursor: pointer;
   z-index: 1;
+}
+
+.neumorphism-activate .effect-icon{
+  color: #0777D9;
 }
 </style>

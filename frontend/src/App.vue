@@ -61,6 +61,7 @@ body{
       inset -7px -7px 20px rgba(255, 255, 255,1),
       0 0 4px rgba(255, 255, 255,.2);
   transition: box-shadow 199ms ease-in-out;
+  color: #0777D9;
 }
 
 ul {
