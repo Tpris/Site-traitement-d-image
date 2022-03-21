@@ -134,6 +134,9 @@ public class ColorProcessing {
   public static void egalisationColorV(Planar<GrayU8> image) {
     int[] egal = new int[256];
     int[] histoCumul = histogramCumulV(image);
+    // Planar<GrayU8> input = image.clone();
+    // RGBtoGray(input);
+    // int[] histoCumul = GrayLevelProcessing.histogramCumul(input.getBand(0));
     for (int i = 0; i < 256; i++) {
       egal[i] = histoCumul[i] * 255 / (image.height * image.width);
     }
@@ -355,14 +358,14 @@ public class ColorProcessing {
     // ImageProcessing.meanFilterWithBorders(image, 11, BorderType.NORMALIZED);
     // ImageProcessing.egalisationV(image);
 
-    long begin2 = System.nanoTime();
-    for(int i = 0; i<10; ++i){
-      ImageProcessing.flouGaussien(image, 5, 1);
-    }
-    long end2 = System.nanoTime();
-    System.out.println("Durée = " + (end2 - begin2)/1000000 + " millisecondes");
+    // long begin2 = System.nanoTime();
+    // for(int i = 0; i<10; ++i){
+    //   ImageProcessing.flouGaussien(image, 5, 1);
+    // }
+    // long end2 = System.nanoTime();
+    // System.out.println("Durée = " + (end2 - begin2)/1000000 + " millisecondes");
 
-    
+    testConversionHSV(100, 125, 31);
 
     // System.out.println("min =" + minS(image) + " max = " + maxS(image));
     // ImageProcessing.egalisationS(image);

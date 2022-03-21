@@ -6,49 +6,6 @@ import boofcv.struct.image.GrayU8;
 
 class Convolution {
 
-  public static void flouGaussienGrayU8(GrayU8 input, GrayU8 output, int size, double sigma, double[][] kernel,
-      BorderType borderType) {
-    if (size % 2 == 1) {
-      int bord = (size - 1) / 2;
-      BoofConcurrency.loopFor(0, input.height, y -> {
-        for (int x = 0; x < input.width; ++x) {
-          if (x < bord || x >= input.width - bord || y < bord || y >= input.height - bord) {
-            gaussBorderTreatement(x, y, bord, size, kernel, sigma, input, output, borderType);
-          } else {
-            int val = 0;
-            for (int ky = -bord; ky <= bord; ky++) {
-              for (int kx = -bord; kx <= bord; kx++) {
-                val += input.get(x + kx, y + ky) * kernel[ky + bord][kx + bord];
-              }
-            }
-            output.set(x, y, val);
-          }
-        }
-      });
-    } else {
-      System.err.println("la taille du noyau doit être impair");
-    }
-  }
-
-  public static double[][] gaussianKernel(int size, double sigma) {
-    double[][] kernel = new double[size][size];
-    int bord = (size - 1) / 2;
-    double denominateur1 = 2 * sigma * sigma;
-    double sumCoef = 0;
-    for (int ky = -bord; ky <= bord; ky++) {
-      for (int kx = -bord; kx <= bord; kx++) {
-        kernel[ky + bord][kx + bord] = Math.exp(-(((kx * kx) + (ky * ky)) / denominateur1));
-        sumCoef += kernel[ky + bord][kx + bord];
-      }
-    }
-    for (int ky = 0; ky < size; ky++) {
-      for (int kx = 0; kx < size; kx++) {
-        kernel[ky][kx] /= sumCoef;
-      }
-    }
-    return kernel;
-  }
-
   static void gradientImageSobel(GrayU8 input, GrayU8 output) {
     int h1[][] = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
     int h2[][] = { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
@@ -75,6 +32,49 @@ class Convolution {
         }
       }
     }
+  }
+
+  public static void gaussianBlurGrayU8(GrayU8 input, GrayU8 output, int size, float sigma, double[][] kernel,
+      BorderType borderType) {
+    if (size % 2 == 1) {
+      int bord = (size - 1) / 2;
+      BoofConcurrency.loopFor(0, input.height, y -> {
+        for (int x = 0; x < input.width; ++x) {
+          if (x < bord || x >= input.width - bord || y < bord || y >= input.height - bord) {
+            gaussianBorderTreatement(x, y, bord, size, kernel, sigma, input, output, borderType);
+          } else {
+            int val = 0;
+            for (int ky = -bord; ky <= bord; ky++) {
+              for (int kx = -bord; kx <= bord; kx++) {
+                val += input.get(x + kx, y + ky) * kernel[ky + bord][kx + bord];
+              }
+            }
+            output.set(x, y, val);
+          }
+        }
+      });
+    } else {
+      System.err.println("la taille du noyau doit être impair");
+    }
+  }
+
+  public static double[][] gaussianKernel(int size, float sigma) {
+    double[][] kernel = new double[size][size];
+    int bord = (size - 1) / 2;
+    double denominateur1 = 2 * sigma * sigma;
+    double sumCoef = 0;
+    for (int ky = -bord; ky <= bord; ky++) {
+      for (int kx = -bord; kx <= bord; kx++) {
+        kernel[ky + bord][kx + bord] = Math.exp(-(((kx * kx) + (ky * ky)) / denominateur1));
+        sumCoef += kernel[ky + bord][kx + bord];
+      }
+    }
+    for (int ky = 0; ky < size; ky++) {
+      for (int kx = 0; kx < size; kx++) {
+        kernel[ky][kx] /= sumCoef;
+      }
+    }
+    return kernel;
   }
 
   static void meanFilterWithBorders(GrayU8 input, GrayU8 output, int size, BorderType borderType) {
@@ -118,12 +118,12 @@ class Convolution {
         extendedMean(x, y, bord, size, input, output);
         break;
       case REFLECT:
-        reflect(x, y, bord, size, input, output);
+        reflectMean(x, y, bord, size, input, output);
         break;
     }
   }
 
-  private static void gaussBorderTreatement(int x, int y, int bord, int size, double[][] kernel, double sigma,
+  private static void gaussianBorderTreatement(int x, int y, int bord, int size, double[][] kernel, double sigma,
       GrayU8 input, GrayU8 output, BorderType borderType) {
     switch (borderType) {
       case SKIP:
@@ -232,7 +232,7 @@ class Convolution {
     output.set(x, y, valE);
   }
 
-  private static void reflect(int x, int y, int bord, int size, GrayU8 input, GrayU8 output) {
+  private static void reflectMean(int x, int y, int bord, int size, GrayU8 input, GrayU8 output) {
     int valE = 0;
     int xE, yE = 0;
     for (int ky = -bord; ky <= bord; ky++) {
