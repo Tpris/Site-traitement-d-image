@@ -96,12 +96,12 @@
       <ul id="options" class="neumorphism">
         <li class="title-option" v-if="hasParam(state.selectedEffect)">{{ state.selectedEffect.text }}</li>
           <li class="option-cursor" v-for="(c) in state.selectedEffect.params.cursors" :key="c">
-              <span>{{ c.text }}</span>
+              <span class="options-cursor-title">{{ c.text }}</span>
               <input type="range" :min="c.param[0]" :max="c.param[1]" :value="c.value" :step="c.step" @mouseup="performEffect(state.selectedEffect, $event, c)"/>
               <span>{{ c.value }}</span>
           </li>
         <li v-for="dB in state.selectedEffect.params.dropBoxes" :key="dB">
-          <select name="pets" v-model="dB.value" @change="performEffect(state.selectedEffect, $event, dB)">
+          <select class="select-box neumorphism neumorphism-push" :name="state.selectedEffect.type" v-model="dB.value" @change="performEffect(state.selectedEffect, $event, dB)">
             <option value="">Choisir un {{ dB.text }}</option>
             <option  v-for="v in dB.param" :value="v">{{ v }}</option>
           </select>
@@ -141,8 +141,19 @@
   scrollbar-width: none;
 }
 
+.select-box{
+  margin-top: 1vh;
+  width: 150px;
+  height: 30px;
+  border-radius: 20px;
+}
+
 #tool-box::-webkit-scrollbar {
   display: none;
+}
+
+.options-cursor-title{
+margin-right: 5px;
 }
 
 .option-cursor{

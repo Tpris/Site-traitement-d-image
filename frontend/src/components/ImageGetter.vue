@@ -28,7 +28,7 @@ const getImage = (id) => {
 }
 
 const getImageEffect = (id, effects: IEffect[] | undefined) =>{
-  if(!effects) return
+  if(!effects || effects?.length===0) return
   api.getImageEffect(id, effects)
       .then((data) => updateSource(data as Blob))
       .catch(e => console.log(e.message))

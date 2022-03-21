@@ -75,9 +75,9 @@ export default function useEffects() {
             case EffectTypes.GaussianBlur:
                 this.text = "Gauss."
                 this.params = new Params(
-                    [new DropBox("Type", "BT",["Skip", "Normalized", "Extended", "Reflect"])] as IDropBox[],
+                    [new DropBox("Type", "BT",["SKIP", "NORMALIZED", "EXTENDED", "REFLECT"])] as IDropBox[],
                     [ new Cursors("Taille", "size", ["1", "255"], 2, 1),
-                        new Cursors("Ecart type","sigma", ["0.1", "7"], 0.01,0.1)
+                        new Cursors("Ecart type","sigma", ["1", "7"], 1,1)
                     ] as ICursors[])
                 break;
 
