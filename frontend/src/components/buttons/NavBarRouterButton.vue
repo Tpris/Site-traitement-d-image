@@ -1,12 +1,8 @@
 <template>
-  <router-link class="link neumorphism neumorphism-push" :class="name === 'home' ? 'selected' : 'unselected'" to="/">
+  <router-link class="link neumorphism neumorphism-push" to="/">
     <slot />
   </router-link>
 </template>
-
-<script setup lang="ts">
-  defineProps<{ name: string }>()
-</script>
 
 <style scoped>
 .link{

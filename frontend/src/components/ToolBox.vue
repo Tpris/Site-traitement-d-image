@@ -1,15 +1,14 @@
 <script setup lang="ts">
   import ToolBoxButton from "@/components/buttons/ToolBoxButton.vue";
-  import { reactive, watch} from "vue";
-  import useEffects, {EffectTypes, ICursors, IDropBox, IEffect} from "@/composables/Effects";
+  import {reactive, UnwrapRef, watch} from "vue";
+  import {EffectTypes, Cursors, DropBox, Effect} from "@/composables/Effects";
 
-  const {Effect} = useEffects()
   const props = defineProps<{ id: number }>()
   const emits = defineEmits(["applyFilter"])
 
   const state = reactive({
-    selectedEffect: new Effect("") as IEffect,
-    appliedEffects: Array<IEffect>(),
+    selectedEffect: new Effect(""),
+    appliedEffects: Array<Effect>(),
     listEffect: [
         new Effect(EffectTypes.Sobel),
         new Effect(EffectTypes.Luminosity),
@@ -18,24 +17,30 @@
         new Effect(EffectTypes.MeanBlur),
         new Effect(EffectTypes.EgalisationS),
         new Effect(EffectTypes.EgalisationV),
-      ] as IEffect[],
+      ] as Effect[],
   })
 
   watch(() => props.id, () =>{
     closeSlider()
     state.appliedEffects.length = 0
-    state.selectedEffect = new Effect("") as IEffect
+    state.selectedEffect = new Effect("")
     reloadEffectsImage()
   })
 
-  const hasParam = (e: IEffect) => e.params.dropBoxes.length !== 0 || e.params.cursors.length !== 0
+  const hasParam = (e: UnwrapRef<Effect>) => e.params.dropBoxes.length !== 0 || e.params.cursors.length !== 0
 
-  const openSlider = () => document.getElementById('container-options').style.width = '30vw'
-  const closeSlider = () => document.getElementById('container-options').style.width = '0'
+  const openSlider = () => {
+    let element = document.getElementById('container-options') as HTMLElement
+    if(element) element.style.width = '30vw'
+  }
+  const closeSlider = () => {
+    let element = document.getElementById('container-options') as HTMLElement
+    if(element) element.style.width = '0'
+  }
   const activeButton = () => "neumorphism-activate"
 
-  const selectEffect = (e: IEffect) => state.selectedEffect = e
-  const addEffects = (effect) => state.appliedEffects.push(effect)
+  const selectEffect = (e: UnwrapRef<Effect>) => state.selectedEffect = e
+  const addEffects = (effect: UnwrapRef<Effect>) => state.appliedEffects.push(effect)
   const findEffect = (type:string) => state.listEffect.find((e) => e.type === type)
   const removeEffect = (type: string) => state.appliedEffects = state.appliedEffects.filter((e) => e.type !== type )
   const isAppliedEffect = (type:string) => state.appliedEffects.find((e) => e.type === type)
@@ -46,14 +51,14 @@
     reloadEffectsImage()
   }
 
-  const handleEffect = (effect: IEffect) =>{
+  const handleEffect = (effect: UnwrapRef<Effect>) =>{
     if(props.id === -1) return
     openSlider()
     selectEffect(effect)
     if(!isAppliedEffect(effect.type)) performEffect(effect, null, null)
   }
 
-  const handleEffectNoParam = (effect: IEffect) => {
+  const handleEffectNoParam = (effect: UnwrapRef<Effect>) => {
     if(props.id === -1) return
     closeSlider()
     selectEffect(effect)
@@ -62,7 +67,7 @@
     reloadEffectsImage()
   }
 
-  const performEffect = (effect: IEffect, e: any | null, param: ICursors | IDropBox| null) => {
+  const performEffect = (effect: UnwrapRef<Effect>, e: any, param: UnwrapRef<Cursors> | UnwrapRef<DropBox> | null) => {
     if (param) param.value = e.target.value
     removeEffect(effect.type)
     addEffects(effect)
@@ -70,9 +75,11 @@
   }
 
   watch(() => findEffect(EffectTypes.Filter), (newEffect) => {
+    if(!newEffect) return
     let minCursors = newEffect.params.cursors[1]
     let maxCursors =  newEffect.params.cursors[2]
-    minCursors.param[1] = maxCursors.value + ""
+    if(minCursors.param[1])
+      minCursors.param[1] = maxCursors.value + ""
     if(minCursors.value > maxCursors.value)
       minCursors.value = maxCursors.value
   }, {deep:true})
@@ -95,20 +102,20 @@
     <div id="container-options">
       <ul id="options" class="neumorphism">
         <li class="title-option" v-if="hasParam(state.selectedEffect)">{{ state.selectedEffect.text }}</li>
-          <li class="option-cursor" v-for="(c) in state.selectedEffect.params.cursors" :key="c">
+          <li class="option-cursor" v-for="c in state.selectedEffect.params.cursors" :key="state.selectedEffect.type + c.name">
               <span class="options-cursor-title">{{ c.text }}</span>
-              <input type="range" :min="c.param[0]" :max="c.param[1]" :value="c.value" :step="c.step" @mouseup="performEffect(state.selectedEffect, $event, c)"/>
+              <input type="range" :min="c.param[0]" :max="c.param[1]" :value="c.value" :step="c.step" @mouseup="performEffect(state.selectedEffect,$event,c)"/>
               <span>{{ c.value }}</span>
           </li>
-        <li v-for="dB in state.selectedEffect.params.dropBoxes" :key="dB">
-          <select class="select-box neumorphism neumorphism-push" :name="state.selectedEffect.type" v-model="dB.value" @change="performEffect(state.selectedEffect, $event, dB)">
+        <li v-for="dB in state.selectedEffect.params.dropBoxes" :key="state.selectedEffect.type + dB.name">
+          <select class="select-box neumorphism neumorphism-push" :name="state.selectedEffect.type" v-model="dB.value" @change="performEffect(state.selectedEffect,$event,dB)">
             <option value="">Choisir un {{ dB.text }}</option>
             <option  v-for="v in dB.param" :value="v">{{ v }}</option>
           </select>
         </li>
         <li v-if="hasParam(state.selectedEffect)">
           <tool-box-button class="apply-filter" v-if="isAppliedEffect(state.selectedEffect.type)" @click="removeEffectAndRefresh(state.selectedEffect.type)">Enlever</tool-box-button>
-          <tool-box-button class="apply-filter" v-else @click="performEffect(state.selectedEffect,null, null)">Appliquer</tool-box-button>
+          <tool-box-button class="apply-filter" v-else @click="performEffect(state.selectedEffect,null,null)">Appliquer</tool-box-button>
         </li>
       </ul>
       <a id="arrow-left" class="neumorphism neumorphism-push" @click="closeSlider()" >&lt;</a>

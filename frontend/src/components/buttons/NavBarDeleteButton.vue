@@ -3,7 +3,7 @@ import { api } from '@/http-api';
 defineProps<{selectedImage: { id:number, source:string, name:string }}>()
 const emit = defineEmits(['updated'])
 
-const deleteImage = (id) => {
+const deleteImage = (id: number) => {
   api.deleteImage(id).then(() => {
     emit('updated')
   }).catch(e => {

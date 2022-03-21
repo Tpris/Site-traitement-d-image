@@ -5,7 +5,7 @@ import ToolBox from '@/components/ToolBox.vue'
 import Carrousel from '@/components/HomeCaroussel.vue'
 import Image from "@/components/ImageGetter.vue"
 import NavBar from '@/components/NavBar.vue'
-import {IEffect} from "@/composables/Effects";
+import {Effect} from "@/composables/Effects";
 
 const state = reactive({
   selectedImage: {
@@ -13,13 +13,13 @@ const state = reactive({
     source : '',
     name: '',
   },
-  effects: [] as IEffect[],
+  effects: [] as Effect[],
   imageList: Array<ImageType>(),
   uploaded: false,
   deleted: false,
 })
 
-const performFilter = (effects: IEffect[]) => state.effects = effects
+const performFilter = (effects: Effect[]) => state.effects = effects
 const handleDeleted = () => {
   state.selectedImage = {id: -1, source : '', name: ''}
   state.deleted = true
@@ -28,7 +28,7 @@ const handleDeleted = () => {
 </script>
 
 <template>
-  <nav-bar @uploaded="state.uploaded = true" @deleted="handleDeleted" name="Home" :selectedImage="state.selectedImage"></nav-bar>
+  <nav-bar @uploaded="state.uploaded = true" @deleted="handleDeleted" :selectedImage="state.selectedImage"></nav-bar>
   <div id="main-content">
     <div id="toolBox">
       <tool-box :selected-image="state.selectedImage.id" :id="state.selectedImage.id" @applyFilter="(effects) => performFilter(effects)"></tool-box>

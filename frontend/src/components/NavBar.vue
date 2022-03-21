@@ -4,7 +4,7 @@ import NavBarDeleteButton from "@/components/buttons/NavBarDeleteButton.vue";
 import NavBarDownloadButton from "@/components/buttons/NavBarDownloadButton.vue"
 import NavBarRouterButton from "@/components/buttons/NavBarRouterButton.vue";
 
-defineProps<{ name: "", selectedImage: { id:number, source:string, name:string }}>()
+defineProps<{ selectedImage: { id:number, source:string, name:string }}>()
 defineEmits(['uploaded', 'deleted'])
 </script>
 
@@ -12,7 +12,7 @@ defineEmits(['uploaded', 'deleted'])
   <nav class="neumorphism" id="nav-bar">
     <h1 id="title">Notre super projet</h1>
     <div id="items">
-      <NavBarRouterButton :name="name">Accueil</NavBarRouterButton>
+      <NavBarRouterButton>Accueil</NavBarRouterButton>
       <NavBarDownloadButton :selected-image="selectedImage"></NavBarDownloadButton>
       <NavBarUploadButton @updated="$emit('uploaded')"></NavBarUploadButton>
       <NavBarDeleteButton @updated="$emit('deleted')" :selected-image="selectedImage"></NavBarDeleteButton>

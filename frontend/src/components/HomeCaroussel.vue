@@ -17,12 +17,13 @@ const state = reactive({
 
 const getCurrentImages = async (index:number, nbImg:number) => {
   return api.getImageListByNumber(index, nbImg).then((data) => {
-    state.nbImages = (data[0] as { nbImages:number }).nbImages as number
-    (data as []).shift()
-    return data as Array<UnwrapRef<ImageType>>;
+    let dataArray = data as unknown as [{}]
+    state.nbImages = (dataArray[0] as unknown as { nbImages:number }).nbImages as number
+    dataArray.shift()
+    return data as unknown as Array<UnwrapRef<ImageType>>;
   }).catch(e => {
     console.log(e.message)
-    return
+    return state.currentImages
   })
 }
 

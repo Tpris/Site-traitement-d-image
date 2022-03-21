@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import {defineProps, onMounted, reactive, ref, toRefs, watch, watchEffect} from 'vue';
+import {defineProps, onMounted, reactive, ref, toRefs, UnwrapRef, watch, watchEffect} from 'vue';
 import { api } from '@/http-api';
-import {IEffect} from "@/composables/Effects";
+import {Effect} from "@/composables/Effects";
 
 const props = defineProps<{
   id: number,
-  effects?:  IEffect[]
+  effects?:  UnwrapRef<Effect[]>
 }>()
 const emits = defineEmits(['update:modelValue'])
 let source = ref("")
@@ -21,16 +21,16 @@ const updateSource = (data: Blob) => {
     }
   };
 }
-const getImage = (id) => {
+const getImage = (id: number) => {
   api.getImage(id)
-      .then((data) => updateSource(data as Blob))
+      .then((data) => updateSource(data as unknown as Blob))
       .catch(e => console.log(e.message))
 }
 
-const getImageEffect = (id, effects: IEffect[] | undefined) =>{
-  if(!effects || effects?.length===0) return
+const getImageEffect = (id: number, effects: UnwrapRef<Effect[]> | undefined) =>{
+  if(!effects || effects?.length===0) return getImage(id)
   api.getImageEffect(id, effects)
-      .then((data) => updateSource(data as Blob))
+      .then((data) => updateSource(data as unknown as Blob))
       .catch(e => console.log(e.message))
 }
 
@@ -41,7 +41,7 @@ watchEffect(() => getImageEffect(props.id, props.effects));
 </script>
 
 <template>
-  <img :src="source" :alt="props.id">
+  <img :src="source" :alt="props.id + ''">
 </template>
 
 <style scoped>

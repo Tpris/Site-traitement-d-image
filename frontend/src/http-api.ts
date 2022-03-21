@@ -1,5 +1,6 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
-import {IEffect} from "@/composables/Effects";
+import {Effect} from "@/composables/Effects";
+import {UnwrapRef} from "vue";
 
 const instance = axios.create({
   baseURL: "/",
@@ -20,25 +21,28 @@ export const api = {
   getImageListByNumber: (index: number, size: number): Promise<AxiosResponse<any>> => requests.get('images', {params: { index: index, size:size }}),
   getImage: (id: number): Promise<AxiosResponse<any>> => requests.get(`images/${id}`, { responseType: "blob" }),
 
-  getImageEffect: (id: number, effects:IEffect[]): Promise<AxiosResponse<any>> => {
-    let params = {}
+  getImageEffect: (id: number, effects: Array<UnwrapRef<Effect>>): Promise<AxiosResponse<any>> => {
+    let params = new Map<string, string>();
     let algorithm : string = ""
     let separator = "_"
 
     effects.forEach((e, index) => {
       if (index !== 0) algorithm += separator
       algorithm += e.type
-      for (let paramsKey in e.params) {
-        e.params[paramsKey].forEach((p) => {
-          if (params[p.name]) params[p.name] += separator + p.value
-          else params[p.name] = p.value
-        })
-      }
+      e.params.dropBoxes.forEach((dB) =>{
+        if (params.has(dB.name)) params.set(dB.name, params.get(dB.name) + separator + dB.value)
+        else params.set(dB.name, dB.value)
+      })
+      e.params.cursors.forEach((c) =>{
+        if (params.has(c.name)) params.set(c.name, params.get(c.name) + separator + c.value)
+        else params.set(c.name, c.value.toString())
+      })
     })
 
+    let objParams = Object.fromEntries(params)
     return requests.get(`images/${id}`, {
       responseType: "blob",
-      params : { algorithm, ...params }
+      params : { algorithm,  ...objParams}
     })
   },
 
