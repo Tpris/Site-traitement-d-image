@@ -105,6 +105,7 @@ watch(() => props.deleted, ((newState) => newState && handleDeleted()))
   display: flex;
   margin: auto;
   animation: appear 700ms ease-in-out;
+  justify-content: center;
 }
 
 .selected-image{
@@ -135,14 +136,6 @@ watch(() => props.deleted, ((newState) => newState && handleDeleted()))
 
 .arrow div{
   animation: appear 700ms ease-in-out;
-}
-
-#arrow-left{
-  margin-left: 2vw;
-}
-
-#arrow-right{
-  margin-right: 2vw;
 }
 
 .container-images{
