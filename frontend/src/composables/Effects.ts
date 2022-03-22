@@ -111,7 +111,7 @@ export class Effect {
             case EffectTypes.MeanBlur:
                 this._text = "Flou"
                 this._params = new Params(
-                    [new DropBox("Type", "BT", ["Skip", "Normalized", "Extended", "Reflect"])] as DropBox[],
+                    [new DropBox("Type", "BT", ["SKIP", "NORMALIZED", "EXTENDED", "REFLECT"])] as DropBox[],
                     [new Cursors("Taille", "size", ["1", "255"], 2, 1)] as Cursors[]
                 )
                 break;

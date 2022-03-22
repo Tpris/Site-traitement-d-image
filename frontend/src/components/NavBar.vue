@@ -10,7 +10,7 @@ defineEmits(['uploaded', 'deleted'])
 
 <template>
   <nav class="neumorphism" id="nav-bar">
-    <h1 id="title">Notre super projet</h1>
+    <h1 id="title">Image in dragon</h1>
     <div id="items">
       <NavBarRouterButton>Accueil</NavBarRouterButton>
       <NavBarDownloadButton :selected-image="selectedImage"></NavBarDownloadButton>
