@@ -47,7 +47,10 @@ public class ImageControllerTests {
     @Test
     @Order(2)
     public void getImageShouldReturnNotFound() throws Exception {
-        /* On admet qu'on ne mettra pas plus de 5000 images dans notre galerie, et que le test ne trouvera jamais la 5000e image */
+        /*
+         * On admet qu'on ne mettra pas plus de 5000 images dans notre galerie, et que
+         * le test ne trouvera jamais la 5000e image
+         */
         this.mockMvc.perform(get("/images/5000")).andExpect(status().isNotFound());
     }
 
@@ -82,8 +85,9 @@ public class ImageControllerTests {
     @Test
     @Order(7)
     public void createImageShouldReturnSuccess() throws Exception {
-        final ClassPathResource cpr = new ClassPathResource ("test.jpg");
-        MockMultipartFile mmf = new MockMultipartFile ("file", "test.jpg","image/jpeg", Files.readAllBytes(cpr.getFile().toPath()));
+        final ClassPathResource cpr = new ClassPathResource("test.jpg");
+        MockMultipartFile mmf = new MockMultipartFile("file", "test.jpg", "image/jpeg",
+                Files.readAllBytes(cpr.getFile().toPath()));
         this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(mmf)).andExpect(status().isOk());
     }
 
@@ -91,9 +95,11 @@ public class ImageControllerTests {
     @Order(8)
     public void createImageShouldReturnUnsupportedMediaType() throws Exception {
         /* Le type xcx n'est pas supporté et renverra une erreur */
-        final ClassPathResource cpr = new ClassPathResource ("test.jpg");
-        MockMultipartFile mmf = new MockMultipartFile ("file", "test.jpg","image/xcx", Files.readAllBytes(cpr.getFile().toPath()));
-        this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(mmf)).andExpect(status().isUnsupportedMediaType());
+        final ClassPathResource cpr = new ClassPathResource("test.jpg");
+        MockMultipartFile mmf = new MockMultipartFile("file", "test.jpg", "image/xcx",
+                Files.readAllBytes(cpr.getFile().toPath()));
+        this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(mmf))
+                .andExpect(status().isUnsupportedMediaType());
     }
 
 }
