@@ -96,11 +96,6 @@ public class ImageDao implements Dao<Image> {
       index++;
     }
 
-    /*
-     * for (long index = idStart; index < idStart + size; index++) {
-     * imagesList.add(images.get(index));
-     * }
-     */
     return imagesList;
   }
 
@@ -120,7 +115,6 @@ public class ImageDao implements Dao<Image> {
     long idRemoved = img.getId();
     images.remove(idRemoved);
 
-    // POUR REINIT LE COUNT ID DES IMAGES
       Image.updateCount(-1);
       for (Image image : images.values()) {
         if (image.getId() > idRemoved) {
