@@ -1,15 +1,21 @@
 package pdl.backend;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 
 import javax.imageio.ImageIO;
 
 import org.springframework.http.MediaType;
+
+import boofcv.io.image.ConvertBufferedImage;
+import boofcv.struct.image.GrayU8;
+import boofcv.struct.image.Planar;
 
 public class Image {
   private static Long count = Long.valueOf(0);
@@ -29,18 +35,23 @@ public class Image {
 
   private String createSize() throws IOException {
 
-    File file = new File(this.name);
+    /*
+     * File file = new File(this.name);
+     * 
+     * FileOutputStream fos = new FileOutputStream(file);
+     * fos.write(this.data);
+     * fos.close();
+     */
 
-    FileOutputStream fos = new FileOutputStream(file);
-    fos.write(this.data);
-    fos.close();
+    InputStream inputStream = new ByteArrayInputStream(this.data);
 
-    BufferedImage img = ImageIO.read(file);
+    BufferedImage img = ImageIO.read(inputStream);
+    Planar<GrayU8> planImg = ConvertBufferedImage.convertFromPlanar(img, null, true, GrayU8.class);
 
     String width = String.valueOf(img.getWidth());
     String height = String.valueOf(img.getHeight());
 
-    return width + 'x' + height + 'x' + width.length();
+    return width + 'x' + height + 'x' + planImg.getNumBands();
   }
 
   public long getId() {
