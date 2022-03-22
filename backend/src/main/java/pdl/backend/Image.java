@@ -35,14 +35,6 @@ public class Image {
 
   private String createSize() throws IOException {
 
-    /*
-     * File file = new File(this.name);
-     * 
-     * FileOutputStream fos = new FileOutputStream(file);
-     * fos.write(this.data);
-     * fos.close();
-     */
-
     InputStream inputStream = new ByteArrayInputStream(this.data);
 
     BufferedImage img = ImageIO.read(inputStream);
