@@ -4,6 +4,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -23,6 +26,27 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.ExpectedDatabase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.test.web.server.MockMvc;
+import org.springframework.test.web.server.samples.context.WebContextLoader;
+ 
+import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.server.samples.context.SecurityRequestPostProcessors.userDetailsService;
+import static org.springframework.test.web.server.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -85,10 +109,11 @@ public class ImageControllerTests {
     @Test
     @Order(7)
     public void createImageShouldReturnSuccess() throws Exception {
-        final ClassPathResource cpr = new ClassPathResource("test.jpg");
+       final ClassPathResource cpr = new ClassPathResource("test.jpg");
         MockMultipartFile mmf = new MockMultipartFile("file", "test.jpg", "image/jpeg",
                 Files.readAllBytes(cpr.getFile().toPath()));
         this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(mmf)).andExpect(status().isOk());
+
     }
 
     @Test
@@ -100,6 +125,19 @@ public class ImageControllerTests {
                 Files.readAllBytes(cpr.getFile().toPath()));
         this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(mmf))
                 .andExpect(status().isUnsupportedMediaType());
+    }
+
+    @Test
+    @Order(9)
+    public void getImageListShouldReturnSuccessContent() throws Exception {
+
+        this.mockMvc.perform(get("/images"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[1].id", is(0)))
+        .andExpect(jsonPath("$[1].name", is("test.jpg")))
+        .andExpect(jsonPath("$[1].type", is("image/jpeg")))
+        .andExpect(jsonPath("$[1].size", is("245x252x3")));
+
     }
 
 }

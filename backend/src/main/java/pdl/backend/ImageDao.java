@@ -51,34 +51,9 @@ public class ImageDao implements Dao<Image> {
       }
 
     } catch (final IOException e) {
-      e.printStackTrace();
+      throw new ImagesDirectoryException("Error: Images directory doesn't exist !");
     } catch (final Exception e) {
-      e.printStackTrace();
-      /*
-       * System.out.println(classLoader.getResource("public") + "testdir");
-       * Path path = Paths.get(this.getClass().getResource("public").getPath());
-       * Path newPath = Paths.get(path.toString());
-       */
-      // Path path = Paths.get("/target/classes/testdir");
-      // System.out.println(path.getFileName());
-      /*
-       * System.out.println(System.getProperty("user.dir") +
-       * "/src/main/resources/testdir");
-       * Path newPath = Paths.get(System.getProperty("user.dir") +
-       * "src/main/resources/testdir");
-       * System.out.println(newPath);
-       * Files.createDirectories(newPath);
-       */
-      /*
-       * Path path = Paths.get(classLoader.getResource("public").getPath());
-       * System.out.println(path.getParent());
-       */
-      // Files.createDirectories(path);
-      /*
-       * Path path = Paths.get(this.getClass().getResource("/").getPath() +
-       * "/testdir");
-       * Files.createDirectories(path);
-       */
+      throw new ImagesDirectoryException("Error: Images directory doesn't exist !");
     }
 
   }
