@@ -185,9 +185,9 @@ public class ImageController<Item> {
             if(!param.isEmpty()) return new ResponseEntity<>("parameter not used", HttpStatus.BAD_REQUEST);
           }
 
-          String outputPath = "/home/priscilla/Documents/L3/ProjetLogiciel/tp-image/test4.jpg";
+          String outputPath = "/home/naby/Images/test4.jpg";
           UtilImageIO.saveImage(img, outputPath);
-          
+
           ConvertRaster.planarToBuffered_U8(img, imBuff);
           ByteArrayOutputStream os = new ByteArrayOutputStream();
           ImageIO.write(imBuff, "png", os);
