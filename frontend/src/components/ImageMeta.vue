@@ -18,12 +18,13 @@
   border-radius: 20px;
   background-color:rgba(44, 62, 80, 0.1);
   color: black;
-  height: 2vh;
-  width: 2vw;
-  position:sticky;
+  height: 12vh;
+  width: 9vw;
+  position: absolute;
+  justify-content: center;
   padding: 2vh 2vw;
   right: 2vw;
-  top: 5vw;
+  top: 10vh;
   animation: appear-opacity 650ms ease-in-out;
 }
 
