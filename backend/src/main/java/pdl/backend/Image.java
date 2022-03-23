@@ -62,6 +62,10 @@ public class Image {
     this.id = newId;
   }
 
+  public void setData(byte[] data) {
+    this.data = data;
+  }
+
   public String getName() {
     return name;
   }

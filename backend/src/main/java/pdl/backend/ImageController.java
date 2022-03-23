@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.imageio.ImageIO;
+
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 import boofcv.io.image.ConvertBufferedImage;
@@ -67,40 +69,42 @@ public class ImageController<Item> {
   // HttpStatus.NOT_FOUND);
   // }
 
-  private static int lenValue(HashMap<String,ArrayList<String>> listParam, String param){
+  private static int lenValue(HashMap<String, ArrayList<String>> listParam, String param) {
     return listParam.get(param).size();
   }
 
-  private static String getAndPopValue(HashMap<String,ArrayList<String>> listParam, String param){
+  private static String getAndPopValue(HashMap<String, ArrayList<String>> listParam, String param) {
     String val = listParam.get(param).get(0);
     listParam.get(param).remove(0);
     return val;
   }
 
-  private static ResponseEntity<?> imgProcessing(Planar<GrayU8> img, String algo, HashMap<String,ArrayList<String>> listParam) {
+  private static ResponseEntity<?> imgProcessing(Planar<GrayU8> img, String algo,
+      HashMap<String, ArrayList<String>> listParam) {
     switch (algo) {
       case "filter":
-        if (lenValue(listParam,"hue")>0 && lenValue(listParam,"smin")>0 && lenValue(listParam,"smax")>0) {
-          return ImageProcessing.filter(img, Float.parseFloat(getAndPopValue(listParam,"hue")), 
-            Float.parseFloat(getAndPopValue(listParam,"smin")), Float.parseFloat(getAndPopValue(listParam,"smax")));  
+        if (lenValue(listParam, "hue") > 0 && lenValue(listParam, "smin") > 0 && lenValue(listParam, "smax") > 0) {
+          return ImageProcessing.filter(img, Float.parseFloat(getAndPopValue(listParam, "hue")),
+              Float.parseFloat(getAndPopValue(listParam, "smin")), Float.parseFloat(getAndPopValue(listParam, "smax")));
         }
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "gaussianBlur":
-        if (lenValue(listParam,"size")>0 && lenValue(listParam,"sigma")>0 && lenValue(listParam,"BT")>0) {
-          return ImageProcessing.gaussianBlur(img, Integer.parseInt(getAndPopValue(listParam,"size")), 
-              Integer.parseInt(getAndPopValue(listParam,"sigma")), stringToBorderType(getAndPopValue(listParam,"BT")));
+        if (lenValue(listParam, "size") > 0 && lenValue(listParam, "sigma") > 0 && lenValue(listParam, "BT") > 0) {
+          return ImageProcessing.gaussianBlur(img, Integer.parseInt(getAndPopValue(listParam, "size")),
+              Integer.parseInt(getAndPopValue(listParam, "sigma")),
+              stringToBorderType(getAndPopValue(listParam, "BT")));
         }
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "meanBlur":
-        if (lenValue(listParam,"size")>0 && lenValue(listParam,"BT")>0) {
-          return ImageProcessing.meanFilterWithBorders(img, Integer.parseInt(getAndPopValue(listParam,"size")), 
-              stringToBorderType(getAndPopValue(listParam,"BT")));
+        if (lenValue(listParam, "size") > 0 && lenValue(listParam, "BT") > 0) {
+          return ImageProcessing.meanFilterWithBorders(img, Integer.parseInt(getAndPopValue(listParam, "size")),
+              stringToBorderType(getAndPopValue(listParam, "BT")));
         }
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "luminosity":
-        if (lenValue(listParam,"delta")>0) {
-          return ImageProcessing.luminosityImage(img, Integer.parseInt(getAndPopValue(listParam,"delta")));
-        } 
+        if (lenValue(listParam, "delta") > 0) {
+          return ImageProcessing.luminosityImage(img, Integer.parseInt(getAndPopValue(listParam, "delta")));
+        }
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "sobel":
         return ImageProcessing.sobelImage(img, false);
@@ -110,8 +114,8 @@ public class ImageController<Item> {
         return ImageProcessing.egalisationV(img);
       case "egalisationS":
         return ImageProcessing.egalisationS(img);
-      default :
-        return new ResponseEntity<>("The algorithm "+algo+" doesn't exist", HttpStatus.BAD_REQUEST);
+      default:
+        return new ResponseEntity<>("The algorithm " + algo + " doesn't exist", HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -128,11 +132,12 @@ public class ImageController<Item> {
     }
   }
 
-  private ArrayList<String> createList(Optional<String> requestParam, String separator){
-    return (requestParam.isPresent())? new ArrayList<String>(Arrays.asList(requestParam.get().split(separator))):new ArrayList<String>();
+  private ArrayList<String> createList(Optional<String> requestParam, String separator) {
+    return (requestParam.isPresent()) ? new ArrayList<String>(Arrays.asList(requestParam.get().split(separator)))
+        : new ArrayList<String>();
   }
 
-  @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_PNG_VALUE)
+  @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
   public @ResponseBody ResponseEntity<?> getImageProcessing(@PathVariable("id") long id,
       @RequestParam("algorithm") Optional<String> algo,
       @RequestParam("delta") Optional<String> delta,
@@ -146,57 +151,56 @@ public class ImageController<Item> {
     Optional<Image> image = imageDao.retrieve(id);
 
     if (image.isPresent()) {
+      String extension = image.get().getName();
+      int p = extension.lastIndexOf(".");
+      extension = extension.substring(p + 1);
       InputStream inputStream = new ByteArrayInputStream(image.get().getData());
+
       if (algo.isPresent()) {
         String separator = "_";
         ArrayList<String> algos = new ArrayList<String>(Arrays.asList(algo.get().split(separator)));
-        // ArrayList<String> algos = createList(algo, separator);
-        HashMap<String, ArrayList<String>> listParam = new HashMap<String, ArrayList<String>>(){{ 
-          put("delta", createList(delta, separator));
-          put("size", createList(size, separator));
-          put("sigma", createList(sigma, separator));
-          put("BT", createList(BT, separator));
-          put("hue", createList(hue, separator));
-          put("smin", createList(smin, separator));
-          put("smax", createList(smax, separator));
-        }};
-        try {
-          BufferedImage imBuff = ImageIO.read(inputStream);
-          Planar<GrayU8> img = ConvertBufferedImage.convertFromPlanar(imBuff, null, true, GrayU8.class);
-
-          // ConvertRaster.orderBandsIntoRGB(img, imBuff);
-
-          System.out.println(img.getNumBands());
-          if (img.getNumBands()==4){
-            GrayU8[] bands = new GrayU8[3];
-            for (int i = 0; i < 3; ++i)
-              bands[i] = img.getBand(i).clone();
-            img.setBands(bands);
+        HashMap<String, ArrayList<String>> listParam = new HashMap<String, ArrayList<String>>() {
+          {
+            put("delta", createList(delta, separator));
+            put("size", createList(size, separator));
+            put("sigma", createList(sigma, separator));
+            put("BT", createList(BT, separator));
+            put("hue", createList(hue, separator));
+            put("smin", createList(smin, separator));
+            put("smax", createList(smax, separator));
           }
-          System.out.println(" can2 = "+img.getNumBands());
+        };
+        try {
+          BufferedImage ImBuff = ImageIO.read(inputStream);
+          if (extension.equals("png")) {
+            BufferedImage newBufferedImage = new BufferedImage(ImBuff.getWidth(), ImBuff.getHeight(),
+                BufferedImage.TYPE_INT_RGB);
+            newBufferedImage.createGraphics().drawImage(ImBuff, 0, 0, Color.WHITE, null);
+            ImBuff = newBufferedImage;
+          }
 
-          for(String alg : algos){
+          Planar<GrayU8> img = ConvertBufferedImage.convertFromPlanar(ImBuff, null, true, GrayU8.class);
+
+          for (String alg : algos) {
             ResponseEntity<?> res = imgProcessing(img, alg, listParam);
-            if(res.getStatusCode()==HttpStatus.BAD_REQUEST){
+            if (res.getStatusCode() == HttpStatus.BAD_REQUEST) {
               return res;
             }
           }
-          for(ArrayList<String> param : listParam.values()){
-            if(!param.isEmpty()) return new ResponseEntity<>("parameter not used", HttpStatus.BAD_REQUEST);
+          for (ArrayList<String> param : listParam.values()) {
+            if (!param.isEmpty())
+              return new ResponseEntity<>("parameter not used", HttpStatus.BAD_REQUEST);
           }
 
-          String outputPath = "/home/priscilla/Documents/L3/ProjetLogiciel/tp-image/test4.jpg";
-          UtilImageIO.saveImage(img, outputPath);
-          
-          ConvertRaster.planarToBuffered_U8(img, imBuff);
+          ConvertRaster.planarToBuffered_U8(img, ImBuff);
           ByteArrayOutputStream os = new ByteArrayOutputStream();
-          ImageIO.write(imBuff, "png", os);
+          ImageIO.write(ImBuff, extension, os);
           inputStream = new ByteArrayInputStream(os.toByteArray());
         } catch (IOException e) {
           return new ResponseEntity<>("Image id=" + id + " can't be treated", HttpStatus.BAD_REQUEST);
         }
       }
-      return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(new InputStreamResource(inputStream));
+      return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(new InputStreamResource(inputStream));
     }
     return new ResponseEntity<>("Image id=" + id + " not found.", HttpStatus.NOT_FOUND);
   }
