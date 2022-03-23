@@ -22,18 +22,12 @@ public class ImageDao implements Dao<Image> {
   public ImageDao() throws Exception {
 
     ClassLoader classLoader = getClass().getClassLoader();
-    File directory = new File(classLoader.getResource("images").getFile());
-
-    if (!directory.exists()) {
-      Path path = Paths.get(directory.getPath());
-      Files.createDirectories(path);
-      directory = new File(classLoader.getResource("images").getFile());
-    }
-
-    ArrayList<File> directories = new ArrayList<>();
-    directories.add(directory);
 
     try {
+      File directory = new File(classLoader.getResource("images").getFile());
+      ArrayList<File> directories = new ArrayList<>();
+      directories.add(directory);
+
       while (directories.size() != 0) {
         File currentDirectory = directories.get(0);
         File[] files = currentDirectory.listFiles();
@@ -55,8 +49,11 @@ public class ImageDao implements Dao<Image> {
       }
 
     } catch (final IOException e) {
-      e.printStackTrace();
+      throw new ImagesDirectoryException("Error: Images directory doesn't exist !");
+    } catch (final Exception e) {
+      throw new ImagesDirectoryException("Error: Images directory doesn't exist !");
     }
+
   }
 
   private boolean isImage(File file) {

@@ -53,7 +53,7 @@ public class ImageController<Item> {
     this.imageDao = imageDao;
   }
 
-  private static int lenValue(HashMap<String, ArrayList<String>> listParam, String param) {
+  private static int lenValue(HashMap<String,ArrayList<String>> listParam, String param){
     return listParam.get(param).size();
   }
 

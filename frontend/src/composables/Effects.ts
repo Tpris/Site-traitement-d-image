@@ -95,7 +95,7 @@ export class Effect {
                 this._params = new Params(null, [
                     new Cursors("Teinte", "hue", ["0", "359"], 1, 0),
                     new Cursors("min", "smin", ["0", "1"], 0.01, 0),
-                    new Cursors("max", "smax", ["0", "1"], 0.01, 0)
+                    new Cursors("max", "smax", ["0", "1"], 0.01, 1)
                 ] as Cursors[])
                 break;
 
