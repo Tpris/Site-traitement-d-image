@@ -16,7 +16,7 @@
   flex-direction: column;
   text-align: left;
   border-radius: 20px;
-  background-color:rgba(44, 62, 80, 0.2);
+  background-color:rgba(44, 62, 80, 0.1);
   color: black;
   height: fit-content;
   width: fit-content;
