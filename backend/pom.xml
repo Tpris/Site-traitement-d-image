@@ -32,7 +32,6 @@
     		<artifactId>boofcv-core</artifactId>
     		<version>0.39.1</version>
     	</dependency>
-
 	</dependencies>
 
 	<build>
