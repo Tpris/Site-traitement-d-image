@@ -86,10 +86,10 @@ watch(() => props.deleted, ((newState) => newState && handleDeleted()))
 <template>
   <div class="neumorphism container">
     <a id="arrow-left" class="arrow neumorphism neumorphism-push" @click="getPreviousImages">&lt;</a>
-    <div class="container-images">
+    <div class="container-images" :key="state.nbImages">
       <Image v-for="image in state.currentImages"
              :key="image.id"
-             class="img neumorphism neumorphism-push appear "
+             class="img neumorphism neumorphism-push appear"
              :class="props.id === image.id ? 'selected-image' : 'neumorphism-push'"
              @click="imageClick(image)" :id="image.id"
       />
@@ -107,6 +107,9 @@ watch(() => props.deleted, ((newState) => newState && handleDeleted()))
   margin: auto;
   animation: appear 700ms ease-in-out;
   justify-content: center;
+}
+.container-images{
+  animation: appear 700ms ease-in-out;
 }
 
 .selected-image{

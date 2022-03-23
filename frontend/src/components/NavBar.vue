@@ -4,7 +4,7 @@ import NavBarDeleteButton from "@/components/buttons/NavBarDeleteButton.vue";
 import NavBarDownloadButton from "@/components/buttons/NavBarDownloadButton.vue"
 import NavBarRouterButton from "@/components/buttons/NavBarRouterButton.vue";
 
-defineProps<{ selectedImage: { id:number, source:string, name:string }}>()
+defineProps<{ selectedImage: { id:number, source:string, name:string, type:string, size:string }}>()
 defineEmits(['uploaded', 'deleted'])
 </script>
 

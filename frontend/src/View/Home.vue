@@ -6,12 +6,15 @@ import Carrousel from '@/components/HomeCaroussel.vue'
 import Image from "@/components/ImageGetter.vue"
 import NavBar from '@/components/NavBar.vue'
 import {Effect} from "@/composables/Effects";
+import ImageMeta from "@/components/ImageMeta.vue";
 
 const state = reactive({
   selectedImage: {
     id: -1,
     source : '',
     name: '',
+    type: '',
+    size: '',
   },
   effects: [] as Effect[],
   imageList: Array<ImageType>(),
@@ -21,7 +24,7 @@ const state = reactive({
 
 const performFilter = (effects: Effect[]) => state.effects = effects
 const handleDeleted = () => {
-  state.selectedImage = {id: -1, source : '', name: ''}
+  state.selectedImage = {id: -1, source : '', name: '', type:'', size:''}
   state.deleted = true
 }
 
@@ -38,6 +41,7 @@ const handleDeleted = () => {
         <Image v-if="state.selectedImage.id !== -1" v-model="state.selectedImage.source" :id="state.selectedImage.id" :effects="state.effects"></Image>
       </div>
     </div>
+    <image-meta :selectedImage="state.selectedImage"></image-meta>
   </div>
   <div id="carrousel-box">
     <carrousel v-model="state.selectedImage"
