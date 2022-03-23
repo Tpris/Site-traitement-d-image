@@ -103,7 +103,7 @@ export class Effect {
                 this._text = "Gauss."
                 this._params = new Params(
                     [new DropBox("Type", "BT", ["SKIP", "NORMALIZED", "EXTENDED", "REFLECT"])] as DropBox[],
-                    [new Cursors("Taille", "size", ["1", "255"], 2, 1),
+                    [new Cursors("Taille", "size", ["1", "35"], 2, 1),
                         new Cursors("Ecart type", "sigma", ["1", "7"], 1, 1)
                     ] as Cursors[])
                 break;
@@ -112,7 +112,7 @@ export class Effect {
                 this._text = "Flou"
                 this._params = new Params(
                     [new DropBox("Type", "BT", ["SKIP", "NORMALIZED", "EXTENDED", "REFLECT"])] as DropBox[],
-                    [new Cursors("Taille", "size", ["1", "255"], 2, 1)] as Cursors[]
+                    [new Cursors("Taille", "size", ["1", "35"], 2, 1)] as Cursors[]
                 )
                 break;
 
