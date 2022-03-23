@@ -8,12 +8,13 @@ const props = defineProps<{ images: ImageType[], id: number, uploaded: boolean, 
 const emit  = defineEmits(['update:modelValue', 'uploaded', 'deleted', 'nameChanged'])
 
 const state = reactive({
-  prevIndex: 0,
-  nextIndex: 0,
+  index: 0,
   nbImg: 5,
   nbImages: 0,
   currentImages: Array<ImageType>()
 })
+
+const mod= (n:number, m:number) => ((n % m) + m) % m
 
 const getCurrentImages = async (index:number, nbImg:number) => {
   return api.getImageListByNumber(index, nbImg).then((data) => {
@@ -28,36 +29,23 @@ const getCurrentImages = async (index:number, nbImg:number) => {
 }
 
 onMounted(async () => {
-  state.currentImages = await getCurrentImages(state.prevIndex, state.nbImg)
-  state.prevIndex = 0
-  state.nextIndex = state.nbImg - 1
+  state.currentImages = await getCurrentImages(state.index, state.nbImg)
+  state.index = state.nbImg
 })
-
-const incrementIndexes = (value: number) => {
-  state.prevIndex += value
-  state.nextIndex += value
-}
 
 const getPreviousImages = async () => {
   if(state.currentImages.length === 0) return
-  incrementIndexes(-1)
-  if(state.prevIndex < 0)
-    state.prevIndex = state.nbImages + state.prevIndex
-  if(state.nextIndex < 0)
-    state.nextIndex = state.nbImages + state.nextIndex
+  state.index--
   state.currentImages.pop()
-  state.currentImages.unshift(...await getCurrentImages(state.prevIndex, 1))
+  state.currentImages.unshift(...await getCurrentImages( mod(state.index - state.nbImg, state.nbImages), 1))
 }
 
 const getNextImages = async () => {
   if(state.currentImages.length === 0) return
-  incrementIndexes(1)
-  if(state.nextIndex > state.nbImages - 1)
-    state.nextIndex = 0
-  if(state.prevIndex > state.nbImages - 1)
-    state.prevIndex = 0
+  state.index++
+  state.index = mod(state.index, state.nbImages)
   state.currentImages.shift()
-  state.currentImages.push(...await getCurrentImages(state.nextIndex, 1))
+  state.currentImages.push(...await getCurrentImages(state.index, 1))
 }
 
 const imageClick = (image: ImageType) => emit('update:modelValue', image)
@@ -66,17 +54,15 @@ const handleUploaded = async () => {
     emit('uploaded', false)
     state.currentImages.length = 0
     state.currentImages = await getCurrentImages(state.nbImages+1 - state.nbImg, state.nbImg)
-    state.prevIndex = state.nbImages - state.nbImg
-    state.nextIndex = state.nbImages
-  emit('update:modelValue', state.currentImages[state.currentImages.length - 1])
+    state.index = state.nbImages - 1
+    emit('update:modelValue', state.currentImages[state.currentImages.length - 1])
 }
 
 const handleDeleted = async () => {
   emit('deleted', false)
   state.currentImages.length = 0
-  state.prevIndex = 0
-  state.nextIndex = state.nbImg-1
-  state.currentImages = await getCurrentImages(state.prevIndex, state.nbImg)
+  state.index = state.nbImg
+  state.currentImages = await getCurrentImages(mod (state.nbImg - state.index,  state.nbImages), state.nbImg)
 }
 
 watch(() => props.uploaded, ((newState) => newState && handleUploaded()))
