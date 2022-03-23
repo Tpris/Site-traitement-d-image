@@ -52,21 +52,6 @@ public class ImageController<Item> {
     this.imageDao = imageDao;
   }
 
-  // @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces
-  // = MediaType.IMAGE_JPEG_VALUE)
-  // public ResponseEntity<?> getImage(@PathVariable("id") long id) {
-
-  // Optional<Image> image = imageDao.retrieve(id);
-
-  // if (image.isPresent()) {
-  // InputStream inputStream = new ByteArrayInputStream(image.get().getData());
-  // return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(new
-  // InputStreamResource(inputStream));
-  // }
-  // return new ResponseEntity<>("Image id=" + id + " not found.",
-  // HttpStatus.NOT_FOUND);
-  // }
-
   private static int lenValue(HashMap<String,ArrayList<String>> listParam, String param){
     return listParam.get(param).size();
   }
