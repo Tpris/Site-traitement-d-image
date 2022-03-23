@@ -187,11 +187,11 @@ public class ImageController<Item> {
 
           String outputPath = "/home/naby/Images/test4.jpg";
           UtilImageIO.saveImage(img, outputPath);
-
           ConvertRaster.planarToBuffered_U8(img, imBuff);
           ByteArrayOutputStream os = new ByteArrayOutputStream();
           ImageIO.write(imBuff, "png", os);
-          inputStream = new ByteArrayInputStream(os.toByteArray());
+         
+          inputStream = new  ByteArrayInputStream(os.toByteArray(), 0, os.size());
         } catch (IOException e) {
           return new ResponseEntity<>("Image id=" + id + " can't be treated", HttpStatus.BAD_REQUEST);
         }

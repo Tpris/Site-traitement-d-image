@@ -18,8 +18,8 @@
   border-radius: 20px;
   background-color:rgba(44, 62, 80, 0.1);
   color: black;
-  height: fit-content;
-  width: fit-content;
+  height: 2vh;
+  width: 2vw;
   position:sticky;
   padding: 2vh 2vw;
   right: 2vw;
