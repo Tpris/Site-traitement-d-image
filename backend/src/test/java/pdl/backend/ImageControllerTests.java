@@ -107,10 +107,18 @@ public class ImageControllerTests {
 
         this.mockMvc.perform(get("/images"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$[1].id", is(0)))
-        .andExpect(jsonPath("$[1].name", is("test.jpg")))
-        .andExpect(jsonPath("$[1].type", is("image/jpeg")))
-        .andExpect(jsonPath("$[1].size", is("245x252x3")));
+        .andExpect(jsonPath("$[*].id", containsInAnyOrder(
+            0, 1, 2, 3
+        )))
+        .andExpect(jsonPath("$[*].name", containsInAnyOrder(
+            "test.jpg", "space.jpeg", "cloud.png", "bn.jpg"
+        )))
+        .andExpect(jsonPath("$[*].type", containsInAnyOrder(
+            "image/jpeg", "image/png", "image/jpeg" , "image/jpeg"
+        )))
+        .andExpect(jsonPath("$[*].size", containsInAnyOrder(
+            "245x252x3", "225x225x3", "1988x1290x3", "275x183x3"
+        )));
 
     }
 

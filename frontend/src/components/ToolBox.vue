@@ -18,6 +18,8 @@
         new Effect(EffectTypes.EgalisationS),
         new Effect(EffectTypes.EgalisationV),
       ] as Effect[],
+    timer: undefined as unknown as ReturnType<typeof setTimeout>,
+    waitTime: 500,
   })
 
   watch(() => props.id, () =>{
@@ -68,8 +70,8 @@
   }
 
   const handleKeyUpCursors = (effect: UnwrapRef<Effect>, e: any, param: UnwrapRef<Cursors> | UnwrapRef<DropBox> | null) => {
-    if(e.keyCode == '37' || e.keyCode == '39')
-      performEffect(effect, e, param)
+    clearTimeout(state.timer);
+    state.timer = setTimeout(() => performEffect(effect, e, param), state.waitTime);
   }
 
   const performEffect = (effect: UnwrapRef<Effect>, e: any, param: UnwrapRef<Cursors> | UnwrapRef<DropBox> | null) => {
@@ -109,7 +111,15 @@
         <li class="title-option" v-if="hasParam(state.selectedEffect)">{{ state.selectedEffect.text }}</li>
           <li class="option-cursor" v-for="c in state.selectedEffect.params.cursors" :key="state.selectedEffect.type + c.name">
               <span class="options-cursor-title">{{ c.text }}</span>
-              <input type="range" :min="c.param[0]" :max="c.param[1]" :value="c.value" :step="c.step" @mouseup="performEffect(state.selectedEffect,$event,c)" @keyup="handleKeyUpCursors(state.selectedEffect, $event, c)"/>
+              <input type="range"
+                     :min="c.param[0]"
+                     :max="c.param[1]"
+                     :value="c.value"
+                     :step="c.step"
+                     @mouseup="performEffect(state.selectedEffect,$event,c)"
+                     @keyup.left="handleKeyUpCursors(state.selectedEffect, $event, c)"
+                     @keyup.right="handleKeyUpCursors(state.selectedEffect, $event, c)"
+              />
               <span>{{ c.value }}</span>
           </li>
         <li v-for="dB in state.selectedEffect.params.dropBoxes" :key="state.selectedEffect.type + dB.name">

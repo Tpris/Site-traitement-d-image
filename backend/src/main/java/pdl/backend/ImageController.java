@@ -216,9 +216,11 @@ public class ImageController<Item> {
     }
 
     ArrayNode nodes = mapper.createArrayNode();
+
     ObjectNode numberNode = mapper.createObjectNode();
     numberNode.put("nbImages", imageDao.getNumberImages());
     nodes.add(numberNode);
+
     for (Image image : images) {
       ObjectNode objectNode = mapper.createObjectNode();
       objectNode.put("id", image.getId());
@@ -226,7 +228,9 @@ public class ImageController<Item> {
       objectNode.put("type", image.getType().toString());
       objectNode.put("size", image.getSize());
       nodes.add(objectNode);
+
     }
+
     return nodes;
   }
 
