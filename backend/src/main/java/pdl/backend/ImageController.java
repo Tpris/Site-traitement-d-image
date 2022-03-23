@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.io.image.ConvertRaster;
+import boofcv.io.image.UtilImageIO;
 import boofcv.struct.border.BorderType;
 import boofcv.struct.image.GrayU8;
 import boofcv.struct.image.Planar;
@@ -131,7 +132,7 @@ public class ImageController<Item> {
     return (requestParam.isPresent())? new ArrayList<String>(Arrays.asList(requestParam.get().split(separator))):new ArrayList<String>();
   }
 
-  @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+  @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_PNG_VALUE)
   public @ResponseBody ResponseEntity<?> getImageProcessing(@PathVariable("id") long id,
       @RequestParam("algorithm") Optional<String> algo,
       @RequestParam("delta") Optional<String> delta,
@@ -149,6 +150,7 @@ public class ImageController<Item> {
       if (algo.isPresent()) {
         String separator = "_";
         ArrayList<String> algos = new ArrayList<String>(Arrays.asList(algo.get().split(separator)));
+        // ArrayList<String> algos = createList(algo, separator);
         HashMap<String, ArrayList<String>> listParam = new HashMap<String, ArrayList<String>>(){{ 
           put("delta", createList(delta, separator));
           put("size", createList(size, separator));
@@ -162,6 +164,17 @@ public class ImageController<Item> {
           BufferedImage imBuff = ImageIO.read(inputStream);
           Planar<GrayU8> img = ConvertBufferedImage.convertFromPlanar(imBuff, null, true, GrayU8.class);
 
+          // ConvertRaster.orderBandsIntoRGB(img, imBuff);
+
+          System.out.println(img.getNumBands());
+          if (img.getNumBands()==4){
+            GrayU8[] bands = new GrayU8[3];
+            for (int i = 0; i < 3; ++i)
+              bands[i] = img.getBand(i).clone();
+            img.setBands(bands);
+          }
+          System.out.println(" can2 = "+img.getNumBands());
+
           for(String alg : algos){
             ResponseEntity<?> res = imgProcessing(img, alg, listParam);
             if(res.getStatusCode()==HttpStatus.BAD_REQUEST){
@@ -172,15 +185,18 @@ public class ImageController<Item> {
             if(!param.isEmpty()) return new ResponseEntity<>("parameter not used", HttpStatus.BAD_REQUEST);
           }
 
+          String outputPath = "/home/naby/Images/test4.jpg";
+          UtilImageIO.saveImage(img, outputPath);
           ConvertRaster.planarToBuffered_U8(img, imBuff);
           ByteArrayOutputStream os = new ByteArrayOutputStream();
-          ImageIO.write(imBuff, "jpeg", os);
-          inputStream = new ByteArrayInputStream(os.toByteArray());
+          ImageIO.write(imBuff, "png", os);
+         
+          inputStream = new  ByteArrayInputStream(os.toByteArray(), 0, os.size());
         } catch (IOException e) {
           return new ResponseEntity<>("Image id=" + id + " can't be treated", HttpStatus.BAD_REQUEST);
         }
       }
-      return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(new InputStreamResource(inputStream));
+      return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(new InputStreamResource(inputStream));
     }
     return new ResponseEntity<>("Image id=" + id + " not found.", HttpStatus.NOT_FOUND);
   }

@@ -352,7 +352,14 @@ public class ColorProcessing {
 
     // processing
 
-    // ImageProcessing.contoursImage(image);
+    if (image.getNumBands()==4){
+      GrayU8[] bands = new GrayU8[3];
+      for (int i = 1; i < 4; ++i)
+        bands[i-1] = image.getBand(i).clone();
+      image.setBands(bands);
+    }
+
+    ImageProcessing.contoursImage(image);
     // ImageProcessing.luminositeImage(image, 80);
     // ImageProcessing.filter(image, 0, (float) 0.5, (float) 0.5);
     // ImageProcessing.meanFilterWithBorders(image, 11, BorderType.NORMALIZED);
@@ -365,7 +372,7 @@ public class ColorProcessing {
     // long end2 = System.nanoTime();
     // System.out.println("Durée = " + (end2 - begin2)/1000000 + " millisecondes");
 
-    testConversionHSV(100, 125, 31);
+    // testConversionHSV(100, 125, 31);
 
     // System.out.println("min =" + minS(image) + " max = " + maxS(image));
     // ImageProcessing.egalisationS(image);
