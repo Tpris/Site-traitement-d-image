@@ -26,7 +26,7 @@ public class ImageProcessing {
     if (nbCanaux != 3)
       return new ResponseEntity<>("unsupported type", HttpStatus.BAD_REQUEST);
     ColorProcessing.equalizationColorV(input);
-    return new ResponseEntity<>("ok", HttpStatus.ACCEPTED);
+    return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
   public static ResponseEntity<?> egalisationS(Planar<GrayU8> input) {
@@ -35,7 +35,7 @@ public class ImageProcessing {
     if (nbCanaux != 3)
       return new ResponseEntity<>("unsupported type", HttpStatus.BAD_REQUEST);
     ColorProcessing.equalizationColorS(input);
-    return new ResponseEntity<>("ok", HttpStatus.ACCEPTED);
+    return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
   public static ResponseEntity<?> sobelImage(Planar<GrayU8> image, boolean color) {
@@ -46,7 +46,7 @@ public class ImageProcessing {
     for (int i = 0; i < nbCanaux; ++i) {
       Convolution.gradientImageSobel(input.getBand(i), image.getBand(i));
     }
-    return new ResponseEntity<>("ok", HttpStatus.ACCEPTED);
+    return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
   public static ResponseEntity<?> luminosityImage(Planar<GrayU8> input, int delta) {
@@ -55,7 +55,7 @@ public class ImageProcessing {
       for (int i = 0; i < nbCanaux; ++i) {
         GrayLevelProcessing.luminosity(input.getBand(i), delta);
       }
-      return new ResponseEntity<>("ok", HttpStatus.ACCEPTED);
+      return new ResponseEntity<>("ok", HttpStatus.OK);
     } else
       return new ResponseEntity<>("the parameter must be between -255 and 255", HttpStatus.BAD_REQUEST);
   }
@@ -68,7 +68,7 @@ public class ImageProcessing {
         for (int i = 0; i < nbCanaux; ++i) {
           Convolution.meanFilterWithBorders(input.getBand(i), image.getBand(i), size, borderType);
         }
-        return new ResponseEntity<>("ok", HttpStatus.ACCEPTED);
+        return new ResponseEntity<>("ok", HttpStatus.OK);
       } else
         return new ResponseEntity<>("the size of the kernel is too large", HttpStatus.BAD_REQUEST);
     } else
@@ -84,7 +84,7 @@ public class ImageProcessing {
         for (int i = 0; i < nbCanaux; ++i) {
           Convolution.gaussianBlurGrayU8(input.getBand(i), image.getBand(i), size, sigma, kernel, borderType);
         }
-        return new ResponseEntity<>("ok", HttpStatus.ACCEPTED);
+        return new ResponseEntity<>("ok", HttpStatus.OK);
       } else
         return new ResponseEntity<>("the size of the kernel is too large", HttpStatus.BAD_REQUEST);
     } else
@@ -102,7 +102,7 @@ public class ImageProcessing {
               ColorProcessing.filter(input, h, smin, smax, x, y);
             }
           }
-          return new ResponseEntity<>("ok", HttpStatus.ACCEPTED);
+          return new ResponseEntity<>("ok", HttpStatus.OK);
         } else
           return new ResponseEntity<>("unsupported type", HttpStatus.BAD_REQUEST);
       } else
