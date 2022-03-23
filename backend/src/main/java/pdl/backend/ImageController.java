@@ -1,42 +1,25 @@
 package pdl.backend;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.io.*;
+import java.util.*;
 
 import javax.imageio.ImageIO;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
-import boofcv.io.image.ConvertBufferedImage;
-import boofcv.io.image.ConvertRaster;
+import boofcv.io.image.*;
 import boofcv.struct.border.BorderType;
-import boofcv.struct.image.GrayU8;
-import boofcv.struct.image.Planar;
+import boofcv.struct.image.*;
 import pdl.imageprocessing.ImageProcessing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -53,7 +36,7 @@ public class ImageController<Item> {
     this.imageDao = imageDao;
   }
 
-  private static int lenValue(HashMap<String,ArrayList<String>> listParam, String param){
+  private static int lenValue(HashMap<String, ArrayList<String>> listParam, String param) {
     return listParam.get(param).size();
   }
 
