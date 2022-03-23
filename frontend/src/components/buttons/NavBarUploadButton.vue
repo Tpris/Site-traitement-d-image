@@ -31,7 +31,7 @@ const handleFileUpload = (event: Event) => {
 <template>
     <div>
       <label id="button" class="neumorphism neumorphism-push" for="file">
-        Parcourir
+        Ajouter
       </label>
       <div id="input-upload">
         <input type="file" id="file" ref="file" @change="handleFileUpload" />
