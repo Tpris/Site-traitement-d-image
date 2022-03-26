@@ -1,4 +1,4 @@
-package pdl.backend.model;
+package pdl.backend.User.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,6 +17,11 @@ public class User {
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+    }
+
+    public User() {
+        this.username = "";
+        this.password = "";
     }
 
     public Long getId() {
