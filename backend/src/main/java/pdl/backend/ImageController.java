@@ -115,7 +115,7 @@ public class ImageController<Item> {
       @RequestParam("smin") Optional<String> smin,
       @RequestParam("smax") Optional<String> smax) {
 
-    Optional<Image> image = imageDao.retrieve(id);
+    Optional<Image> image = imageDao.retrieve(id, Long.parseLong("-1"));
 
     if (image.isPresent()) {
       String extension = image.get().getName();
@@ -173,19 +173,30 @@ public class ImageController<Item> {
   }
 
   @RequestMapping(value = "/images/{id}", method = RequestMethod.DELETE)
-  public ResponseEntity<?> deleteImage(@PathVariable("id") long id) {
+  public ResponseEntity<?> deleteImage(@PathVariable("imgId") long imgId,
+                                       @RequestParam("userId") Optional<Long> userId) {
 
-    Optional<Image> image = imageDao.retrieve(id);
+    long idUser = Long.parseLong("-1");
+    if(userId.isPresent()){
+      idUser = userId.get();
+    }
+    Optional<Image> image = imageDao.retrieve(imgId, idUser);
 
     if (image.isPresent()) {
-      imageDao.delete(image.get());
-      return new ResponseEntity<>("Image id=" + id + " deleted.", HttpStatus.OK);
+      imageDao.delete(image.get(), idUser);
+      return new ResponseEntity<>("Image id=" + imgId + " deleted.", HttpStatus.OK);
     }
-    return new ResponseEntity<>("Image id=" + id + " not found.", HttpStatus.NOT_FOUND);
+    return new ResponseEntity<>("Image id=" + imgId + " not found.", HttpStatus.NOT_FOUND);
   }
 
   @RequestMapping(value = "/images", method = RequestMethod.POST)
-  public ResponseEntity<?> addImage(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
+  public ResponseEntity<?> addImage(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes,
+                                    @RequestParam("userId") Optional<Long> userId) {
+
+    long idUser = Long.parseLong("-1");
+    if(userId.isPresent()){
+      idUser = userId.get();
+    }
 
     String contentType = file.getContentType();
     if (!contentType.equals(MediaType.IMAGE_JPEG.toString()) && !contentType.equals(MediaType.IMAGE_PNG.toString())) {
@@ -193,7 +204,7 @@ public class ImageController<Item> {
     }
 
     try {
-      imageDao.create(new Image(file.getOriginalFilename(), file.getBytes()));
+      imageDao.create(new Image(file.getOriginalFilename(), file.getBytes()), idUser);
     } catch (IOException e) {
       return new ResponseEntity<>("Failure to read file", HttpStatus.NO_CONTENT);
     } catch (Exception e) {
@@ -206,32 +217,46 @@ public class ImageController<Item> {
   @ResponseBody
   public ArrayNode getImageList(
       @RequestParam("index") Optional<Long> index,
-      @RequestParam("size") Optional<Integer> size) {
+      @RequestParam("size") Optional<Integer> size,
+      @RequestParam("userId") Optional<Long> userId) {
 
-    List<Image> images = new ArrayList<>();
-    if (index.isPresent() && size.isPresent()) {
-      images = imageDao.retrieveGroup(index.get(), size.get());
-    } else {
-      images = imageDao.retrieveAll();
+      List<Image> images = new ArrayList<>();
+
+      long idUser = Long.parseLong("-1"); long start = 0; int limit = imageDao.getNumberImages(Long.parseLong("-1")) - 1;
+
+      if(userId.isPresent() ){
+        idUser = userId.get();
+      }
+
+      if (index.isPresent() && size.isPresent())
+      {
+        start = index.get(); limit = size.get();
+      }
+    if(imageDao.userListExists(idUser)){
+
+      images = imageDao.retrieveList(idUser, start, limit);
+
+      ArrayNode nodes = mapper.createArrayNode();
+
+      ObjectNode numberNode = mapper.createObjectNode();
+      numberNode.put("nbImages", imageDao.getNumberImages(idUser));
+      nodes.add(numberNode);
+
+      for (Image image : images) {
+        ObjectNode objectNode = mapper.createObjectNode();
+        objectNode.put("id", image.getId());
+        objectNode.put("name", image.getName());
+        objectNode.put("type", image.getType().toString());
+        objectNode.put("size", image.getSize());
+        objectNode.put("userId", image.getIdUser());
+        nodes.add(objectNode);
+
+      }
+
+      return nodes;
     }
 
-    ArrayNode nodes = mapper.createArrayNode();
-
-    ObjectNode numberNode = mapper.createObjectNode();
-    numberNode.put("nbImages", imageDao.getNumberImages());
-    nodes.add(numberNode);
-
-    for (Image image : images) {
-      ObjectNode objectNode = mapper.createObjectNode();
-      objectNode.put("id", image.getId());
-      objectNode.put("name", image.getName());
-      objectNode.put("type", image.getType().toString());
-      objectNode.put("size", image.getSize());
-      nodes.add(objectNode);
-
-    }
-
-    return nodes;
+    return mapper.createArrayNode();
   }
 
 }

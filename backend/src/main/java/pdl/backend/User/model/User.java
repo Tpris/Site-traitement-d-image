@@ -1,9 +1,12 @@
 package pdl.backend.User.model;
 
+import pdl.backend.Image;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.List;
 
 @Entity
 public class User {
@@ -26,10 +29,6 @@ public class User {
 
     public Long getId() {
         return Id;
-    }
-
-    public void setId(Long id) {
-        Id = id;
     }
 
     public String getUsername() {

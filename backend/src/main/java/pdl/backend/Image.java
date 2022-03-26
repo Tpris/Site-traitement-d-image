@@ -20,6 +20,11 @@ public class Image {
   private byte[] data;
   private MediaType type;
   private String size;
+  private Long idUser;
+
+  public Long getIdUser() {
+    return idUser;
+  }
 
   public Image(final String name, final byte[] data) throws IOException {
     id = count++;
@@ -27,6 +32,7 @@ public class Image {
     this.data = data;
     this.type = getType(name);
     this.size = createSize();
+    this.idUser = Long.parseLong("1");
   }
 
   private String createSize() throws IOException {

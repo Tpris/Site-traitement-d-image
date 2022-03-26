@@ -67,7 +67,6 @@ public class UserController {
             ObjectNode objectNode = mapper.createObjectNode();
             objectNode.put("id", user.getId());
             objectNode.put("username", user.getUsername());
-            objectNode.put("password", user.getPassword());
             nodes.add(objectNode);
         }
         return nodes;
