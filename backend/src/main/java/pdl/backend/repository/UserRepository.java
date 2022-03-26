@@ -1,0 +1,12 @@
+package pdl.backend.repository;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+import pdl.backend.model.User;
+
+@Repository
+public interface UserRepository extends CrudRepository<User, Long> {
+
+
+
+}
