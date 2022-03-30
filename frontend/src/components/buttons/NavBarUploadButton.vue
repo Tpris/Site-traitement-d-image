@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { api } from '@/http-api';
+import {useImageStore} from "@/store";
+import {storeToRefs} from "pinia";
+
+const store = useImageStore()
+
+let { uploaded } = storeToRefs(store)
 
 const target = ref<HTMLInputElement>();
-const emit = defineEmits(['updated'])
 
 const submitFile = ()  =>{
   if (target.value !== null && target.value !== undefined && target.value.files !== null) {
@@ -15,7 +20,7 @@ const submitFile = ()  =>{
     api.createImage(formData).then(() => {
       if (target.value !== undefined)
         target.value.value = '';
-      emit('updated')
+        uploaded.value = true
     }).catch(e => {
       console.log(e.message);
     });

@@ -3,8 +3,6 @@ import NavBarUploadButton from "@/components/buttons/NavBarUploadButton.vue"
 import NavBarDeleteButton from "@/components/buttons/NavBarDeleteButton.vue";
 import NavBarDownloadButton from "@/components/buttons/NavBarDownloadButton.vue"
 import NavBarRouterButton from "@/components/buttons/NavBarRouterButton.vue";
-
-defineEmits(['uploaded', 'deleted'])
 </script>
 
 <template>
@@ -13,8 +11,8 @@ defineEmits(['uploaded', 'deleted'])
     <div id="items">
       <NavBarRouterButton>Accueil</NavBarRouterButton>
       <NavBarDownloadButton></NavBarDownloadButton>
-      <NavBarUploadButton @updated="$emit('uploaded')"></NavBarUploadButton>
-      <NavBarDeleteButton @updated="$emit('deleted')"></NavBarDeleteButton>
+      <NavBarUploadButton></NavBarUploadButton>
+      <NavBarDeleteButton></NavBarDeleteButton>
     </div>
   </nav>
 </template>

@@ -2,12 +2,15 @@
 import {defineProps, onMounted, reactive, ref, toRefs, UnwrapRef, watch, watchEffect} from 'vue';
 import { api } from '@/http-api';
 import {Effect} from "@/composables/Effects";
+import { useImageStore } from '@/store.ts'
+import {storeToRefs} from "pinia";
+const store = useImageStore()
+let { selectedImage } = storeToRefs(store)
 
 const props = defineProps<{
   id: number,
   effects?:  UnwrapRef<Effect[]>
 }>()
-const emits = defineEmits(['update:modelValue'])
 let source = ref("")
 
 const updateSource = (data: Blob) => {
@@ -17,7 +20,7 @@ const updateSource = (data: Blob) => {
     let result: string = reader.result as string
     if (result) {
       source.value = result
-      emits('update:modelValue', result)
+      selectedImage.value.source = result
     }
   };
 }

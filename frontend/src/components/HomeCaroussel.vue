@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ImageType} from "@/image";
-import {defineProps, onMounted, reactive, ref, UnwrapRef, watch} from "vue";
+import { onMounted, reactive, ref, UnwrapRef, watch} from "vue";
 import Image from '@/components/ImageGetter.vue';
 import {api} from "@/http-api";
 import { Swiper, SwiperSlide } from 'swiper/vue';
@@ -12,21 +12,16 @@ import { useImageStore } from '@/store.ts'
 import {storeToRefs} from "pinia";
 
 const store = useImageStore()
-let { selectedImage } = storeToRefs(store)
-
-const props = defineProps<{ uploaded: boolean, deleted: boolean}>()
-const emit  = defineEmits(['update:modelValue', 'uploaded', 'deleted', 'nameChanged'])
+let { selectedImage, uploaded, deleted } = storeToRefs(store)
 
 const state = reactive({
-  index: 0,
-  nbImg: 5,
+  size: 5,
   nbImages: 0,
   isUpdate: false,
   currentImages: Array<ImageType>()
 })
 
 const controlledSwiper = ref(null);
-const mod= (n:number, m:number) => ((n % m) + m) % m
 
 const getCurrentImages = async (index:number, nbImg:number) => {
   return api.getImageListByNumber(index, nbImg).then((data) => {
@@ -40,40 +35,29 @@ const getCurrentImages = async (index:number, nbImg:number) => {
   })
 }
 
-onMounted(async () => {
-  state.currentImages = await getCurrentImages(state.index, state.nbImg)
-  state.index = state.nbImg
-})
+onMounted(async () => state.currentImages = await getCurrentImages(0, state.size))
 
 const imageClick = (image: ImageType) => selectedImage.value = image
 
 const handleUploaded = async () => {
-    emit('uploaded', false)
+    uploaded.value = false
     state.isUpdate = true
-    state.currentImages.push(...await getCurrentImages(state.currentImages.length,1))
-    emit('update:modelValue', state.currentImages[state.currentImages.length - 1])
+    selectedImage.value = [...await getCurrentImages(state.nbImages,1)][0]
     state.isUpdate = false
 }
 
-const handleSwiper = (swiper:any) => {
-  controlledSwiper.value = swiper
-}
+const handleSwiper = (swiper:any) => controlledSwiper.value = swiper
+
 
 const handleDeleted = async () => {
-  emit('deleted', false)
-  //state.currentImages = state.currentImages.filter((img) => img.id === id)
-  state.currentImages.length = 0
-  state.index = state.nbImg
-  state.currentImages = await getCurrentImages(mod (state.nbImg - state.index,  state.nbImages), state.nbImg)
+  deleted.value = false
+  state.currentImages = await getCurrentImages(0, state.size)
 }
 
-const loadNextImages = async () => {
-  console.log("enter")
-  state.currentImages.push(...await getCurrentImages(state.currentImages.length, state.nbImg))
-}
+const loadNextImages = async () => state.currentImages.push(...await getCurrentImages(state.currentImages.length, state.size))
+
 
 const handleEdge = async (swip:Swiper) => {
-  console.log(state.currentImages.length + " " + state.nbImages)
   if(swip.isEnd && state.currentImages.length !== state.nbImages && !state.isUpdate){
     state.isUpdate = true
     await loadNextImages()
@@ -82,8 +66,8 @@ const handleEdge = async (swip:Swiper) => {
   }
 }
 
-watch(() => props.uploaded, ((newState) => newState && handleUploaded()))
-watch(() => props.deleted, ((newState) => newState && handleDeleted()))
+watch(() => uploaded.value, ((newState) => newState && handleUploaded()))
+watch(() => deleted.value, ((newState) => newState && handleDeleted()))
 </script>
 
 <template>

@@ -1,5 +1,8 @@
 <script setup lang="ts">
-  defineProps<{selectedImage: { id:number, source:string, name:string, type:string, size:string }}>()
+  import { useImageStore } from '@/store.ts'
+  import {storeToRefs} from "pinia";
+  const store = useImageStore()
+  let { selectedImage } = storeToRefs(store)
 </script>
 
 <template>

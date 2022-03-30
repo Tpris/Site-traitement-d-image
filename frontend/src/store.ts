@@ -8,25 +8,9 @@ export const useImageStore = defineStore('main', {
             name: '',
             type: '',
             size: '',
+            url: '',
         },
+        uploaded: false,
+        deleted: false,
     }),
-    getters: {
-        getSelectedImage(state) {
-            // autocompletion! ✨
-            return state.selectedImage
-        },
-        getSelectedId(state) {
-            return state.selectedImage.id
-        },
-    },
-    actions: {
-        setSelectedImage(image){
-            this.selectedImage = image
-        }
-        // any amount of arguments, return a promise or not
-       /* addTodo(text) {
-            // you can directly mutate the state
-            this.todos.push({ text, id: this.nextId++, isFinished: false })
-        },*/
-    },
 })

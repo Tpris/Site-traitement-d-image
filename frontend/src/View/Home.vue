@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {reactive} from 'vue';
-import { ImageType } from '@/image'
 import ToolBox from '@/components/ToolBox.vue'
 import Carrousel from '@/components/HomeCaroussel.vue'
 import Image from "@/components/ImageGetter.vue"
@@ -14,21 +13,13 @@ let { selectedImage } = storeToRefs(store)
 
 const state = reactive({
   effects: [] as Effect[],
-  imageList: Array<ImageType>(),
-  uploaded: false,
-  deleted: false,
 })
 
 const performFilter = (effects: Effect[]) => state.effects = effects
-const handleDeleted = () => {
-  selectedImage = {id: -1, source : '', name: '', type:'', size:''}
-  state.deleted = true
-}
-
 </script>
 
 <template>
-  <nav-bar @uploaded="state.uploaded = true" @deleted="handleDeleted"></nav-bar>
+  <nav-bar></nav-bar>
   <div id="main-content">
     <div id="toolBox">
       <tool-box @applyFilter="(effects) => performFilter(effects)"></tool-box>
@@ -41,13 +32,7 @@ const handleDeleted = () => {
     <image-meta :selectedImage="selectedImage"></image-meta>
   </div>
   <div id="carrousel-box">
-    <carrousel :images="state.imageList"
-               :uploaded="state.uploaded"
-               :deleted="state.deleted"
-                @uploaded="state.uploaded = false"
-                @deleted="state.deleted = false"
-    >
-    </carrousel>
+    <carrousel></carrousel>
   </div>
 </template>
 

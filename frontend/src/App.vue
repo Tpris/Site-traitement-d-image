@@ -10,7 +10,7 @@
 <style>
 #app {
   text-align: center;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Helvetica, Arial,  sans-serif;
   color: #2c3e50;
 }
 

@@ -6,17 +6,19 @@
 </script>
 
 <template>
-  <a class="button neumorphism neumorphism-push"
+  <button class="button neumorphism neumorphism-push"
      v-if="selectedImage.source !== '' && selectedImage.id !== -1"
      :href="selectedImage.source"
      :download="selectedImage.name">
     Télécharger
-  </a>
-  <a class="button neumorphism neumorphism-push" v-else>Télécharger</a>
+  </button>
+  <button class="button neumorphism neumorphism-push" v-else>Télécharger</button>
 </template>
 
 <style scoped>
 .button{
+  font-family: Helvetica, Arial,  sans-serif;
+  font-size: 16px;
   margin-right: 50px;
   border-radius: 50px;
   display: flex;
@@ -27,6 +29,7 @@
   cursor: pointer;
   text-decoration: none;
   color: #2c3e50;
+  border:none;
 }
 
 .button:hover{

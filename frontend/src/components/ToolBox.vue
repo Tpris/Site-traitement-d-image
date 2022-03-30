@@ -26,7 +26,7 @@
     waitTime: 500,
   })
 
-  watch(() => selectedImage.id, () =>{
+  watch(() => selectedImage.value.id, () =>{
     closeSlider()
     state.appliedEffects.length = 0
     state.selectedEffect = new Effect("")
@@ -58,14 +58,14 @@
   }
 
   const handleEffect = (effect: UnwrapRef<Effect>) =>{
-    if(props.id === -1) return
+    if(selectedImage.value.id === -1) return
     openSlider()
     selectEffect(effect)
     if(!isAppliedEffect(effect.type)) performEffect(effect, null, null)
   }
 
   const handleEffectNoParam = (effect: UnwrapRef<Effect>) => {
-    if(props.id === -1) return
+    if(selectedImage.value.id === -1) return
     closeSlider()
     selectEffect(effect)
     if(isAppliedEffect(effect.type)) removeEffect(effect.type)

@@ -3,14 +3,14 @@ import { api } from '@/http-api';
 import {useImageStore} from "@/store";
 import {storeToRefs} from "pinia";
 
-const emit = defineEmits(['updated'])
 const store = useImageStore()
 
-let { selectedImage } = storeToRefs(store)
+let { selectedImage, deleted } = storeToRefs(store)
 
 const deleteImage = (id: number) => {
   api.deleteImage(id).then(() => {
-    emit('updated')
+    selectedImage.value = {id: -1, source : '', name: '', type:'', size:''}
+    deleted.value = true
   }).catch(e => {
     console.log(e.message);
   });
@@ -18,14 +18,16 @@ const deleteImage = (id: number) => {
 </script>
 
 <template>
-  <a class="button neumorphism neumorphism-push"  v-if="selectedImage.source && selectedImage.id !== -1" @click="deleteImage(selectedImage.id)">
+  <button class="button neumorphism neumorphism-push" v-if="selectedImage.source && selectedImage.id !== -1" @click="deleteImage(selectedImage.id)">
     Supprimer
-  </a>
-  <a class="button neumorphism neumorphism-push" v-else>Supprimer</a>
+  </button>
+  <button class="button neumorphism neumorphism-push" v-else>Supprimer</button>
 </template>
 
 <style scoped>
 .button{
+  font-family: Helvetica, Arial,  sans-serif;
+  font-size: 16px;
   margin-right: 50px;
   border-radius: 50px;
   display: flex;
@@ -34,5 +36,6 @@ const deleteImage = (id: number) => {
   width: 100px;
   height: 35px;
   cursor: pointer;
+  border:none;
 }
 </style>
