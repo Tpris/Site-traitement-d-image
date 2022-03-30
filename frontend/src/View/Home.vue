@@ -7,15 +7,12 @@ import Image from "@/components/ImageGetter.vue"
 import NavBar from '@/components/NavBar.vue'
 import {Effect} from "@/composables/Effects";
 import ImageMeta from "@/components/ImageMeta.vue";
+import { useImageStore } from '@/store.ts'
+import {storeToRefs} from "pinia";
+const store = useImageStore()
+const { selectedImage, setSelectedImage } = storeToRefs(store)
 
 const state = reactive({
-  selectedImage: {
-    id: -1,
-    source : '',
-    name: '',
-    type: '',
-    size: '',
-  },
   effects: [] as Effect[],
   imageList: Array<ImageType>(),
   uploaded: false,
@@ -24,28 +21,28 @@ const state = reactive({
 
 const performFilter = (effects: Effect[]) => state.effects = effects
 const handleDeleted = () => {
-  state.selectedImage = {id: -1, source : '', name: '', type:'', size:''}
+  setSelectedImage({id: -1, source : '', name: '', type:'', size:''})
   state.deleted = true
 }
 
 </script>
 
 <template>
-  <nav-bar @uploaded="state.uploaded = true" @deleted="handleDeleted" :selectedImage="state.selectedImage"></nav-bar>
+  <nav-bar @uploaded="state.uploaded = true" @deleted="handleDeleted" :selectedImage="selectedImage"></nav-bar>
   <div id="main-content">
     <div id="toolBox">
-      <tool-box :selected-image="state.selectedImage.id" :id="state.selectedImage.id" @applyFilter="(effects) => performFilter(effects)"></tool-box>
+      <tool-box :selected-image="selectedImage.id" :id="selectedImage.id" @applyFilter="(effects) => performFilter(effects)"></tool-box>
     </div>
     <div id="img-box-selected">
-      <div class="img-box" :key="state.selectedImage.id">
-        <Image v-if="state.selectedImage.id !== -1" v-model="state.selectedImage.source" :id="state.selectedImage.id" :effects="state.effects"></Image>
+      <div class="img-box" :key="selectedImage.id">
+        <Image v-if="selectedImage.id !== -1" v-model="selectedImage.source" :id="selectedImage.id" :effects="state.effects"></Image>
       </div>
     </div>
-    <image-meta :selectedImage="state.selectedImage"></image-meta>
+    <image-meta :selectedImage="selectedImage"></image-meta>
   </div>
   <div id="carrousel-box">
-    <carrousel v-model="state.selectedImage"
-               :id="state.selectedImage.id"
+    <carrousel v-model="selectedImage"
+               :id="selectedImage.id"
                :images="state.imageList"
                :uploaded="state.uploaded"
                :deleted="state.deleted"
