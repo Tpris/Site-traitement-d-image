@@ -81,7 +81,7 @@ public class ImageDao implements Dao<Image> {
   public List<Image> retrieveGroup(final long idStart, final int size) {
     ArrayList<Image> imagesList = new ArrayList<>();
 
-    long cpt = 0;
+   /* long cpt = 0;
     long index = idStart;
     while (cpt != size && index <= Image.getCount()) {
       if (images.containsKey(index)) {
@@ -89,8 +89,12 @@ public class ImageDao implements Dao<Image> {
         cpt++;
       }
       index++;
+    }*/
+    
+    Image[] imgs = images.values().toArray(new Image[0]);
+    for(long i = idStart; i < idStart + size && i < Image.getCount(); i++){
+      imagesList.add(imgs[(int)i]);
     }
-
     return imagesList;
   }
 
