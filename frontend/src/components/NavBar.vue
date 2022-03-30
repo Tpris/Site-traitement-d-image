@@ -4,7 +4,6 @@ import NavBarDeleteButton from "@/components/buttons/NavBarDeleteButton.vue";
 import NavBarDownloadButton from "@/components/buttons/NavBarDownloadButton.vue"
 import NavBarRouterButton from "@/components/buttons/NavBarRouterButton.vue";
 
-defineProps<{ selectedImage: { id:number, source:string, name:string, type:string, size:string }}>()
 defineEmits(['uploaded', 'deleted'])
 </script>
 
@@ -13,9 +12,9 @@ defineEmits(['uploaded', 'deleted'])
     <h1 id="title">Image in dragon</h1>
     <div id="items">
       <NavBarRouterButton>Accueil</NavBarRouterButton>
-      <NavBarDownloadButton :selected-image="selectedImage"></NavBarDownloadButton>
+      <NavBarDownloadButton></NavBarDownloadButton>
       <NavBarUploadButton @updated="$emit('uploaded')"></NavBarUploadButton>
-      <NavBarDeleteButton @updated="$emit('deleted')" :selected-image="selectedImage"></NavBarDeleteButton>
+      <NavBarDeleteButton @updated="$emit('deleted')"></NavBarDeleteButton>
     </div>
   </nav>
 </template>

@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { api } from '@/http-api';
-defineProps<{selectedImage: { id:number, source:string, name:string }}>()
+import {useImageStore} from "@/store";
+import {storeToRefs} from "pinia";
+
 const emit = defineEmits(['updated'])
+const store = useImageStore()
+
+let { selectedImage } = storeToRefs(store)
 
 const deleteImage = (id: number) => {
   api.deleteImage(id).then(() => {

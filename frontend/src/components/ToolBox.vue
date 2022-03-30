@@ -2,8 +2,12 @@
   import ToolBoxButton from "@/components/buttons/ToolBoxButton.vue";
   import {reactive, UnwrapRef, watch} from "vue";
   import {EffectTypes, Cursors, DropBox, Effect} from "@/composables/Effects";
+  import {useImageStore} from "@/store";
+  import {storeToRefs} from "pinia";
 
-  const props = defineProps<{ id: number }>()
+  const store = useImageStore()
+  let { selectedImage } = storeToRefs(store)
+
   const emits = defineEmits(["applyFilter"])
 
   const state = reactive({
@@ -22,7 +26,7 @@
     waitTime: 500,
   })
 
-  watch(() => props.id, () =>{
+  watch(() => selectedImage.id, () =>{
     closeSlider()
     state.appliedEffects.length = 0
     state.selectedEffect = new Effect("")

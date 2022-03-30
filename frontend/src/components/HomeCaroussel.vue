@@ -8,8 +8,13 @@ import { Controller, Navigation, Pagination } from 'swiper';
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+import { useImageStore } from '@/store.ts'
+import {storeToRefs} from "pinia";
 
-const props = defineProps<{ images: ImageType[], id: number, uploaded: boolean, deleted: boolean}>()
+const store = useImageStore()
+let { selectedImage } = storeToRefs(store)
+
+const props = defineProps<{ uploaded: boolean, deleted: boolean}>()
 const emit  = defineEmits(['update:modelValue', 'uploaded', 'deleted', 'nameChanged'])
 
 const state = reactive({
@@ -19,6 +24,7 @@ const state = reactive({
   isUpdate: false,
   currentImages: Array<ImageType>()
 })
+
 const controlledSwiper = ref(null);
 const mod= (n:number, m:number) => ((n % m) + m) % m
 
@@ -39,7 +45,7 @@ onMounted(async () => {
   state.index = state.nbImg
 })
 
-const imageClick = (image: ImageType) => emit('update:modelValue', image)
+const imageClick = (image: ImageType) => selectedImage.value = image
 
 const handleUploaded = async () => {
     emit('uploaded', false)
@@ -100,7 +106,7 @@ watch(() => props.deleted, ((newState) => newState && handleDeleted()))
       >
         <swiper-slide v-for="image in state.currentImages" class="text-center" :key="image.id">
           <Image class="img neumorphism neumorphism-push appear"
-                 :class="props.id === image.id ? 'selected-image' : 'neumorphism-push'"
+                 :class="selectedImage.id === image.id ? 'selected-image' : 'neumorphism-push'"
                  @click="imageClick(image)" :id="image.id"
           />
         </swiper-slide>

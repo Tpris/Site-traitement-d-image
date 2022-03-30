@@ -10,7 +10,7 @@ import ImageMeta from "@/components/ImageMeta.vue";
 import { useImageStore } from '@/store.ts'
 import {storeToRefs} from "pinia";
 const store = useImageStore()
-const { selectedImage, setSelectedImage } = storeToRefs(store)
+let { selectedImage } = storeToRefs(store)
 
 const state = reactive({
   effects: [] as Effect[],
@@ -21,29 +21,27 @@ const state = reactive({
 
 const performFilter = (effects: Effect[]) => state.effects = effects
 const handleDeleted = () => {
-  setSelectedImage({id: -1, source : '', name: '', type:'', size:''})
+  selectedImage = {id: -1, source : '', name: '', type:'', size:''}
   state.deleted = true
 }
 
 </script>
 
 <template>
-  <nav-bar @uploaded="state.uploaded = true" @deleted="handleDeleted" :selectedImage="selectedImage"></nav-bar>
+  <nav-bar @uploaded="state.uploaded = true" @deleted="handleDeleted"></nav-bar>
   <div id="main-content">
     <div id="toolBox">
-      <tool-box :selected-image="selectedImage.id" :id="selectedImage.id" @applyFilter="(effects) => performFilter(effects)"></tool-box>
+      <tool-box @applyFilter="(effects) => performFilter(effects)"></tool-box>
     </div>
     <div id="img-box-selected">
       <div class="img-box" :key="selectedImage.id">
-        <Image v-if="selectedImage.id !== -1" v-model="selectedImage.source" :id="selectedImage.id" :effects="state.effects"></Image>
+        <Image v-if="selectedImage.id !== -1" :id="selectedImage.id" :effects="state.effects"></Image>
       </div>
     </div>
     <image-meta :selectedImage="selectedImage"></image-meta>
   </div>
   <div id="carrousel-box">
-    <carrousel v-model="selectedImage"
-               :id="selectedImage.id"
-               :images="state.imageList"
+    <carrousel :images="state.imageList"
                :uploaded="state.uploaded"
                :deleted="state.deleted"
                 @uploaded="state.uploaded = false"
