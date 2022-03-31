@@ -55,6 +55,12 @@ public class ImageController<Item> {
               Float.parseFloat(getAndPopValue(listParam, "smin")), Float.parseFloat(getAndPopValue(listParam, "smax")));
         }
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
+      case "dynamicContrast":
+        if (lenValue(listParam, "min") > 0 && lenValue(listParam, "max") > 0) {
+          return ImageProcessing.dynamicContast(img, Integer.parseInt(getAndPopValue(listParam, "min")), 
+                                                    Integer.parseInt(getAndPopValue(listParam, "max")));
+        }
+        return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "gaussianBlur":
         if (lenValue(listParam, "size") > 0 && lenValue(listParam, "sigma") > 0 && lenValue(listParam, "BT") > 0) {
           return ImageProcessing.gaussianBlur(img, Integer.parseInt(getAndPopValue(listParam, "size")),
@@ -73,6 +79,11 @@ public class ImageController<Item> {
           return ImageProcessing.luminosityImage(img, Integer.parseInt(getAndPopValue(listParam, "delta")));
         }
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
+      case "threshold":
+        if (lenValue(listParam, "threshold") > 0) {
+          return ImageProcessing.threshold(img, Integer.parseInt(getAndPopValue(listParam, "threshold")));
+        }
+        return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "sobel":
         return ImageProcessing.sobelImage(img, false);
       case "sobelColor":
@@ -81,6 +92,12 @@ public class ImageController<Item> {
         return ImageProcessing.egalisationV(img);
       case "egalisationS":
         return ImageProcessing.egalisationS(img);
+      case "egalisationRGB":
+        return ImageProcessing.egalisationRGB(img);
+      case "RGBtoGray":
+        return ImageProcessing.RGBtoGray(img);
+      case "negativeImg":
+        return ImageProcessing.negativeImage(img);
       default:
         return new ResponseEntity<>("The algorithm " + algo + " doesn't exist", HttpStatus.BAD_REQUEST);
     }
@@ -104,7 +121,7 @@ public class ImageController<Item> {
         : new ArrayList<String>();
   }
 
-  @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+  @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
   public @ResponseBody ResponseEntity<?> getImage(@PathVariable("id") long id,
       @RequestParam("algorithm") Optional<String> algo,
       @RequestParam("delta") Optional<String> delta,
@@ -112,8 +129,11 @@ public class ImageController<Item> {
       @RequestParam("sigma") Optional<String> sigma,
       @RequestParam("BT") Optional<String> BT,
       @RequestParam("hue") Optional<String> hue,
+      @RequestParam("threshold") Optional<String> threshold,
       @RequestParam("smin") Optional<String> smin,
-      @RequestParam("smax") Optional<String> smax) {
+      @RequestParam("smax") Optional<String> smax,
+      @RequestParam("min") Optional<String> min,
+      @RequestParam("max") Optional<String> max) {
 
     Optional<Image> image = imageDao.retrieve(id);
 
@@ -133,8 +153,11 @@ public class ImageController<Item> {
             put("sigma", createList(sigma, separator));
             put("BT", createList(BT, separator));
             put("hue", createList(hue, separator));
+            put("threshold", createList(threshold, separator));
             put("smin", createList(smin, separator));
             put("smax", createList(smax, separator));
+            put("min", createList(min, separator));
+            put("max", createList(max, separator));
           }
         };
         try {
@@ -167,6 +190,7 @@ public class ImageController<Item> {
           return new ResponseEntity<>("Image id=" + id + " can't be treated", HttpStatus.BAD_REQUEST);
         }
       }
+      if (extension.equals("png")) return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(new InputStreamResource(inputStream));
       return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(new InputStreamResource(inputStream));
     }
     return new ResponseEntity<>("Image id=" + id + " not found.", HttpStatus.NOT_FOUND);

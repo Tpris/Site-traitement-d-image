@@ -112,4 +112,61 @@ public class ImageProcessing {
       return new ResponseEntity<>("hue must be between 0 and 360", HttpStatus.BAD_REQUEST);
   }
 
+  public static ResponseEntity<?> dynamicContast(Planar<GrayU8> image, int min, int max){
+    if(min>max) return new ResponseEntity<>("min must be less than max", HttpStatus.BAD_REQUEST);
+    int nbCanaux = image.getNumBands();
+    if(nbCanaux!=1 && nbCanaux!=3) return new ResponseEntity<>("unsupported type", HttpStatus.BAD_REQUEST);
+    int minHisto, maxHisto;
+    if (nbCanaux == 3){
+      Planar<GrayU8> input = image.clone();
+      ColorProcessing.RGBtoGray(input);
+      minHisto = GrayLevelProcessing.min(input.getBand(0));
+      maxHisto = GrayLevelProcessing.max(input.getBand(0));
+    } else {
+      minHisto = GrayLevelProcessing.min(image.getBand(0));
+      maxHisto = GrayLevelProcessing.max(image.getBand(0));
+    }
+    if(minHisto==maxHisto) return new ResponseEntity<>("dynamic contrast cannot be applied to a solid image", HttpStatus.BAD_REQUEST);
+    for (int i = 0; i < nbCanaux; ++i)
+        GrayLevelProcessing.contrastLUT(image.getBand(i), min, max, minHisto, maxHisto);
+    return new ResponseEntity<>("ok", HttpStatus.OK);
+  }
+
+  public static ResponseEntity<?> egalisationRGB(Planar<GrayU8> image) {
+    int nbCanaux = image.getNumBands();
+    if(nbCanaux!=1 && nbCanaux!=3) return new ResponseEntity<>("unsupported type", HttpStatus.BAD_REQUEST);
+    int[] histoCum;
+    if (nbCanaux == 3){
+      Planar<GrayU8> input = image.clone();
+      ColorProcessing.RGBtoGray(input);
+      histoCum = GrayLevelProcessing.histogramCumul(input.getBand(0));
+    } else histoCum = GrayLevelProcessing.histogramCumul(image.getBand(0));
+    for (int i = 0; i < nbCanaux; ++i)
+        GrayLevelProcessing.egalisation(image.getBand(i), histoCum);
+    return new ResponseEntity<>("ok", HttpStatus.OK);
+  }
+
+  public static ResponseEntity<?> threshold(Planar<GrayU8> image, int t) {
+      if(t<0 || t>255) return new ResponseEntity<>("The threshold parameter must be between 0 and 255", HttpStatus.BAD_REQUEST);
+      int nbCanaux = image.getNumBands();
+      for (int i = 0; i < nbCanaux; ++i)
+        GrayLevelProcessing.threshold(image.getBand(i), t);
+      return new ResponseEntity<>("ok", HttpStatus.OK);
+  }
+
+  public static ResponseEntity<?> RGBtoGray(Planar<GrayU8> image) {
+    int nbCanaux = image.getNumBands();
+    if(nbCanaux == 1) return new ResponseEntity<>("ok", HttpStatus.OK);
+    if(nbCanaux != 3) return new ResponseEntity<>("unsupported type", HttpStatus.BAD_REQUEST);
+    ColorProcessing.RGBtoGray(image);
+    return new ResponseEntity<>("ok", HttpStatus.OK);
+  }
+
+  public static ResponseEntity<?> negativeImage(Planar<GrayU8> image){
+    int nbCanaux = image.getNumBands();
+    for (int i = 0; i < nbCanaux; ++i)
+        GrayLevelProcessing.reverse(image.getBand(i));
+    return new ResponseEntity<>("ok", HttpStatus.OK);
+  }
+
 }
