@@ -5,7 +5,12 @@ export enum EffectTypes {
     Luminosity = "luminosity",
     Sobel = "sobel",
     EgalisationS = "egalisationS",
-    EgalisationV = "egalisationV"
+    EgalisationV = "egalisationV",
+    EgalisationRGB = "egalisationRGB",
+    DynContrast = "dynamicContrast",
+    Negative = "negativeImg",
+    Threshold = "threshold",
+    ColorToGray = "RGBtoGray"
 }
 
 export class Params{
@@ -98,6 +103,21 @@ export class Effect {
                     new Cursors("max", "smax", ["0", "1"], 0.01, 1)
                 ] as Cursors[])
                 break;
+            
+            case EffectTypes.DynContrast:
+                this._text = "Dyn. Contrast"
+                this._params = new Params(null, [
+                    new Cursors("min", "min", ["0", "255"], 1, 0),
+                    new Cursors("max", "max", ["0", "255"], 1, 255)
+                ] as Cursors[])
+                break;
+
+            case EffectTypes.Threshold:
+                this._text = "Threshold"
+                this._params = new Params(null, [
+                    new Cursors("threshold", "threshold", ["0", "255"], 1, 122)
+                ] as Cursors[])
+                break;
 
             case EffectTypes.GaussianBlur:
                 this._text = "Gauss."
@@ -133,6 +153,21 @@ export class Effect {
 
             case EffectTypes.EgalisationV:
                 this._text = "Egal° V"
+                this._params = new Params(null, null)
+                break;
+
+            case EffectTypes.EgalisationRGB:
+                this._text = "Egal° RGB"
+                this._params = new Params(null, null)
+                break;
+
+            case EffectTypes.Negative:
+                this._text = "Neg."
+                this._params = new Params(null, null)
+                break;
+
+            case EffectTypes.ColorToGray:
+                this._text = "Gray"
                 this._params = new Params(null, null)
                 break;
 

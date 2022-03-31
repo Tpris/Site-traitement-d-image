@@ -50,6 +50,8 @@ class GrayLevelProcessing {
 			int LUT[] = new int[256];
 			for (int i = 0; i < 256; i++) {
 				LUT[i] = ((max - min) * (i - minHisto) / (maxHisto - minHisto)) + min;
+				if(LUT[i]>255) LUT[i] = 255;
+				else if (LUT[i]<0) LUT[i] = 0;
 			}
 			for (int y = 0; y < input.height; ++y) {
 				for (int x = 0; x < input.width; ++x) {

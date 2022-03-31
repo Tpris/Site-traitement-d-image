@@ -10,13 +10,18 @@
     selectedEffect: new Effect(""),
     appliedEffects: Array<Effect>(),
     listEffect: [
+      new Effect(EffectTypes.ColorToGray),
         new Effect(EffectTypes.Sobel),
+        new Effect(EffectTypes.Threshold),
         new Effect(EffectTypes.Luminosity),
         new Effect(EffectTypes.Filter),
+        new Effect(EffectTypes.Negative),
         new Effect(EffectTypes.GaussianBlur),
         new Effect(EffectTypes.MeanBlur),
         new Effect(EffectTypes.EgalisationS),
         new Effect(EffectTypes.EgalisationV),
+        new Effect(EffectTypes.EgalisationRGB),
+        new Effect(EffectTypes.DynContrast)
       ] as Effect[],
     timer: undefined as unknown as ReturnType<typeof setTimeout>,
     waitTime: 500,
