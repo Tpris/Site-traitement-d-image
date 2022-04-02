@@ -115,4 +115,23 @@ class GrayLevelProcessing {
 			}
 		}
 	}
+
+	public static void threshold4step(GrayU8 input) {
+		for (int y = 0; y < input.height; ++y) {
+			for (int x = 0; x < input.width; ++x) {
+				int gl = input.get(x, y);
+				 if (gl < 61) {
+					gl = 255;
+				} else if(gl<122){
+					gl = 122;
+				} else if(gl<183){
+					gl = 183;
+				} else gl = 255;
+				if(gl>255) gl = 255; 
+				else if(gl<0) gl = 0;
+				input.set(x, y, gl);
+			}
+		}
+	}
+	
 }

@@ -84,6 +84,11 @@ public class ImageController<Item> {
           return ImageProcessing.threshold(img, Integer.parseInt(getAndPopValue(listParam, "threshold")));
         }
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
+      case "draw":
+        if (lenValue(listParam, "step") > 0) {
+          return ImageProcessing.draw(img, Integer.parseInt(getAndPopValue(listParam, "step")));
+        }
+        return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "sobel":
         return ImageProcessing.sobelImage(img, false);
       case "sobelColor":
@@ -98,6 +103,8 @@ public class ImageController<Item> {
         return ImageProcessing.RGBtoGray(img);
       case "negativeImg":
         return ImageProcessing.negativeImage(img);
+      case "waterColor":
+        return ImageProcessing.waterColor(img);
       default:
         return new ResponseEntity<>("The algorithm " + algo + " doesn't exist", HttpStatus.BAD_REQUEST);
     }
@@ -130,6 +137,7 @@ public class ImageController<Item> {
       @RequestParam("BT") Optional<String> BT,
       @RequestParam("hue") Optional<String> hue,
       @RequestParam("threshold") Optional<String> threshold,
+      @RequestParam("step") Optional<String> step,
       @RequestParam("smin") Optional<String> smin,
       @RequestParam("smax") Optional<String> smax,
       @RequestParam("min") Optional<String> min,
@@ -153,6 +161,7 @@ public class ImageController<Item> {
             put("sigma", createList(sigma, separator));
             put("BT", createList(BT, separator));
             put("hue", createList(hue, separator));
+            put("step", createList(step, separator));
             put("threshold", createList(threshold, separator));
             put("smin", createList(smin, separator));
             put("smax", createList(smax, separator));

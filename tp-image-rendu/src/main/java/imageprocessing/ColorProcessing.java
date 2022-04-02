@@ -253,6 +253,57 @@ public class ColorProcessing {
     return histoCum;
   }
 
+  private static void blackToWhite(Planar<GrayU8> input, int x, int y){
+    int nbCanaux = input.getNumBands();
+    int cpt = 0;
+    for(int i = 0; i<nbCanaux; ++i) cpt += input.getBand(i).get(x, y);
+    if(cpt == 0) {
+      for(int i = 0; i<nbCanaux; ++i) input.getBand(i).set(x, y, 255);
+    }
+  }
+
+  private static void gradient(Planar<GrayU8> input, int x, int y){
+    int nbCanaux = input.getNumBands();
+    int gl = input.getBand(0).get(x, y);
+    int val;
+    for(int i = 1; i<nbCanaux; ++i) {
+      val = input.getBand(i).get(x, y);
+      if (val>gl) gl = val;
+    }
+    val = gl/10;
+    val += val%6;
+    val*=10;
+    val = gl-val;
+    for(int i = 0; i<nbCanaux; ++i) {
+      int v = input.getBand(i).get(x, y)+val;
+      if(v>255) v = 255; 
+      else if(v<0) v = 0;
+      input.getBand(i).set(x, y, v);
+    }
+  }
+
+  static void draw(Planar<GrayU8> input){
+    int nbCanaux = input.getNumBands();
+    Planar<GrayU8> contours = input.clone();
+    ImageProcessing.sobelImage(contours, false);
+    ImageProcessing.invImage(contours);
+    for(int i = 0; i<nbCanaux; ++i){
+      GrayLevelProcessing.threshold2(input.getBand(i), 0);
+    }
+    // ImageProcessing.invImage(input);
+    for (int y = 0; y < input.height; ++y) {
+      for (int x = 0; x < input.width; ++x) {
+        // blackToWhite(input, x, y);
+        // gradient(input, x, y);
+        for(int i = 0; i<nbCanaux; ++i){
+          int c = contours.getBand(i).get(x, y);
+          int color = input.getBand(i).get(x, y);
+          if(c<color) input.getBand(i).set(x, y,c);
+        }
+      }
+    }
+  }
+
   public static void main(String[] args) {
 
     // load image
@@ -308,8 +359,9 @@ public class ColorProcessing {
     // ImageProcessing.RGBtoGray(image);
     // ImageProcessing.dynamicContast(image, 50, 255);
     // ImageProcessing.egalisationRGB(image);
-    ImageProcessing.invImage(image);
+    // ImageProcessing.invImage(image);
     // ImageProcessing.threshold(image, 180);
+    draw(image);
 
     // save output image
     final String outputPath = args[1];

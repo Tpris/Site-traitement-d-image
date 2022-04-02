@@ -169,4 +169,52 @@ public class ImageProcessing {
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
+  private static void gradient(Planar<GrayU8> input, int x, int y, int step){
+    int nbCanaux = input.getNumBands();
+    int gl = input.getBand(0).get(x, y);
+    int val;
+    for(int i = 1; i<nbCanaux; ++i) {
+      val = input.getBand(i).get(x, y);
+      if (val>gl) gl = val;
+    }
+    val = gl;
+    val += val%step;
+    val = gl-val;
+    for(int i = 0; i<nbCanaux; ++i) {
+      int v = input.getBand(i).get(x, y)+val;
+      if(v>255) v = 255; 
+      else if(v<0) v = 0;
+      input.getBand(i).set(x, y, v);
+    }
+  }
+
+  public static ResponseEntity<?> draw(Planar<GrayU8> input, int step){
+    for (int y = 0; y < input.height; ++y) {
+      for (int x = 0; x < input.width; ++x) {
+        gradient(input, x, y, step);
+      }
+    }
+    return new ResponseEntity<>("ok", HttpStatus.OK);
+  }
+
+  public static ResponseEntity<?> waterColor(Planar<GrayU8> input){
+    int nbCanaux = input.getNumBands();
+    Planar<GrayU8> contours = input.clone();
+    sobelImage(contours, false);
+    negativeImage(contours);
+    for(int i = 0; i<nbCanaux; ++i){
+      GrayLevelProcessing.threshold4step(input.getBand(i));
+    }
+    for (int y = 0; y < input.height; ++y) {
+      for (int x = 0; x < input.width; ++x) {
+        for(int i = 0; i<nbCanaux; ++i){
+          int c = contours.getBand(i).get(x, y);
+          int color = input.getBand(i).get(x, y);
+          if(c<color) input.getBand(i).set(x, y,c);
+        }
+      }
+    }
+    return new ResponseEntity<>("ok", HttpStatus.OK);
+  }
+
 }
