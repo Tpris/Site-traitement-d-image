@@ -10,7 +10,9 @@ export enum EffectTypes {
     DynContrast = "dynamicContrast",
     Negative = "negativeImg",
     Threshold = "threshold",
-    ColorToGray = "RGBtoGray"
+    ColorToGray = "RGBtoGray",
+    Draw = "draw",
+    WaterColor = "waterColor"
 }
 
 export class Params{
@@ -169,6 +171,18 @@ export class Effect {
             case EffectTypes.ColorToGray:
                 this._text = "Gray"
                 this._params = new Params(null, null)
+                break;
+
+            case EffectTypes.WaterColor:
+                this._text = "Water Color"
+                this._params = new Params(null, null)
+                break;
+            
+            case EffectTypes.Draw:
+                this._text = "Draw"
+                this._params = new Params(null, [
+                    new Cursors("step", "step", ["1", "255"], 1, 1)
+                ] as Cursors[])
                 break;
 
             default:

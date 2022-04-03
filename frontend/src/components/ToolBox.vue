@@ -21,7 +21,9 @@
         new Effect(EffectTypes.EgalisationS),
         new Effect(EffectTypes.EgalisationV),
         new Effect(EffectTypes.EgalisationRGB),
-        new Effect(EffectTypes.DynContrast)
+        new Effect(EffectTypes.DynContrast),
+        new Effect(EffectTypes.Draw),
+        new Effect(EffectTypes.WaterColor)
       ] as Effect[],
     timer: undefined as unknown as ReturnType<typeof setTimeout>,
     waitTime: 500,
