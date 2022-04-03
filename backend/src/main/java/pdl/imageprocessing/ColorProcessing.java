@@ -103,7 +103,8 @@ class ColorProcessing {
   static void equalizationColorS(Planar<GrayU8> image) {
     float[] egal = new float[101];
     int[] histoCumul = histogramCumulS(image);
-    for (int i = 0; i < 101; i++) {
+    egal[0]=0;
+    for (int i = 1; i < 101; i++) {
       egal[i] = histoCumul[i] * 100 / (image.height * image.width);
     }
     for (int y = 0; y < image.height; ++y) {

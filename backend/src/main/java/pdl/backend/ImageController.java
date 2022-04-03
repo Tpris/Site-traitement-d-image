@@ -90,9 +90,13 @@ public class ImageController<Item> {
         }
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "sobel":
-        return ImageProcessing.sobelImage(img, false);
-      case "sobelColor":
-        return ImageProcessing.sobelImage(img, true);
+        if (lenValue(listParam, "color") > 0) {
+          String res = getAndPopValue(listParam, "color");
+          if(res.equals("White")) return ImageProcessing.sobelImage(img, false);
+          else if(res.equals("Color")) return ImageProcessing.sobelImage(img, true);
+          return new ResponseEntity<>("wrong parameter : it must be White or Color", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "egalisationV":
         return ImageProcessing.egalisationV(img);
       case "egalisationS":
@@ -136,6 +140,7 @@ public class ImageController<Item> {
       @RequestParam("sigma") Optional<String> sigma,
       @RequestParam("BT") Optional<String> BT,
       @RequestParam("hue") Optional<String> hue,
+      @RequestParam("color") Optional<String> color,
       @RequestParam("threshold") Optional<String> threshold,
       @RequestParam("step") Optional<String> step,
       @RequestParam("smin") Optional<String> smin,
@@ -161,6 +166,7 @@ public class ImageController<Item> {
             put("sigma", createList(sigma, separator));
             put("BT", createList(BT, separator));
             put("hue", createList(hue, separator));
+            put("color", createList(color, separator));
             put("step", createList(step, separator));
             put("threshold", createList(threshold, separator));
             put("smin", createList(smin, separator));

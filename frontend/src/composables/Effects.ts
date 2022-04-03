@@ -145,7 +145,9 @@ export class Effect {
 
             case EffectTypes.Sobel:
                 this._text = "Sobel"
-                this._params = new Params(null, null)
+                this._params = new Params(
+                    [new DropBox("Type", "color", ["Color","White"])] as DropBox[],
+                    null)
                 break;
 
             case EffectTypes.EgalisationS:
