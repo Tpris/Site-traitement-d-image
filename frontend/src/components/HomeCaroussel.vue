@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ImageType} from "@/image";
+import {ImageType} from "@/types/ImageType";
 import { onMounted, reactive, ref, UnwrapRef, watch} from "vue";
 import Image from '@/components/ImageGetter.vue';
 import {api} from "@/http-api";
@@ -8,7 +8,7 @@ import { Controller, Navigation, Pagination } from 'swiper';
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import { useImageStore } from '@/store.ts'
+import { useImageStore } from '@/store'
 import {storeToRefs} from "pinia";
 
 const store = useImageStore()
@@ -35,33 +35,38 @@ const getCurrentImages = async (index:number, nbImg:number) => {
   })
 }
 
-onMounted(async () => state.currentImages = await getCurrentImages(0, state.size))
+onMounted(async () => {
+  state.currentImages = await getCurrentImages(0, state.size)
+  await loadNextImages()
+})
 
 const imageClick = (image: ImageType) => selectedImage.value = image
 
 const handleUploaded = async () => {
     uploaded.value = false
     state.isUpdate = true
-    selectedImage.value = [...await getCurrentImages(state.nbImages,1)][0]
+    let newImg = [...await getCurrentImages(state.nbImages,1)][0]
+    state.currentImages.push(newImg)
+    selectedImage.value = newImg
     state.isUpdate = false
 }
 
-const handleSwiper = (swiper:any) => controlledSwiper.value = swiper
-
+const handleSwiper = (swiper: any) => controlledSwiper.value = swiper
 
 const handleDeleted = async () => {
   deleted.value = false
+  state.currentImages.length = 0
   state.currentImages = await getCurrentImages(0, state.size)
+  await loadNextImages()
 }
 
 const loadNextImages = async () => state.currentImages.push(...await getCurrentImages(state.currentImages.length, state.size))
 
-
-const handleEdge = async (swip:Swiper) => {
-  if(swip.isEnd && state.currentImages.length !== state.nbImages && !state.isUpdate){
+const handleEdge = async (swiper: any) => {
+  if(swiper.isEnd && state.currentImages.length !== state.nbImages && !state.isUpdate){
     state.isUpdate = true
     await loadNextImages()
-    swip.update()
+    swiper.update()
     state.isUpdate = false
   }
 }
@@ -101,6 +106,12 @@ watch(() => deleted.value, ((newState) => newState && handleDeleted()))
 </template>
 
 <style scoped>
+
+.mySwiper{
+  margin-left: 0;
+  margin-right: 0;
+  width: 90vw;
+}
 
 .swiper-slide{
   display: flex;

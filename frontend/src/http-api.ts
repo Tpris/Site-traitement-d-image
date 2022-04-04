@@ -1,6 +1,11 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
-import {Effect} from "@/composables/Effects";
-import {UnwrapRef} from "vue";
+import {PropType, UnwrapRef} from "vue";
+import { useImageStore } from '@/store'
+import {storeToRefs} from "pinia";
+import {Cursors, DropBox, Effect} from "@/composables/Effects";
+const store = useImageStore()
+let { selectedImage, appliedEffects } = storeToRefs(store)
+
 
 const instance = axios.create({
   baseURL: "/",
@@ -19,28 +24,28 @@ const requests = {
 export const api = {
   getImageList: (): Promise<AxiosResponse<any>> => requests.get('images', {}),
   getImageListByNumber: (index: number, size: number): Promise<AxiosResponse<any>> => requests.get('images', {params: { index: index, size:size }}),
-  getImage: (id: number): Promise<AxiosResponse<any>> => requests.get(`images/${id}`, { responseType: "blob" }),
+  getImage: (id: PropType<{ type: NumberConstructor; required: boolean }> | number | undefined): Promise<AxiosResponse<any>> => requests.get(`images/${id}`, { responseType: "blob" }),
 
-  getImageEffect: (id: number, effects: Array<UnwrapRef<Effect>>): Promise<AxiosResponse<any>> => {
+  getImageEffect: (): Promise<AxiosResponse<any>> => {
     let params = new Map<string, string>();
     let algorithm : string = ""
     let separator = "_"
 
-    effects.forEach((e, index) => {
+    appliedEffects.value.forEach((e: UnwrapRef<Effect>, index: number) => {
       if (index !== 0) algorithm += separator
       algorithm += e.type
-      e.params.dropBoxes.forEach((dB) =>{
+      e.params.dropBoxes.forEach((dB: UnwrapRef<DropBox>) =>{
         if (params.has(dB.name)) params.set(dB.name, params.get(dB.name) + separator + dB.value)
         else params.set(dB.name, dB.value)
       })
-      e.params.cursors.forEach((c) =>{
+      e.params.cursors.forEach((c: UnwrapRef<Cursors>) =>{
         if (params.has(c.name)) params.set(c.name, params.get(c.name) + separator + c.value)
         else params.set(c.name, c.value.toString())
       })
     })
 
     let objParams = Object.fromEntries(params)
-    return requests.get(`images/${id}`, {
+    return requests.get(`images/${selectedImage.value.id}`, {
       responseType: "blob",
       params : { algorithm,  ...objParams}
     })

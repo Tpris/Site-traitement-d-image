@@ -6,13 +6,10 @@
   import {storeToRefs} from "pinia";
 
   const store = useImageStore()
-  let { selectedImage } = storeToRefs(store)
-
-  const emits = defineEmits(["applyFilter"])
+  let { selectedImage, appliedEffects } = storeToRefs(store)
 
   const state = reactive({
     selectedEffect: new Effect(""),
-    appliedEffects: Array<Effect>(),
     listEffect: [
         new Effect(EffectTypes.Sobel),
         new Effect(EffectTypes.Luminosity),
@@ -28,9 +25,8 @@
 
   watch(() => selectedImage.value.id, () =>{
     closeSlider()
-    state.appliedEffects.length = 0
+    appliedEffects.value.length = 0
     state.selectedEffect = new Effect("")
-    reloadEffectsImage()
   })
 
   const hasParam = (e: UnwrapRef<Effect>) => e.params.dropBoxes.length !== 0 || e.params.cursors.length !== 0
@@ -43,19 +39,14 @@
     let element = document.getElementById('container-options') as HTMLElement
     if(element) element.style.width = '0'
   }
+
   const activeButton = () => "neumorphism-activate"
-
   const selectEffect = (e: UnwrapRef<Effect>) => state.selectedEffect = e
-  const addEffects = (effect: UnwrapRef<Effect>) => state.appliedEffects.push(effect)
+  const addEffects = (effect: UnwrapRef<Effect>) => appliedEffects.value.push(effect)
   const findEffect = (type:string) => state.listEffect.find((e) => e.type === type)
-  const removeEffect = (type: string) => state.appliedEffects = state.appliedEffects.filter((e) => e.type !== type )
-  const isAppliedEffect = (type:string) => state.appliedEffects.find((e) => e.type === type)
-  const reloadEffectsImage = () => emits("applyFilter", state.appliedEffects)
-
-  const removeEffectAndRefresh = (type: string) =>{
-    removeEffect(type)
-    reloadEffectsImage()
-  }
+  const removeEffect = (type: string) => appliedEffects.value = appliedEffects.value.filter((e) => e.type !== type )
+  const isAppliedEffect = (type:string) => appliedEffects.value.find((e) => e.type === type)
+  const removeEffectAndRefresh = (type: string) => removeEffect(type)
 
   const handleEffect = (effect: UnwrapRef<Effect>) =>{
     if(selectedImage.value.id === -1) return
@@ -70,7 +61,6 @@
     selectEffect(effect)
     if(isAppliedEffect(effect.type)) removeEffect(effect.type)
     else addEffects(effect)
-    reloadEffectsImage()
   }
 
   const handleKeyUpCursors = (effect: UnwrapRef<Effect>, e: any, param: UnwrapRef<Cursors> | UnwrapRef<DropBox> | null) => {
@@ -82,7 +72,6 @@
     if (param) param.value = e.target.value
     removeEffect(effect.type)
     addEffects(effect)
-    reloadEffectsImage()
   }
 
   watch(() => findEffect(EffectTypes.Filter), (newEffect) => {

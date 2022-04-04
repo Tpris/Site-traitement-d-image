@@ -1,35 +1,28 @@
 <script setup lang="ts">
-import {reactive} from 'vue';
 import ToolBox from '@/components/ToolBox.vue'
 import Carrousel from '@/components/HomeCaroussel.vue'
 import Image from "@/components/ImageGetter.vue"
 import NavBar from '@/components/NavBar.vue'
-import {Effect} from "@/composables/Effects";
 import ImageMeta from "@/components/ImageMeta.vue";
-import { useImageStore } from '@/store.ts'
+import { useImageStore } from '@/store'
 import {storeToRefs} from "pinia";
 const store = useImageStore()
 let { selectedImage } = storeToRefs(store)
 
-const state = reactive({
-  effects: [] as Effect[],
-})
-
-const performFilter = (effects: Effect[]) => state.effects = effects
 </script>
 
 <template>
   <nav-bar></nav-bar>
   <div id="main-content">
     <div id="toolBox">
-      <tool-box @applyFilter="(effects) => performFilter(effects)"></tool-box>
+      <tool-box></tool-box>
     </div>
     <div id="img-box-selected">
       <div class="img-box" :key="selectedImage.id">
-        <Image v-if="selectedImage.id !== -1" :id="selectedImage.id" :effects="state.effects"></Image>
+        <Image v-if="selectedImage.id !== -1" :id="selectedImage.id" :authorize-effect="true"></Image>
       </div>
     </div>
-    <image-meta :selectedImage="selectedImage"></image-meta>
+    <image-meta></image-meta>
   </div>
   <div id="carrousel-box">
     <carrousel></carrousel>

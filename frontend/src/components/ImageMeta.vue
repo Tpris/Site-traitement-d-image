@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { useImageStore } from '@/store.ts'
+  import { useImageStore } from '@/store'
   import {storeToRefs} from "pinia";
   const store = useImageStore()
   let { selectedImage } = storeToRefs(store)
