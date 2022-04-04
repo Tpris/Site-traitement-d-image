@@ -1,5 +1,6 @@
 package imageprocessing;
 
+import boofcv.alg.sfm.DepthSparse3D.I;
 import boofcv.struct.border.BorderType;
 import boofcv.struct.image.GrayU8;
 import boofcv.struct.image.Planar;
@@ -79,6 +80,24 @@ public class ImageProcessing {
     for (int i = 0; i < nbCanaux; ++i)
         GrayLevelProcessing.reverse(image.getBand(i));
     //return good
+  }
+
+  public static void rotation(Planar<GrayU8> image, double theta){
+    int nbCanaux = image.getNumBands();
+    for (int i = 0; i < nbCanaux; ++i)
+        GrayLevelProcessing.rotate(image.getBand(i), theta);
+  }
+
+  public static void fisheyes(Planar<GrayU8> image, double theta){
+    int nbCanaux = image.getNumBands();
+    for (int i = 0; i < nbCanaux; ++i)
+        GrayLevelProcessing.fisheyes(image.getBand(i), theta);
+  }
+
+  public static void tourbillon(Planar<GrayU8> image){
+    int nbCanaux = image.getNumBands();
+    for (int i = 0; i < nbCanaux; ++i)
+        GrayLevelProcessing.tourbillon(image.getBand(i));
   }
 
 }

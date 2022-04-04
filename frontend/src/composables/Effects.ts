@@ -12,7 +12,10 @@ export enum EffectTypes {
     Threshold = "threshold",
     ColorToGray = "RGBtoGray",
     Draw = "draw",
-    WaterColor = "waterColor"
+    WaterColor = "waterColor",
+    Tourbillon = "tourbillon",
+    Fisheyes = "fisheyes",
+    Rotation = "rotation"
 }
 
 export class Params{
@@ -141,6 +144,21 @@ export class Effect {
             case EffectTypes.Luminosity:
                 this._text = "Lum."
                 this._params = new Params(null, [new Cursors("Delta", "delta", ["-255", "255"], 1, 0)] as Cursors[])
+                break
+
+            case EffectTypes.Fisheyes:
+                this._text = "Fish eyes"
+                this._params = new Params(null, [new Cursors("Delta", "delta", ["-1", "1"], 0.001, 0)] as Cursors[])
+                break
+
+            case EffectTypes.Rotation:
+                this._text = "Rot°"
+                this._params = new Params(null, [new Cursors("Angle", "theta", ["-360", "360"], 0.1, 0)] as Cursors[])
+                break
+
+            case EffectTypes.Tourbillon:
+                this._text = "Tourbillon"
+                this._params = new Params(null, null)
                 break
 
             case EffectTypes.Sobel:

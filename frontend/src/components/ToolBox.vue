@@ -22,6 +22,9 @@
         new Effect(EffectTypes.EgalisationV),
         new Effect(EffectTypes.EgalisationRGB),
         new Effect(EffectTypes.DynContrast),
+        new Effect(EffectTypes.Fisheyes),
+        new Effect(EffectTypes.Rotation),
+        new Effect(EffectTypes.Tourbillon),
         new Effect(EffectTypes.Draw),
         new Effect(EffectTypes.WaterColor)
       ] as Effect[],

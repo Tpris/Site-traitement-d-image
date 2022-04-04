@@ -79,6 +79,16 @@ public class ImageController<Item> {
           return ImageProcessing.luminosityImage(img, Integer.parseInt(getAndPopValue(listParam, "delta")));
         }
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
+      case "fisheyes":
+        if (lenValue(listParam, "delta") > 0) {
+          return ImageProcessing.fisheyes(img, Double.parseDouble(getAndPopValue(listParam, "delta")));
+        }
+        return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
+      case "rotation":
+        if (lenValue(listParam, "theta") > 0) {
+          return ImageProcessing.rotation(img, Double.parseDouble(getAndPopValue(listParam, "theta")));
+        }
+        return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "threshold":
         if (lenValue(listParam, "threshold") > 0) {
           return ImageProcessing.threshold(img, Integer.parseInt(getAndPopValue(listParam, "threshold")));
@@ -109,6 +119,8 @@ public class ImageController<Item> {
         return ImageProcessing.negativeImage(img);
       case "waterColor":
         return ImageProcessing.waterColor(img);
+      case "tourbillon":
+        return ImageProcessing.tourbillon(img);
       default:
         return new ResponseEntity<>("The algorithm " + algo + " doesn't exist", HttpStatus.BAD_REQUEST);
     }
@@ -136,6 +148,7 @@ public class ImageController<Item> {
   public @ResponseBody ResponseEntity<?> getImage(@PathVariable("id") long id,
       @RequestParam("algorithm") Optional<String> algo,
       @RequestParam("delta") Optional<String> delta,
+      @RequestParam("theta") Optional<String> theta,
       @RequestParam("size") Optional<String> size,
       @RequestParam("sigma") Optional<String> sigma,
       @RequestParam("BT") Optional<String> BT,
@@ -162,6 +175,7 @@ public class ImageController<Item> {
         HashMap<String, ArrayList<String>> listParam = new HashMap<String, ArrayList<String>>() {
           {
             put("delta", createList(delta, separator));
+            put("theta", createList(theta, separator));
             put("size", createList(size, separator));
             put("sigma", createList(sigma, separator));
             put("BT", createList(BT, separator));

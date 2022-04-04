@@ -134,4 +134,53 @@ class GrayLevelProcessing {
 		}
 	}
 	
+	static void rotate(GrayU8 input, double theta){
+		int x0 = input.width/2;
+		int y0 = input.height/2;
+		GrayU8 tmp = input.clone();
+		for (int y = 0; y < input.height; ++y) {
+			for (int x = 0; x < input.width; ++x) {
+				int p = (int) ((x-x0)*Math.cos(theta)+(y-y0)*Math.sin(theta)+x0);
+				int q = (int) (-(x-x0)*Math.sin(theta)+(y-y0)*Math.cos(theta)+y0);
+				if(p<input.width && q <input.height && p>=0 && q>=0)
+					input.set(x, y, tmp.get(p, q));
+				else input.set(x, y, 0);
+			}
+		}
+	}
+
+	static void fisheyes(GrayU8 input, double d){
+		int x0 = input.width/2;
+		int y0 = input.height/2;
+		GrayU8 tmp = input.clone();
+		for (int y = 0; y < input.height; ++y) {
+			for (int x = 0; x < input.width; ++x) {
+				int p = (int) (d*radious(x, y, x0, y0)*(x-x0)+x);
+				int q = (int) (d*radious(x, y, x0, y0)*(y-y0)+y);
+				if(p<input.width && q <input.height && p>=0 && q>=0)
+					input.set(x, y, tmp.get(p, q));
+				else input.set(x, y, 0);
+			}
+		}
+	}
+
+	static void tourbillon(GrayU8 input){
+		int x0 = input.width/2;
+		int y0 = input.height/2;
+		GrayU8 tmp = input.clone();
+		for (int y = 0; y < input.height; ++y) {
+			for (int x = 0; x < input.width; ++x) {
+				double theta=10*Math.exp(-0.01*radious(x, y, x0, y0));
+				int p = (int) ((x-x0)*Math.cos(theta)+(y-y0)*Math.sin(theta)+x0);
+				int q = (int) (-(x-x0)*Math.sin(theta)+(y-y0)*Math.cos(theta)+y0);
+				if(p<input.width && q <input.height && p>=0 && q>=0)
+					input.set(x, y, tmp.get(p, q));
+				else input.set(x, y, 0);
+			}
+		}
+	}
+
+	private static double radious(int x, int y, int x0, int y0){
+		return Math.sqrt(Math.pow(x-x0, 2)+Math.pow(y-y0, 2));
+	}
 }

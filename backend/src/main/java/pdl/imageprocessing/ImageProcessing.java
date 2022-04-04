@@ -217,4 +217,26 @@ public class ImageProcessing {
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
+  public static ResponseEntity<?> rotation(Planar<GrayU8> image, double theta){
+    theta = theta*Math.PI/180;
+    int nbCanaux = image.getNumBands();
+    for (int i = 0; i < nbCanaux; ++i)
+        GrayLevelProcessing.rotate(image.getBand(i), theta);
+    return new ResponseEntity<>("ok", HttpStatus.OK);
+  }
+
+  public static ResponseEntity<?> fisheyes(Planar<GrayU8> image, double delta){
+    int nbCanaux = image.getNumBands();
+    for (int i = 0; i < nbCanaux; ++i)
+        GrayLevelProcessing.fisheyes(image.getBand(i), delta);
+    return new ResponseEntity<>("ok", HttpStatus.OK);
+  }
+
+  public static ResponseEntity<?> tourbillon(Planar<GrayU8> image){
+    int nbCanaux = image.getNumBands();
+    for (int i = 0; i < nbCanaux; ++i)
+        GrayLevelProcessing.tourbillon(image.getBand(i));
+    return new ResponseEntity<>("ok", HttpStatus.OK);
+  }
+
 }

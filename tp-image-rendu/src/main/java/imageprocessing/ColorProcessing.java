@@ -361,7 +361,11 @@ public class ColorProcessing {
     // ImageProcessing.egalisationRGB(image);
     // ImageProcessing.invImage(image);
     // ImageProcessing.threshold(image, 180);
-    draw(image);
+    // draw(image);
+
+    // ImageProcessing.rotation(image, Math.PI/2);
+    // ImageProcessing.tourbillon(image);
+    ImageProcessing.fisheyes(image, 0.001);
 
     // save output image
     final String outputPath = args[1];
