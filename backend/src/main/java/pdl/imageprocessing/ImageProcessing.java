@@ -232,10 +232,10 @@ public class ImageProcessing {
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
-  public static ResponseEntity<?> tourbillon(Planar<GrayU8> image){
+  public static ResponseEntity<?> tourbillon(Planar<GrayU8> image, float tourbillonFactor){
     int nbCanaux = image.getNumBands();
     for (int i = 0; i < nbCanaux; ++i)
-        GrayLevelProcessing.tourbillon(image.getBand(i));
+        GrayLevelProcessing.tourbillon(image.getBand(i), tourbillonFactor);
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 

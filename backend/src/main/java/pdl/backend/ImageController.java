@@ -120,7 +120,10 @@ public class ImageController<Item> {
       case "waterColor":
         return ImageProcessing.waterColor(img);
       case "tourbillon":
-        return ImageProcessing.tourbillon(img);
+        if (lenValue(listParam, "tourbillon") > 0) {
+          return ImageProcessing.tourbillon(img,Float.parseFloat(getAndPopValue(listParam, "tourbillon")));
+        }
+        return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       default:
         return new ResponseEntity<>("The algorithm " + algo + " doesn't exist", HttpStatus.BAD_REQUEST);
     }
@@ -148,6 +151,7 @@ public class ImageController<Item> {
   public @ResponseBody ResponseEntity<?> getImage(@PathVariable("id") long id,
       @RequestParam("algorithm") Optional<String> algo,
       @RequestParam("delta") Optional<String> delta,
+      @RequestParam("tourbillon") Optional<String> tourbillon,
       @RequestParam("theta") Optional<String> theta,
       @RequestParam("size") Optional<String> size,
       @RequestParam("sigma") Optional<String> sigma,
@@ -175,6 +179,7 @@ public class ImageController<Item> {
         HashMap<String, ArrayList<String>> listParam = new HashMap<String, ArrayList<String>>() {
           {
             put("delta", createList(delta, separator));
+            put("tourbillon", createList(tourbillon, separator));
             put("theta", createList(theta, separator));
             put("size", createList(size, separator));
             put("sigma", createList(sigma, separator));
