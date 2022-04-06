@@ -225,10 +225,11 @@ public class ImageProcessing {
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
-  public static ResponseEntity<?> fisheyes(Planar<GrayU8> image, double delta){
+  public static ResponseEntity<?> fisheyes(Planar<GrayU8> image, double delta, Perspective perspective){
     int nbCanaux = image.getNumBands();
     for (int i = 0; i < nbCanaux; ++i)
-        GrayLevelProcessing.fisheyes(image.getBand(i), delta);
+        GrayLevelProcessing.fisheyes(image.getBand(i), delta, perspective);
+    // image.reshape(image.width/2,image.height);
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 

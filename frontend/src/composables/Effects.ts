@@ -148,7 +148,10 @@ export class Effect {
 
             case EffectTypes.Fisheyes:
                 this._text = "Fish eyes"
-                this._params = new Params(null, [new Cursors("Delta", "delta", ["-1", "1"], 0.001, 0)] as Cursors[])
+                this._params = new Params(
+                    [new DropBox("Perspective", "persp", ["TOPLEFT", "TOP", "TOPRIGHT",
+                        "LEFT", "CENTER", "RIGHT","BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT"])] as DropBox[], 
+                    [new Cursors("Delta", "delta", ["0", "0.01"], 0.001, 0)] as Cursors[])
                 break
 
             case EffectTypes.Rotation:

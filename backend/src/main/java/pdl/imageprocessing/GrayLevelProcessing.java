@@ -149,9 +149,47 @@ class GrayLevelProcessing {
 		}
 	}
 
-	static void fisheyes(GrayU8 input, double d){
+	static void fisheyes(GrayU8 input, double d, Perspective perspective){
+		// int x0min = (int) (input.width/2*d);
+		// int y0min = (int) (input.height/2*d);
+		// int x0 = (input.width-2*x0min)*x0proportion+x0min;
+		// int y0 = (input.height-2*y0min)*y0proportion+y0min;
+		// System.out.println("X = "+x0+" "+x0min);
+		// System.out.println("Y = "+y0+" "+y0min);
 		int x0 = input.width/2;
 		int y0 = input.height/2;
+		switch(perspective){
+			case TOPLEFT :
+				x0 = (int) (input.width/2*d);
+				y0 = (int) (input.height/2*d);
+			break;
+			case TOP :
+				y0 = (int) (input.height/2*d);
+			break;
+			case TOPRIGHT :
+				x0 = (int) (input.width - input.width/2*d);
+				y0 = (int) (input.height/2*d);
+			break;
+			case LEFT :
+				x0 = (int) (input.width/2*d);
+			break;
+			case RIGHT :
+				x0 = (int) (input.width - input.width/2*d);
+			break;
+			case BOTTOM:
+				y0 = (int) (input.height-input.height/2*d);
+			break;
+			case BOTTOMLEFT :
+				x0 = (int) (input.width/2*d);
+				y0 = (int) (input.height-input.height/2*d);
+			break;
+			case BOTTOMRIGHT :
+				x0 = (int) (input.width - input.width/2*d);
+				y0 = (int) (input.height-input.height/2*d);
+			break;
+
+		}
+		
 		GrayU8 tmp = input.clone();
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
@@ -162,6 +200,7 @@ class GrayLevelProcessing {
 				else input.set(x, y, 0);
 			}
 		}
+		// input.reshape(input.width/2,input.height/2);
 	}
 
 	static void tourbillon(GrayU8 input, float tourbillonFactor){

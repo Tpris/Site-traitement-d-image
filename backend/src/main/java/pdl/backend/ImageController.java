@@ -12,6 +12,7 @@ import boofcv.io.image.*;
 import boofcv.struct.border.BorderType;
 import boofcv.struct.image.*;
 import pdl.imageprocessing.ImageProcessing;
+import pdl.imageprocessing.Perspective;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
@@ -80,8 +81,9 @@ public class ImageController<Item> {
         }
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "fisheyes":
-        if (lenValue(listParam, "delta") > 0) {
-          return ImageProcessing.fisheyes(img, Double.parseDouble(getAndPopValue(listParam, "delta")));
+        if (lenValue(listParam, "delta") > 0  && lenValue(listParam, "persp") > 0 ) {
+          return ImageProcessing.fisheyes(img, Double.parseDouble(getAndPopValue(listParam, "delta")) , 
+                                              stringToPerspective(getAndPopValue(listParam, "persp")));
         }
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "rotation":
@@ -142,6 +144,29 @@ public class ImageController<Item> {
     }
   }
 
+  private static Perspective stringToPerspective(String p) {
+    switch (p) {
+      case "TOP":
+        return Perspective.TOP;
+      case "TOPLEFT":
+        return Perspective.TOPLEFT;
+      case "TOPRIGHT":
+        return Perspective.TOPRIGHT;
+      case "LEFT":
+        return Perspective.LEFT;
+      case "RIGHT":
+        return Perspective.RIGHT;
+      case "BOTTOM":
+        return Perspective.BOTTOM;
+      case "BOTTOMLEFT":
+        return Perspective.BOTTOMLEFT;
+      case "BOTTOMRIGHT":
+        return Perspective.BOTTOMRIGHT;
+      default:
+        return Perspective.CENTER;
+    }
+  }
+
   private ArrayList<String> createList(Optional<String> requestParam, String separator) {
     return (requestParam.isPresent()) ? new ArrayList<String>(Arrays.asList(requestParam.get().split(separator)))
         : new ArrayList<String>();
@@ -160,6 +185,7 @@ public class ImageController<Item> {
       @RequestParam("color") Optional<String> color,
       @RequestParam("threshold") Optional<String> threshold,
       @RequestParam("step") Optional<String> step,
+      @RequestParam("persp") Optional<String> persp,
       @RequestParam("smin") Optional<String> smin,
       @RequestParam("smax") Optional<String> smax,
       @RequestParam("min") Optional<String> min,
@@ -188,6 +214,7 @@ public class ImageController<Item> {
             put("color", createList(color, separator));
             put("step", createList(step, separator));
             put("threshold", createList(threshold, separator));
+            put("persp", createList(persp, separator));
             put("smin", createList(smin, separator));
             put("smax", createList(smax, separator));
             put("min", createList(min, separator));
