@@ -34,8 +34,6 @@ const handleFileUpload = (event: Event) => {
 }
 
 onMounted(() => {
-  console.log(isGallery);
-  
   isMobile.value = window.matchMedia('(min-width: 360px) and (max-width:640px)').matches
   window.matchMedia('(min-width: 360px) and (max-width:640px)').addEventListener('change', e => isMobile.value = e.matches)
 })

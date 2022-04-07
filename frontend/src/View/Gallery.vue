@@ -109,8 +109,8 @@ onMounted(async () => {
 
 @media (max-width: 825px){
   .gallery-panel img {
-    width: 100%;
-    height: 60vw;
+    width: 80%;
+    height: 50vw;
     object-fit: cover;
     border-radius: 0.75rem;
   }

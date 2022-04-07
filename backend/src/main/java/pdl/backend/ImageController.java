@@ -216,10 +216,8 @@ public class ImageController<Item> {
       images = imageDao.retrieveWithFilters(type.get(), nameImg.get());
     }
     else if (index.isPresent() && size.isPresent()) {
-      System.out.println("nopp");
       images = imageDao.retrieveGroup(index.get(), size.get());
     } else {
-      System.out.println("nop");
       images = imageDao.retrieveAll();
     }
 
