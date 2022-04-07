@@ -24,7 +24,7 @@ const getImages = async () => {
     state.type = "jpg"
   }else{
     state.type = "all";
-  }
+  }s
 
   return api.getImageListWithFilters(state.type, state.nameImg).then((data) => {
       let dataArray = data as unknown as [{}]
