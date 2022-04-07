@@ -33,11 +33,18 @@
 
   const openSlider = () => {
     let element = document.getElementById('container-options') as HTMLElement
-    if(element) element.style.width = '30vw'
+    if(element) {
+      if(window.matchMedia("(min-width: 360px) and (max-width:640px)").matches)
+        element.style.width = '60vw';
+      else
+        element.style.width = '30vw'
+    }
   }
   const closeSlider = () => {
     let element = document.getElementById('container-options') as HTMLElement
-    if(element) element.style.width = '0'
+    if(element) {
+        element.style.width = '0'
+    }
   }
 
   const activeButton = () => "neumorphism-activate"
@@ -86,7 +93,6 @@
 </script>
 
 <template>
-
   <div id="container-tool-box">
     <ul id="tool-box" class="neumorphism">
       <li v-for="effect in state.listEffect" :key="effect.type">
@@ -205,7 +211,7 @@ margin-right: 5px;
   align-items: center;
   position: relative;
   width: 0;
-  transition: 550ms width ease-in-out;
+  transition: 550ms width ease-in-out, 550ms height ease-in-out;
 }
 
 #arrow-left{
@@ -228,4 +234,10 @@ margin-right: 5px;
 .neumorphism-activate .effect-icon{
   color: #0777D9;
 }
+@media (min-width: 360px) and (max-width:640px){
+  #options{
+    width: 100vw;
+  }
+}
+
 </style>

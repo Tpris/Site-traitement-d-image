@@ -47,6 +47,18 @@ let { selectedImage } = storeToRefs(store)
   animation: appear-opacity 500ms ease-in-out;
 }
 
+@media (min-width: 360px) and (max-width:640px){
+  #img-box-selected{
+    position: fixed;
+    left: 26vw;
+    z-index: -1;
+  }
+
+  .img-box img {
+    max-width: 70vw;
+  }
+}
+
 @keyframes appear-opacity {
   From {
     opacity: 0;

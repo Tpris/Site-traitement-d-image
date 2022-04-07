@@ -3,9 +3,10 @@ import {useImageStore} from "@/store";
 const store = useImageStore()
 import {storeToRefs} from "pinia";
 import {api} from "@/http-api";
-import {ref} from "vue";
+import {ref, onMounted} from "vue";
 let { selectedImage, deleted, uploaded } = storeToRefs(store)
 
+const isMobile = ref(false)
 const deleteImage = (id: number) => {
   api.deleteImage(id).then(() => {
     selectedImage.value = {id: -1, source : '', name: '', type:'', size:'', url:''}
@@ -30,36 +31,50 @@ const handleFileUpload = (event: Event) => {
   target.value = (event.target as HTMLInputElement)
   submitFile()
 }
-
+onMounted(() => {
+  isMobile.value = window.matchMedia('(min-width: 360px) and (max-width:640px)').matches
+  window.matchMedia('(min-width: 360px) and (max-width:640px)').addEventListener('change', e => isMobile.value = e.matches)
+})
 </script>
 
 <template>
   <nav class="neumorphism" id="nav-bar">
-    <h1 id="title">Image in dragon</h1>
+    <h1 v-if="isMobile" class="title">IiD</h1>
+    <h1 v-else class="title">Image in dragon</h1>
     <div id="items">
       <router-link class="button link neumorphism neumorphism-push" to="/">
-        Accueil
+        <span v-if="isMobile"></span>
+        <span v-else>Accueil</span>
       </router-link>
 
       <a class="button neumorphism neumorphism-push"
          v-if="selectedImage.source !== '' && selectedImage.id !== -1"
          :href="selectedImage.source"
          :download="selectedImage.name">
-        Télécharger
+        <span v-if="isMobile"></span>
+        <span v-else>Télécharger</span>
       </a>
-      <button class="button neumorphism neumorphism-push" v-else>Télécharger</button>
+      <button class="button neumorphism neumorphism-push" v-else>
+        <span v-if="isMobile"></span>
+        <span v-else>Télécharger</span>
+      </button>
 
       <label class="button neumorphism neumorphism-push" for="file">
-        Ajouter
+        <span v-if="isMobile"></span>
+        <span v-else>Ajouter</span>
       </label>
       <div id="input-upload">
         <input type="file" id="file" ref="file" @change="handleFileUpload" />
       </div>
 
       <button class="button neumorphism neumorphism-push" v-if="selectedImage.source && selectedImage.id !== -1" @click="deleteImage(selectedImage.id)">
-        Supprimer
+        <span v-if="isMobile"></span>
+        <span v-else>Supprimer</span>
       </button>
-      <button class="button neumorphism neumorphism-push" v-else>Supprimer</button>
+      <button class="button neumorphism neumorphism-push" v-else>
+        <span v-if="isMobile"></span>
+        <span v-else>Supprimer</span>
+      </button>
     </div>
   </nav>
 </template>
@@ -96,7 +111,7 @@ const handleFileUpload = (event: Event) => {
   display: none;
 }
 
-#title{
+.title{
   margin-left: 10px;
 }
 
@@ -105,4 +120,13 @@ const handleFileUpload = (event: Event) => {
   margin-left: auto;
   margin-right: 10px;
 }
+
+@media (min-width: 360px) and (max-width:640px){
+  .button{
+    width: 14vw;
+    margin-right: 20px;
+  }
+}
+
+
 </style>

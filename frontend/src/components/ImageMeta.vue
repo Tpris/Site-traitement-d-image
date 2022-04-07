@@ -21,7 +21,6 @@
   border-radius: 20px;
   background-color:rgba(44, 62, 80, 0.1);
   color: black;
-  height: 12vh;
   width: 9vw;
   position: absolute;
   justify-content: center;
@@ -29,6 +28,15 @@
   right: 2vw;
   top: 10vh;
   animation: appear-opacity 650ms ease-in-out;
+}
+
+
+@media (min-width: 360px) and (max-width:640px){
+  #meta-img{
+    top:10vh;
+    width: 50vw;
+    right: 18vw;
+  }
 }
 
 .meta{

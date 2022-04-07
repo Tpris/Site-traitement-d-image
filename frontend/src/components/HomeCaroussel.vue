@@ -90,6 +90,17 @@ watch(() => deleted.value, ((newState) => newState && handleDeleted()))
           }"
           :modules="[Controller, Pagination, Navigation]"
           class="mySwiper"
+          :breakpoints="{
+            360: {
+                slidesPerView: 1
+            },
+            640: {
+              slidesPerView: 2
+            },
+            820: {
+              slidesPerView: 5
+            }
+          }"
           @toEdge="handleEdge"
           @swiper="handleSwiper"
       >
