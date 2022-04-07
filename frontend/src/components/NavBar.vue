@@ -55,7 +55,7 @@ onMounted(() => {
     <div v-if="!isGallery"  class="items">
       <router-link class="button link neumorphism neumorphism-push" to="/gallery">
         <span v-if="isMobile"><input type="image" src="../../public/gallery.png" class="icon-nav"/></span>
-        <span v-else>Gallery</span>
+        <span v-else>Gallerie</span>
       </router-link>
 
       <a class="button neumorphism neumorphism-push"
