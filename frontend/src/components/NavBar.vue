@@ -43,12 +43,8 @@ onMounted(() => {
   <nav class="neumorphism" id="nav-bar">
     <h1 v-if="isMobile" class="title">IiD</h1>
     <h1 v-else class="title">Image in dragon</h1>
-    <div id="items">
-      <router-link v-if="isGallery" class="button link neumorphism neumorphism-push" to="/">
-        <span v-if="isMobile"></span>
-        <span v-else>Editeur</span>
-      </router-link>
-      <router-link v-else class="button link neumorphism neumorphism-push" to="/gallery">
+    <div v-if="!isGallery"  class="items">
+      <router-link class="button link neumorphism neumorphism-push" to="/gallery">
         <span v-if="isMobile"></span>
         <span v-else>Gallery</span>
       </router-link>
@@ -82,6 +78,14 @@ onMounted(() => {
         <span v-else>Supprimer</span>
       </button>
     </div>
+
+    <div v-else class="items">
+      <router-link v-if="isGallery" class="button link neumorphism neumorphism-push" to="/">
+        <span v-if="isMobile"></span>
+        <span v-else>Editeur</span>
+      </router-link>
+    </div>
+
   </nav>
 </template>
 
@@ -121,7 +125,7 @@ onMounted(() => {
   margin-left: 10px;
 }
 
-#items{
+.items{
   display: flex;
   margin-left: auto;
   margin-right: 10px;
