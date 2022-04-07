@@ -31,6 +31,7 @@ const handleFileUpload = (event: Event) => {
   target.value = (event.target as HTMLInputElement)
   submitFile()
 }
+
 onMounted(() => {
   isMobile.value = window.matchMedia('(min-width: 360px) and (max-width:640px)').matches
   window.matchMedia('(min-width: 360px) and (max-width:640px)').addEventListener('change', e => isMobile.value = e.matches)
@@ -60,7 +61,7 @@ onMounted(() => {
       </button>
 
       <label class="button neumorphism neumorphism-push" for="file">
-        <span v-if="isMobile"></span>
+        <span v-if="isMobile">+</span>
         <span v-else>Ajouter</span>
       </label>
       <div id="input-upload">
