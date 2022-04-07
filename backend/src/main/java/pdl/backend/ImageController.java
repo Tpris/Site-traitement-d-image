@@ -225,7 +225,7 @@ public class ImageController<Item> {
       ObjectNode objectNode = mapper.createObjectNode();
       objectNode.put("id", image.getId());
       objectNode.put("name", image.getName());
-      objectNode.put("type", image.getType().toString());
+      objectNode.put("type", image.getType().getSubtype().toString());
       objectNode.put("size", image.getSize());
       nodes.add(objectNode);
 
