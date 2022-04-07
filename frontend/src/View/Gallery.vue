@@ -3,11 +3,9 @@ import NavBar from '@/components/NavBar.vue'
 import {onMounted, reactive, UnwrapRef} from "vue";
 import {api} from "../http-api";
 import {ImageType} from "@/types/ImageType";
-import ToolBoxButton from "@/components/buttons/ToolBoxButton.vue";
 
 const state = reactive({
   images: Array<ImageType>(),
-  nbImages: 0,
   limit: 0,
   nameImg: "",
   type: "all"
@@ -26,31 +24,22 @@ const getImages = async () => {
     state.type = "all";
   }
 
+  state.images = await loadImages()
+}
+
+const loadImages = async () => {
   return api.getImageListWithFilters(state.type, state.nameImg).then((data) => {
       let dataArray = data as unknown as [{}]
-      state.nbImages = (dataArray[0] as unknown as { nbImages:number }).nbImages as number
       dataArray.shift()
       return data as unknown as Array<UnwrapRef<ImageType>>;
     }).catch(e => {
       console.log(e.message)
       return state.images
     })
-
-  /*return api.getImageList().then((data) => {
-    let dataArray = data as unknown as [{}]
-    state.nbImages = (dataArray[0] as unknown as { nbImages:number }).nbImages as number
-    dataArray.shift()
-    return data as unknown as Array<UnwrapRef<ImageType>>;
-  }).catch(e => {
-    console.log(e.message)
-    return state.images
-  })*/
-
-  //getImageListWithFilters:
 }
 
 onMounted(async () => {
-  state.images = await getImages()
+  state.images = await loadImages()
 })
 
 </script>

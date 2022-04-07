@@ -215,10 +215,11 @@ public class ImageController<Item> {
     if(type.isPresent() && nameImg.isPresent()){
       images = imageDao.retrieveWithFilters(type.get(), nameImg.get());
     }
-
-    if (index.isPresent() && size.isPresent()) {
+    else if (index.isPresent() && size.isPresent()) {
+      System.out.println("nopp");
       images = imageDao.retrieveGroup(index.get(), size.get());
     } else {
+      System.out.println("nop");
       images = imageDao.retrieveAll();
     }
 

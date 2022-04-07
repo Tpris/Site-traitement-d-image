@@ -92,9 +92,10 @@ public class ImageDao implements Dao<Image> {
   public List<Image> retrieveWithFilters(final String type, final String nameImg) {
     ArrayList<Image> imagesList = new ArrayList<>();
 
-    for(Image img: images.values){
-      if(img.getName().startsWith(nameImg) && ( img.getType().getSubtype() == type || type == "all"))
+    for(Image img: images.values()){
+      if(img.getName().startsWith(nameImg) && ( img.getType().getSubtype().equals(type) || type.equals("all") || (type.equals("jpg") && img.getType().getSubtype().equals("jpeg")))){
         imagesList.add(img);
+      }
     }
 
     return imagesList;
