@@ -87,7 +87,7 @@ public class ImageController<Item> {
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "fisheyes":
         if (lenValue(listParam, "delta") > 0  && lenValue(listParam, "persp") > 0 ) {
-          return ImageProcessing.fisheyes(img, Double.parseDouble(getAndPopValue(listParam, "delta")) , 
+          return ImageProcessing.perspective(img, Double.parseDouble(getAndPopValue(listParam, "delta")) , 
                                               stringToPerspective(getAndPopValue(listParam, "persp")));
         }
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
@@ -144,8 +144,10 @@ public class ImageController<Item> {
         return BorderType.EXTENDED;
       case "REFLECT":
         return BorderType.REFLECT;
-      default:
+      case "SKIP":
         return BorderType.SKIP;
+      default :
+        return null;
     }
   }
 
@@ -168,8 +170,9 @@ public class ImageController<Item> {
       case "BOTTOMRIGHT":
         return Perspective.BOTTOMRIGHT;
       case "CENTER" :
-      default:
         return Perspective.CENTER;
+      default:
+        return null;
     }
   }
 

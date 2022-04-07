@@ -76,6 +76,7 @@ public class ImageProcessing {
   }
 
   public static ResponseEntity<?> gaussianBlur(Planar<GrayU8> image, int size, float sigma, BorderType borderType) {
+    if(borderType == null) return new ResponseEntity<>("borderType can't be null", HttpStatus.BAD_REQUEST);
     if (size % 2 == 1) {
       if (size < image.height && size < image.width) {
         int nbCanaux = image.getNumBands();
@@ -246,11 +247,12 @@ public class ImageProcessing {
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
-  public static ResponseEntity<?> fisheyes(Planar<GrayU8> image, double delta, Perspective perspective){
+  public static ResponseEntity<?> perspective(Planar<GrayU8> image, double delta, Perspective perspective){
+    if(perspective == null) return new ResponseEntity<>("perspective can't be null", HttpStatus.BAD_REQUEST);
     int nbCanaux = image.getNumBands();
     if(delta<0) return new ResponseEntity<>("delta must be positive", HttpStatus.BAD_REQUEST);
     for (int i = 0; i < nbCanaux; ++i)
-        GrayLevelProcessing.fisheyes(image.getBand(i), delta, perspective);
+        GrayLevelProcessing.perspective(image.getBand(i), delta, perspective);
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
