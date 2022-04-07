@@ -51,15 +51,22 @@ onMounted(async () => {
       <div class=""> 
         <form>
            <input type="search" v-model="state.nameImg" placeholder="Entrez le nom de l'image" class="items"/>
-            <input type="checkbox" name="png" value="" class="items" id="type-png"/><label for="PNG">PNG</label>
-            <input type="checkbox" name="jpg" value="" class="items" id="type-jpg"/><label for="JPG">JPG</label>
+           <div id="type-check">
+              <input type="checkbox" name="png" value="" class="items" id="type-png"/><label for="PNG">PNG</label>
+              <input type="checkbox" name="jpg" value="" class="items" id="type-jpg"/><label for="JPG">JPG</label>
+           </div>
             <input v-on:click="getImages()" type="button" name="search" value="Chercher" class="button neumorphism neumorphism-push items"/>
         </form>
       </div>
   </div>
   <div class="gallery">
-    <div v-for="image in state.images" :key="image['id']" :id="image['id']" class="gallery-panel">
-      <img  :src="'/images/' + image['id']" :alt="image['name']" />
+    <div  @mouseover="mouseover(image['id'])" @mouseout="mouseout"
+          v-for="image in state.images" :key="image['id']" :id="image['id']" class="gallery-img">
+      <img :src="'/images/' + image['id']" :alt="image['name']" />
+    </div>
+    <div v-if="hover" class="gallery-img-info"  v-show="state+img['id']"
+                :key="img['id']"
+                :ref="img['id']">
     </div>
   </div>
 </template>
@@ -74,11 +81,15 @@ onMounted(async () => {
   padding: 0 5rem;
 }
 
-.gallery-panel img {
+.gallery-img img {
   width: 100%;
   height: 22vw;
   object-fit: cover;
   border-radius: 0.75rem;
+}
+
+.gallery-img-info{
+  opacity: 10%;
 }
 
 .button{
@@ -108,7 +119,7 @@ onMounted(async () => {
 }
 
 @media (max-width: 825px){
-  .gallery-panel img {
+  .gallery-img img {
     width: 80%;
     height: 50vw;
     object-fit: cover;
@@ -117,11 +128,18 @@ onMounted(async () => {
 }
 
 @media (min-width: 825px) and (max-width: 1160px){
-  .gallery-panel img {
+  .gallery-img img {
     width: 100%;
     height: 40vw;
     object-fit: cover;
     border-radius: 0.75rem;
+  }
+}
+
+@media (min-width: 628px){
+
+  #type-check{
+    display: contents;
   }
 }
 
