@@ -15,6 +15,7 @@
         new Effect(EffectTypes.Threshold),
         new Effect(EffectTypes.Luminosity),
         new Effect(EffectTypes.Filter),
+        new Effect(EffectTypes.Rainbow),
         new Effect(EffectTypes.Negative),
         new Effect(EffectTypes.GaussianBlur),
         new Effect(EffectTypes.MeanBlur),

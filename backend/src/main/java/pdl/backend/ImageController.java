@@ -56,6 +56,11 @@ public class ImageController<Item> {
               Float.parseFloat(getAndPopValue(listParam, "smin")), Float.parseFloat(getAndPopValue(listParam, "smax")));
         }
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
+        case "rainbow":
+        if (lenValue(listParam, "smin") > 0 && lenValue(listParam, "smax") > 0) {
+          return ImageProcessing.rainbow(img, Float.parseFloat(getAndPopValue(listParam, "smin")), Float.parseFloat(getAndPopValue(listParam, "smax")));
+        }
+        return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "dynamicContrast":
         if (lenValue(listParam, "min") > 0 && lenValue(listParam, "max") > 0) {
           return ImageProcessing.dynamicContast(img, Integer.parseInt(getAndPopValue(listParam, "min")), 
@@ -162,6 +167,7 @@ public class ImageController<Item> {
         return Perspective.BOTTOMLEFT;
       case "BOTTOMRIGHT":
         return Perspective.BOTTOMRIGHT;
+      case "CENTER" :
       default:
         return Perspective.CENTER;
     }

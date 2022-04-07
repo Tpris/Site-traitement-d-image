@@ -1,5 +1,6 @@
 export enum EffectTypes {
     Filter = "filter",
+    Rainbow = "rainbow",
     GaussianBlur = "gaussianBlur",
     MeanBlur = "meanBlur",
     Luminosity = "luminosity",
@@ -108,6 +109,14 @@ export class Effect {
                     new Cursors("max", "smax", ["0", "1"], 0.01, 1)
                 ] as Cursors[])
                 break;
+
+            case EffectTypes.Rainbow:
+                this._text = "Rainbow"
+                this._params = new Params(null, [
+                    new Cursors("min", "smin", ["0", "1"], 0.01, 0),
+                    new Cursors("max", "smax", ["0", "1"], 0.01, 1)
+                ] as Cursors[])
+                break;
             
             case EffectTypes.DynContrast:
                 this._text = "Dyn. Contrast"
@@ -156,7 +165,7 @@ export class Effect {
 
             case EffectTypes.Rotation:
                 this._text = "Rot°"
-                this._params = new Params(null, [new Cursors("Angle", "theta", ["-360", "360"], 0.1, 0)] as Cursors[])
+                this._params = new Params(null, [new Cursors("Angle", "theta", ["0", "360"], 0.1, 0)] as Cursors[])
                 break
 
             case EffectTypes.Tourbillon:

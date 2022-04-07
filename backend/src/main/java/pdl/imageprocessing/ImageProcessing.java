@@ -112,6 +112,25 @@ public class ImageProcessing {
       return new ResponseEntity<>("hue must be between 0 and 360", HttpStatus.BAD_REQUEST);
   }
 
+  public static ResponseEntity<?> rainbow(Planar<GrayU8> input, float smin, float smax) {
+      if (smin <= smax && smin >= 0 && smin <= 1 && smax >= 0 && smax <= 1) {
+        input = grayToPlanarRGB(input);
+        int nbCanaux = input.getNumBands();
+        if (nbCanaux == 3) {
+          for (int y = 0; y < input.height; ++y) {
+            float h = y*360/input.height;
+            for (int x = 0; x < input.width; ++x) {
+              ColorProcessing.filter(input, h, smin, smax, x, y);
+            }
+          }
+          return new ResponseEntity<>("ok", HttpStatus.OK);
+        } else
+          return new ResponseEntity<>("unsupported type", HttpStatus.BAD_REQUEST);
+      } else
+        return new ResponseEntity<>("smin must be inferior or equal to smax and they must be between 0 and 1",
+            HttpStatus.BAD_REQUEST);
+  }
+
   public static ResponseEntity<?> dynamicContast(Planar<GrayU8> image, int min, int max){
     if(min>max) return new ResponseEntity<>("min must be less than max", HttpStatus.BAD_REQUEST);
     int nbCanaux = image.getNumBands();
@@ -189,6 +208,7 @@ public class ImageProcessing {
   }
 
   public static ResponseEntity<?> draw(Planar<GrayU8> input, int step){
+    if(step<1 || step>255) return new ResponseEntity<>("The step must be between 1 and 255", HttpStatus.BAD_REQUEST);
     for (int y = 0; y < input.height; ++y) {
       for (int x = 0; x < input.width; ++x) {
         gradient(input, x, y, step);
@@ -219,6 +239,7 @@ public class ImageProcessing {
 
   public static ResponseEntity<?> rotation(Planar<GrayU8> image, double theta){
     theta = theta*Math.PI/180;
+    if(theta<-360 || theta>360) return new ResponseEntity<>("The angle of rotation must be between -360 and 360", HttpStatus.BAD_REQUEST);
     int nbCanaux = image.getNumBands();
     for (int i = 0; i < nbCanaux; ++i)
         GrayLevelProcessing.rotate(image.getBand(i), theta);
@@ -227,14 +248,15 @@ public class ImageProcessing {
 
   public static ResponseEntity<?> fisheyes(Planar<GrayU8> image, double delta, Perspective perspective){
     int nbCanaux = image.getNumBands();
+    if(delta<0) return new ResponseEntity<>("delta must be positive", HttpStatus.BAD_REQUEST);
     for (int i = 0; i < nbCanaux; ++i)
         GrayLevelProcessing.fisheyes(image.getBand(i), delta, perspective);
-    // image.reshape(image.width/2,image.height);
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
   public static ResponseEntity<?> tourbillon(Planar<GrayU8> image, float tourbillonFactor){
     int nbCanaux = image.getNumBands();
+    if(tourbillonFactor<0) return new ResponseEntity<>("the parameter must be positive", HttpStatus.BAD_REQUEST);
     for (int i = 0; i < nbCanaux; ++i)
         GrayLevelProcessing.tourbillon(image.getBand(i), tourbillonFactor);
     return new ResponseEntity<>("ok", HttpStatus.OK);
