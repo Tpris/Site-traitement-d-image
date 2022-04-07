@@ -42,21 +42,15 @@ class GrayLevelProcessing {
 	}
 
 	static void contrastLUT(GrayU8 input, int min, int max, int minHisto, int maxHisto) {
-		if (min > max) {
-			System.err.println("min est superieur à max");
-		} else if (minHisto == maxHisto) {
-			System.err.println("un contraste ne peut pas être appliqué à une image à couleur unie");
-		} else {
-			int LUT[] = new int[256];
-			for (int i = 0; i < 256; i++) {
-				LUT[i] = ((max - min) * (i - minHisto) / (maxHisto - minHisto)) + min;
-				if(LUT[i]>255) LUT[i] = 255;
-				else if (LUT[i]<0) LUT[i] = 0;
-			}
-			for (int y = 0; y < input.height; ++y) {
-				for (int x = 0; x < input.width; ++x) {
-					input.set(x, y, LUT[input.get(x, y)]);
-				}
+		int LUT[] = new int[256];
+		for (int i = 0; i < 256; i++) {
+			LUT[i] = ((max - min) * (i - minHisto) / (maxHisto - minHisto)) + min;
+			if(LUT[i]>255) LUT[i] = 255;
+			else if (LUT[i]<0) LUT[i] = 0;
+		}
+		for (int y = 0; y < input.height; ++y) {
+			for (int x = 0; x < input.width; ++x) {
+				input.set(x, y, LUT[input.get(x, y)]);
 			}
 		}
 	}
@@ -65,11 +59,7 @@ class GrayLevelProcessing {
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
 				int gl = input.get(x, y);
-				if (gl < t) {
-					gl = 0;
-				} else {
-					gl = 255;
-				}
+				gl = (gl<t)?0:255;
 				input.set(x, y, gl);
 			}
 		}
@@ -121,15 +111,12 @@ class GrayLevelProcessing {
 			for (int x = 0; x < input.width; ++x) {
 				int gl = input.get(x, y);
 				 if (gl < 61) {
-					gl = 255;
+					input.set(x, y, 255);
 				} else if(gl<122){
-					gl = 122;
+					input.set(x, y, 122);
 				} else if(gl<183){
-					gl = 183;
-				} else gl = 255;
-				if(gl>255) gl = 255; 
-				else if(gl<0) gl = 0;
-				input.set(x, y, gl);
+					input.set(x, y, 183);
+				} else input.set(x, y, 255);
 			}
 		}
 	}
