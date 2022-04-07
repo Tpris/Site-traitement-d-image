@@ -206,9 +206,16 @@ public class ImageController<Item> {
   @ResponseBody
   public ArrayNode getImageList(
       @RequestParam("index") Optional<Long> index,
-      @RequestParam("size") Optional<Integer> size) {
+      @RequestParam("size") Optional<Integer> size,
+      @RequestParam("type") Optional<String> type,
+      @RequestParam("nameImg") Optional<String> nameImg)  {
 
     List<Image> images = new ArrayList<>();
+
+    if(type.isPresent() && nameImg.isPresent()){
+      images = imageDao.retrieveWithFilters(type.get(), nameImg.get());
+    }
+
     if (index.isPresent() && size.isPresent()) {
       images = imageDao.retrieveGroup(index.get(), size.get());
     } else {

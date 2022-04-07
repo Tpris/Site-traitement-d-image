@@ -81,22 +81,25 @@ public class ImageDao implements Dao<Image> {
   public List<Image> retrieveGroup(final long idStart, final int size) {
     ArrayList<Image> imagesList = new ArrayList<>();
 
-   /* long cpt = 0;
-    long index = idStart;
-    while (cpt != size && index <= Image.getCount()) {
-      if (images.containsKey(index)) {
-        imagesList.add(images.get(index));
-        cpt++;
-      }
-      index++;
-    }*/
-    
     Image[] imgs = images.values().toArray(new Image[0]);
     for(long i = idStart; i < idStart + size && i < Image.getCount(); i++){
       imagesList.add(imgs[(int)i]);
     }
     return imagesList;
   }
+
+  @Override
+  public List<Image> retrieveWithFilters(final String type, final String nameImg) {
+    ArrayList<Image> imagesList = new ArrayList<>();
+
+    for(Image img: images.values){
+      if(img.getName().startsWith(nameImg) && ( img.getType().getSubtype() == type || type == "all"))
+        imagesList.add(img);
+    }
+
+    return imagesList;
+  }
+
 
   @Override
   public void create(final Image img) {
