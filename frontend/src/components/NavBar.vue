@@ -34,6 +34,8 @@ const handleFileUpload = (event: Event) => {
 }
 
 onMounted(() => {
+  console.log(isGallery);
+  
   isMobile.value = window.matchMedia('(min-width: 360px) and (max-width:640px)').matches
   window.matchMedia('(min-width: 360px) and (max-width:640px)').addEventListener('change', e => isMobile.value = e.matches)
 })
@@ -41,8 +43,15 @@ onMounted(() => {
 
 <template>
   <nav class="neumorphism" id="nav-bar">
-    <h1 v-if="isMobile" class="title">IiD</h1>
-    <h1 v-else class="title">Image in dragon</h1>
+    <div id="container-logo" v-if="isMobile">
+      <router-link to="/">
+        <input v-bind:class=" isGallery? 'logo-nav-g': 'logo-nav'" type="image" src="../../public/logoApp.png"/>
+      </router-link>
+    </div>
+      <router-link v-else to="/" class="no-deco-link">
+        <h1 class="title">Image in dragon</h1>
+      </router-link>
+   
     <div v-if="!isGallery"  class="items">
       <router-link class="button link neumorphism neumorphism-push" to="/gallery">
         <span v-if="isMobile"><input type="image" src="../../public/gallery.png" class="icon-nav"/></span>
@@ -57,7 +66,7 @@ onMounted(() => {
         <span v-else>Télécharger</span>
       </a>
       <button class="button neumorphism neumorphism-push" v-else>
-        <span v-if="isMobile">      </span>
+        <span v-if="isMobile"><input type="image" src="../../public/download.png" class="icon-nav"/></span>
         <span v-else>Télécharger</span>
       </button>
 
@@ -99,6 +108,21 @@ onMounted(() => {
     margin-top: 5%;
 }
 
+#container-logo{
+    text-align: left;
+    margin-left: 20px;
+}
+
+.logo-nav{
+    width: 34%;
+    height: 34%;
+}
+
+.logo-nav-g{
+    width: 12%;
+    height: 12%;
+}
+
 #nav-bar{
   display: flex;
   height: 70px;
@@ -133,6 +157,12 @@ onMounted(() => {
 .title{
   margin-left: 10px;
 }
+
+.no-deco-link{
+  text-decoration: none;
+  color: inherit;
+}
+
 
 .items{
   display: flex;
