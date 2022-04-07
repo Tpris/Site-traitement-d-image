@@ -35,7 +35,6 @@ onMounted(async () => {
     <div v-for="image in state.images" :key="image['id']" :id="image['id']" class="gallery-panel">
       <img  :src="'/images/' + image['id']" :alt="image['name']" />
     </div>
-
   </div>
 </template>
 
