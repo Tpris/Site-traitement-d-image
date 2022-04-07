@@ -9,10 +9,34 @@ const state = reactive({
   images: Array<ImageType>(),
   nbImages: 0,
   limit: 0,
+  nameImg: "",
+  type: "all"
 })
 
 const getImages = async () => {
-  return api.getImageList().then((data) => {
+  let pngCheckbox = (<HTMLInputElement>document.getElementById("type-png")).checked;
+  let jpgCheckbox = (<HTMLInputElement>document.getElementById("type-jpg")).checked;
+
+  if( pngCheckbox && !jpgCheckbox){
+    state.type = "png";
+  }
+  else if(jpgCheckbox && !pngCheckbox){
+    state.type = "jpg"
+  }else{
+    state.type = "all";
+  }
+
+  return api.getImageListWithFilters(state.type, state.nameImg).then((data) => {
+      let dataArray = data as unknown as [{}]
+      state.nbImages = (dataArray[0] as unknown as { nbImages:number }).nbImages as number
+      dataArray.shift()
+      return data as unknown as Array<UnwrapRef<ImageType>>;
+    }).catch(e => {
+      console.log(e.message)
+      return state.images
+    })
+
+  /*return api.getImageList().then((data) => {
     let dataArray = data as unknown as [{}]
     state.nbImages = (dataArray[0] as unknown as { nbImages:number }).nbImages as number
     dataArray.shift()
@@ -20,7 +44,9 @@ const getImages = async () => {
   }).catch(e => {
     console.log(e.message)
     return state.images
-  })
+  })*/
+
+  //getImageListWithFilters:
 }
 
 onMounted(async () => {
@@ -35,10 +61,10 @@ onMounted(async () => {
       <h2 class="" for="search"> Chercher une image:</h2>
       <div class=""> 
         <form>
-           <input type="search" placeholder="Entrez le nom de l'image" class="items"/>
-            <input type="checkbox" name="png" value="" class="items"/><label for="PNG">PNG</label>
-            <input type="checkbox" name="jpg" value="" class="items"/><label for="JPG">JPG</label>
-            <input type="submit" name="search" value="Chercher" class="button neumorphism neumorphism-push items"/>
+           <input type="search" v-model="state.nameImg" placeholder="Entrez le nom de l'image" class="items"/>
+            <input type="checkbox" name="png" value="" class="items" id="type-png"/><label for="PNG">PNG</label>
+            <input type="checkbox" name="jpg" value="" class="items" id="type-jpg"/><label for="JPG">JPG</label>
+            <input v-on:click="getImages()" type="button" name="search" value="Chercher" class="button neumorphism neumorphism-push items"/>
         </form>
       </div>
   </div>
