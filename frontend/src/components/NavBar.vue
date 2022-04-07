@@ -6,6 +6,7 @@ import {api} from "@/http-api";
 import {ref, onMounted} from "vue";
 let { selectedImage, deleted, uploaded } = storeToRefs(store)
 
+const isGallery = ref(  window.location.pathname == "/gallery")
 const isMobile = ref(false)
 const deleteImage = (id: number) => {
   api.deleteImage(id).then(() => {
@@ -43,9 +44,13 @@ onMounted(() => {
     <h1 v-if="isMobile" class="title">IiD</h1>
     <h1 v-else class="title">Image in dragon</h1>
     <div id="items">
-      <router-link class="button link neumorphism neumorphism-push" to="/">
+      <router-link v-if="isGallery" class="button link neumorphism neumorphism-push" to="/">
         <span v-if="isMobile"></span>
-        <span v-else>Accueil</span>
+        <span v-else>Editeur</span>
+      </router-link>
+      <router-link v-else class="button link neumorphism neumorphism-push" to="/gallery">
+        <span v-if="isMobile"></span>
+        <span v-else>Gallery</span>
       </router-link>
 
       <a class="button neumorphism neumorphism-push"
