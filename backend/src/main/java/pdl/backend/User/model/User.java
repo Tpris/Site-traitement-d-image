@@ -6,15 +6,20 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.List;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Entity
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
+    @NotBlank
+    @Size(max = 20)
     private final String username;
+    @NotBlank
+    @Size(max = 120)
     private final String password;
 
     public User(String username, String password) {
@@ -37,5 +42,9 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public void setId(Long id) {
+        this.Id = id;
     }
 }
