@@ -37,6 +37,13 @@ const loadImages = async () => {
       return state.images
     })
 }
+const mouseOver =  (id: String) => {
+  (<HTMLDivElement>document.getElementById('img'+id)).style.display = "block";
+}
+
+const mouseOut =  (id: String) => {
+  (<HTMLDivElement>document.getElementById('img'+id)).style.display = "none";
+}
 
 onMounted(async () => {
   state.images = await loadImages()
@@ -60,18 +67,20 @@ onMounted(async () => {
       </div>
   </div>
   <div class="gallery">
-    <div  @mouseover="mouseover(image['id'])" @mouseout="mouseout"
-          v-for="image in state.images" :key="image['id']" :id="image['id']" class="gallery-img">
-      <img :src="'/images/' + image['id']" :alt="image['name']" />
-    </div>
-    <div v-if="hover" class="gallery-img-info"  v-show="state+img['id']"
-                :key="img['id']"
-                :ref="img['id']">
+    <div v-for="image in state.images" :key="image['id']" :id="image['id']"
+         style="position: relative;" @mouseover="mouseOver(image['id'])" @mouseout="mouseOut(image['id'])"
+         class="gallery-img">
+        <img :src="'/images/' + image['id']" :alt="image['name']" />
+      <div class="gallery-img-info"
+            :ref="'img'+image['id']"
+            :id="'img'+image['id']">
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+
 .gallery {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
@@ -88,8 +97,22 @@ onMounted(async () => {
   border-radius: 0.75rem;
 }
 
+.gallery-img {
+ cursor: pointer;
+}
+
 .gallery-img-info{
-  opacity: 10%;
+  opacity: 90%;
+  background: white;
+  z-index: 9999;
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: none;
+  width: 100%;
+  height: 22vw;
+  object-fit: cover;
+  border-radius: 0.75rem;
 }
 
 .button{
@@ -110,29 +133,27 @@ onMounted(async () => {
   color: #0777D9;
 }
 
-.container-items{
-  display: flex;
-}
-
 .items{
   margin: 10px;
 }
 
 @media (max-width: 825px){
   .gallery-img img {
-    width: 80%;
     height: 50vw;
-    object-fit: cover;
-    border-radius: 0.75rem;
+  }
+
+  .gallery-img-info{
+    height: 50vw;
   }
 }
 
 @media (min-width: 825px) and (max-width: 1160px){
   .gallery-img img {
-    width: 100%;
     height: 40vw;
-    object-fit: cover;
-    border-radius: 0.75rem;
+  }
+
+  .gallery-img-info{
+    height: 40vw;
   }
 }
 
