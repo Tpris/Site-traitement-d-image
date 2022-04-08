@@ -4,11 +4,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 import javax.imageio.ImageIO;
-
 import org.springframework.http.MediaType;
-
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.struct.image.GrayU8;
 import boofcv.struct.image.Planar;
@@ -21,6 +18,12 @@ public class Image {
   private MediaType type;
   private String size;
 
+  /**
+   * Constructor Image
+   * @param name String
+   * @param data byte[]
+   * @throws IOException
+   */
   public Image(final String name, final byte[] data) throws IOException {
     id = count++;
     this.name = name.split("\\.")[0];
@@ -29,6 +32,11 @@ public class Image {
     this.size = createSize();
   }
 
+  /**
+   * Form the image's size as "width x height x channels"
+   * @return String
+   * @throws IOException
+   */
   private String createSize() throws IOException {
 
     InputStream inputStream = new ByteArrayInputStream(this.data);
@@ -42,30 +50,58 @@ public class Image {
     return width + 'x' + height + 'x' + planImg.getNumBands();
   }
 
+  /**
+   * Getter Id
+   * @return long
+   */
   public long getId() {
     return id;
   }
 
+  /**
+   * Setter Id
+   * @param newId long
+   */
   public void setId(long newId) {
     this.id = newId;
   }
 
+  /**
+   * Getter Name
+   * @return String
+   */
   public String getName() {
     return name;
   }
 
+  /**
+   * Setter Name
+   * @param name String
+   */
   public void setName(final String name) {
     this.name = name;
   }
 
+  /**
+   * Getter Data
+   * @return byte[]
+   */
   public byte[] getData() {
     return data;
   }
 
+  /**
+   * Getter Type
+   * @return MediaType
+   */
   public MediaType getType() {
     return type;
   }
 
+  /**
+   * Getter Size
+   * @return String
+   */
   public String getSize() {
     return size;
   }
@@ -84,10 +120,18 @@ public class Image {
     return extension.equals("jpg") ? MediaType.IMAGE_JPEG : MediaType.IMAGE_PNG;
   }
 
+  /**
+   * Update count
+   * @param i int
+   */
   public static void updateCount(int i) {
     count = count + i;
   }
 
+  /**
+   * Getter Count
+   * @return long
+   */
   public static long getCount() {
     return count;
   }

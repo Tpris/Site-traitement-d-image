@@ -36,12 +36,20 @@ public class ImageControllerTests {
         ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
     }
 
+    /**
+     * Test get all images
+     * @throws Exception
+     */
     @Test
     @Order(1)
     public void getImageListShouldReturnSuccess() throws Exception {
         this.mockMvc.perform(get("/images")).andExpect(status().isOk());
     }
 
+    /**
+     * Test get image that doesn't exist
+     * @throws Exception
+     */
     @Test
     @Order(2)
     public void getImageShouldReturnNotFound() throws Exception {
@@ -52,6 +60,10 @@ public class ImageControllerTests {
         this.mockMvc.perform(get("/images/5000")).andExpect(status().isNotFound());
     }
 
+    /**
+     * Test get image with its id
+     * @throws Exception
+     */
     @Test
     @Order(3)
     public void getImageShouldReturnSuccess() throws Exception {
@@ -59,6 +71,10 @@ public class ImageControllerTests {
         this.mockMvc.perform(get("/images/0")).andExpect(status().isOk());
     }
 
+    /**
+     * Test delete on an incorrect HTTP request
+     * @throws Exception
+     */
     @Test
     @Order(4)
     public void deleteImagesShouldReturnMethodNotAllowed() throws Exception {
@@ -66,6 +82,10 @@ public class ImageControllerTests {
         this.mockMvc.perform(delete("/images")).andExpect(status().isMethodNotAllowed());
     }
 
+    /**
+     * Test delete image not existing
+     * @throws Exception
+     */
     @Test
     @Order(5)
     public void deleteImageShouldReturnNotFound() throws Exception {
@@ -73,6 +93,10 @@ public class ImageControllerTests {
         this.mockMvc.perform(delete("/images/5001")).andExpect(status().isNotFound());
     }
 
+    /**
+     * Test delete image success
+     * @throws Exception
+     */
     @Test
     @Order(6)
     public void deleteImageShouldReturnSuccess() throws Exception {
@@ -80,6 +104,10 @@ public class ImageControllerTests {
         this.mockMvc.perform(delete("/images/0")).andExpect(status().isOk());
     }
 
+    /**
+     * Test add Image supported MediaType
+     * @throws Exception
+     */
     @Test
     @Order(7)
     public void createImageShouldReturnSuccess() throws Exception {
@@ -90,6 +118,10 @@ public class ImageControllerTests {
 
     }
 
+    /**
+     * Test add unsupported MediaType
+     * @throws Exception
+     */
     @Test
     @Order(8)
     public void createImageShouldReturnUnsupportedMediaType() throws Exception {
@@ -101,6 +133,11 @@ public class ImageControllerTests {
                 .andExpect(status().isUnsupportedMediaType());
     }
 
+    /**
+     * Test the content of the directory images
+     * Please do not delete/add images in the directory
+     * @throws Exception
+     */
     @Test
     @Order(9)
     public void getImageListShouldReturnSuccessContent() throws Exception {

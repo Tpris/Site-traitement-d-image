@@ -20,6 +20,10 @@ public class ImageDao implements Dao<Image> {
 
   private final Map<Long, Image> images = new HashMap<>();
 
+  /**
+   * Load images
+   * @throws Exception
+   */
   public ImageDao() throws Exception {
 
     ClassLoader classLoader = getClass().getClassLoader();
@@ -28,11 +32,9 @@ public class ImageDao implements Dao<Image> {
       File directory = new File(classLoader.getResource("images").getFile());
       ArrayList<File> directories = new ArrayList<>();
       directories.add(directory);
-
       while (directories.size() != 0) {
         File currentDirectory = directories.get(0);
         File[] files = currentDirectory.listFiles();
-
         for (File file : files) {
           byte[] fileContent;
           if (file.isDirectory()) {
@@ -48,9 +50,6 @@ public class ImageDao implements Dao<Image> {
 
         directories.remove(currentDirectory);
       }
-
-    } catch (final IOException e) {
-      throw new ImagesDirectoryException("Error: Images directory doesn't exist !");
     } catch (final Exception e) {
       throw new ImagesDirectoryException("Error: Images directory doesn't exist !");
     }
@@ -68,16 +67,31 @@ public class ImageDao implements Dao<Image> {
     return extension.equals("jpg") || extension.equals("jpeg") || extension.equals("png");
   }
 
+  /**
+   * Retrieve image with its id
+   * @param id long
+   * @return Optional
+   */
   @Override
   public Optional<Image> retrieve(final long id) {
     return Optional.ofNullable(images.get(id));
   }
 
+  /**
+   * Retrieve all the images
+   * @return List
+   */
   @Override
   public List<Image> retrieveAll() {
     return new ArrayList<Image>(images.values());
   }
 
+  /**
+   * Retrieve a list of containing a selected number of images starting from a specific index
+   * @param idStart long
+   * @param size int
+   * @return List
+   */
   @Override
   public List<Image> retrieveGroup(final long idStart, final int size) {
     ArrayList<Image> imagesList = new ArrayList<>();
@@ -89,6 +103,12 @@ public class ImageDao implements Dao<Image> {
     return imagesList;
   }
 
+  /**
+   * Retrieve a list of images depending on specific filters
+   * @param type String
+   * @param nameImg String
+   * @return List
+   */
   @Override
   public List<Image> retrieveWithFilters(final String type, final String nameImg) {
     ArrayList<Image> imagesList = new ArrayList<>();
@@ -103,17 +123,30 @@ public class ImageDao implements Dao<Image> {
   }
 
 
+  /**
+   * Create a new image
+   * @param img Image
+   */
   @Override
   public void create(final Image img) {
     images.put(img.getId(), img);
   }
 
+  /**
+   * Update an image
+   * @param img Image
+   * @param params String[]
+   */
   @Override
   public void update(final Image img, final String[] params) {
     img.setName(Objects.requireNonNull(params[0], "Name cannot be null"));
     images.put(img.getId(), img);
   }
 
+  /**
+   * Delete an image
+   * @param img Image
+   */
   @Override
   public void delete(final Image img) {
     long idRemoved = img.getId();
@@ -135,6 +168,10 @@ public class ImageDao implements Dao<Image> {
 
   }
 
+  /**
+   * Get number images stocked
+   * @return int
+   */
   public int getNumberImages() {
     return images.size();
   }
