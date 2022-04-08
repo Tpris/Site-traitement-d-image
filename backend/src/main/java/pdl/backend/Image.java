@@ -23,7 +23,7 @@ public class Image {
 
   public Image(final String name, final byte[] data) throws IOException {
     id = count++;
-    this.name = name;
+    this.name = name.split("\\.")[0];
     this.data = data;
     this.type = getType(name);
     this.size = createSize();
