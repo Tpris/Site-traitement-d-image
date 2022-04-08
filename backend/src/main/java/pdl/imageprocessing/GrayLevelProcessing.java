@@ -4,6 +4,12 @@ import boofcv.struct.image.GrayU8;
 
 class GrayLevelProcessing {
 
+	/**
+	 * Modify the brightness of a GrayU8 band
+	 * 
+	 * @param input the GrayU8 band
+	 * @param delta
+	 */
 	static void luminosity(GrayU8 input, int delta) {
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
@@ -17,6 +23,10 @@ class GrayLevelProcessing {
 		}
 	}
 
+	/**
+	 * @param input the GrayU8 band
+	 * @return int
+	 */
 	static int min(GrayU8 input) {
 		int min = 255;
 		for (int y = 0; y < input.height; ++y) {
@@ -29,6 +39,10 @@ class GrayLevelProcessing {
 		return min;
 	}
 
+	/**
+	 * @param input the GrayU8 band
+	 * @return int
+	 */
 	static int max(GrayU8 input) {
 		int max = 0;
 		for (int y = 0; y < input.height; ++y) {
@@ -41,12 +55,21 @@ class GrayLevelProcessing {
 		return max;
 	}
 
+	/**
+	 * @param input    the GrayU8 band
+	 * @param min
+	 * @param max
+	 * @param minHisto
+	 * @param maxHisto
+	 */
 	static void contrastLUT(GrayU8 input, int min, int max, int minHisto, int maxHisto) {
 		int LUT[] = new int[256];
 		for (int i = 0; i < 256; i++) {
 			LUT[i] = ((max - min) * (i - minHisto) / (maxHisto - minHisto)) + min;
-			if(LUT[i]>255) LUT[i] = 255;
-			else if (LUT[i]<0) LUT[i] = 0;
+			if (LUT[i] > 255)
+				LUT[i] = 255;
+			else if (LUT[i] < 0)
+				LUT[i] = 0;
 		}
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
@@ -55,16 +78,23 @@ class GrayLevelProcessing {
 		}
 	}
 
+	/**
+	 * @param input the GrayU8 band
+	 * @param t
+	 */
 	static void threshold(GrayU8 input, int t) {
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
 				int gl = input.get(x, y);
-				gl = (gl<t)?0:255;
+				gl = (gl < t) ? 0 : 255;
 				input.set(x, y, gl);
 			}
 		}
 	}
 
+	/**
+	 * @param input the GrayU8 band
+	 */
 	static void reverse(GrayU8 input) {
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
@@ -74,6 +104,10 @@ class GrayLevelProcessing {
 		}
 	}
 
+	/**
+	 * @param input the GrayU8 band
+	 * @return int[]
+	 */
 	static int[] histogram(GrayU8 input) {
 		int values[] = new int[256];
 		for (int y = 0; y < input.height; ++y) {
@@ -84,20 +118,37 @@ class GrayLevelProcessing {
 		return values;
 	}
 
-	static int[] histogramCumul(GrayU8 input){
-		int[] histo = histogram(input);
-		int histoCum[] = new int[256];
+	/**
+	 * @param hist
+	 * @param tailleTab
+	 * @return int[]
+	 */
+	static int[] histogramCumulGeneric(int[] hist, int tailleTab) {
+		int[] histo = hist;
+		int histoCum[] = new int[tailleTab];
 		histoCum[0] = histo[0];
-		for (int i = 1; i < 256; i++) {
-			histoCum[i]=histo[i]+histoCum[i-1];
+		for (int i = 1; i < tailleTab; i++) {
+			histoCum[i] = histo[i] + histoCum[i - 1];
 		}
 		return histoCum;
 	}
 
+	/**
+	 * @param input the GrayU8 band
+	 * @return int[]
+	 */
+	static int[] histogramCumul(GrayU8 input) {
+		return histogramCumulGeneric(histogram(input), 256);
+	}
+
+	/**
+	 * @param input      the GrayU8 band
+	 * @param histoCumul
+	 */
 	static void egalisation(GrayU8 input, int[] histoCumul) {
 		int[] egal = new int[256];
 		for (int i = 0; i < 256; i++) {
-			egal[i] = (histoCumul[i]*255)/(input.height*input.width);
+			egal[i] = (histoCumul[i] * 255) / (input.height * input.width);
 		}
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
@@ -106,93 +157,143 @@ class GrayLevelProcessing {
 		}
 	}
 
+	/**
+	 * @param input the GrayU8 band
+	 */
 	public static void threshold4step(GrayU8 input) {
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
 				int gl = input.get(x, y);
-				 if (gl < 61) {
+				if (gl < 61) {
 					input.set(x, y, 255);
-				} else if(gl<122){
+				} else if (gl < 122) {
 					input.set(x, y, 122);
-				} else if(gl<183){
+				} else if (gl < 183) {
 					input.set(x, y, 183);
-				} else input.set(x, y, 255);
+				} else
+					input.set(x, y, 255);
 			}
 		}
 	}
-	
-	static void rotate(GrayU8 input, double theta){
-		int x0 = input.width/2;
-		int y0 = input.height/2;
+
+	/**
+	 * @param input the GrayU8 band
+	 * @param theta
+	 */
+	static void rotate(GrayU8 input, double theta) {
+		int x0 = input.width / 2;
+		int y0 = input.height / 2;
 		GrayU8 tmp = input.clone();
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
-				int p = (int) ((x-x0)*Math.cos(theta)+(y-y0)*Math.sin(theta)+x0);
-				int q = (int) (-(x-x0)*Math.sin(theta)+(y-y0)*Math.cos(theta)+y0);
-				if(p<input.width && q <input.height && p>=0 && q>=0)
+				int p = (int) ((x - x0) * Math.cos(theta) + (y - y0) * Math.sin(theta) + x0);
+				int q = (int) (-(x - x0) * Math.sin(theta) + (y - y0) * Math.cos(theta) + y0);
+				if (p < input.width && q < input.height && p >= 0 && q >= 0)
 					input.set(x, y, tmp.get(p, q));
-				else input.set(x, y, 0);
+				else
+					input.set(x, y, 0);
 			}
 		}
 	}
-	static void perspective(GrayU8 input, double d, Perspective perspective){
+
+	/**
+	 * @param input       the GrayU8 band
+	 * @param d
+	 * @param perspective
+	 */
+	static void perspective(GrayU8 input, double d, Perspective perspective) {
 		int x0 = x0declarationToPerspective(input, d, perspective);
 		int y0 = y0declarationToPerspective(input, d, perspective);
 		perspectiveTreatement(input, d, x0, y0);
 	}
 
-	private static int x0declarationToPerspective(GrayU8 input, double d, Perspective perspective){
-		if(perspective.equals(Perspective.LEFT) || perspective.equals(Perspective.TOPLEFT) || perspective.equals(Perspective.BOTTOMLEFT)){
-			return (int) (input.width/2*d);
-		} 
-		if(perspective.equals(Perspective.RIGHT) || perspective.equals(Perspective.TOPRIGHT) || perspective.equals(Perspective.BOTTOMRIGHT)){
-			return (int) (input.width - input.width/2*d);
+	/**
+	 * @param input       the GrayU8 band
+	 * @param d
+	 * @param perspective
+	 * @return int
+	 */
+	private static int x0declarationToPerspective(GrayU8 input, double d, Perspective perspective) {
+		if (perspective.equals(Perspective.LEFT) || perspective.equals(Perspective.TOPLEFT)
+				|| perspective.equals(Perspective.BOTTOMLEFT)) {
+			return (int) (input.width / 2 * d);
 		}
-		return input.width/2;
+		if (perspective.equals(Perspective.RIGHT) || perspective.equals(Perspective.TOPRIGHT)
+				|| perspective.equals(Perspective.BOTTOMRIGHT)) {
+			return (int) (input.width - input.width / 2 * d);
+		}
+		return input.width / 2;
 	}
 
-	private static int y0declarationToPerspective(GrayU8 input, double d, Perspective perspective){
-		if(perspective.equals(Perspective.TOP) || perspective.equals(Perspective.TOPLEFT) || perspective.equals(Perspective.TOPRIGHT)){
-			return (int) (input.height/2*d);
-		} 
-		if(perspective.equals(Perspective.BOTTOM) || perspective.equals(Perspective.BOTTOMLEFT) || perspective.equals(Perspective.BOTTOMRIGHT)){
-			return (int) (input.height-input.height/2*d);
+	/**
+	 * @param input       the GrayU8 band
+	 * @param d
+	 * @param perspective
+	 * @return int
+	 */
+	private static int y0declarationToPerspective(GrayU8 input, double d, Perspective perspective) {
+		if (perspective.equals(Perspective.TOP) || perspective.equals(Perspective.TOPLEFT)
+				|| perspective.equals(Perspective.TOPRIGHT)) {
+			return (int) (input.height / 2 * d);
 		}
-		return input.height/2;
+		if (perspective.equals(Perspective.BOTTOM) || perspective.equals(Perspective.BOTTOMLEFT)
+				|| perspective.equals(Perspective.BOTTOMRIGHT)) {
+			return (int) (input.height - input.height / 2 * d);
+		}
+		return input.height / 2;
 	}
 
-	private static void perspectiveTreatement(GrayU8 input, double d, int x0, int y0){
+	/**
+	 * @param input the GrayU8 band
+	 * @param d
+	 * @param x0
+	 * @param y0
+	 */
+	private static void perspectiveTreatement(GrayU8 input, double d, int x0, int y0) {
 		GrayU8 tmp = input.clone();
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
-				int p = (int) (d*radious(x, y, x0, y0)*(x-x0)+x);
-				int q = (int) (d*radious(x, y, x0, y0)*(y-y0)+y);
-				if(p<input.width && q <input.height && p>=0 && q>=0)
+				int p = (int) (d * radious(x, y, x0, y0) * (x - x0) + x);
+				int q = (int) (d * radious(x, y, x0, y0) * (y - y0) + y);
+				if (p < input.width && q < input.height && p >= 0 && q >= 0)
 					input.set(x, y, tmp.get(p, q));
-				else input.set(x, y, 0);
+				else
+					input.set(x, y, 0);
 			}
 		}
 	}
 
-	static void tourbillon(GrayU8 input, float tourbillonFactor, int x0, int y0){
-		// int x0 = input.width/10;//input.width/2;
-		// int y0 = input.height/2;
-		x0 *= input.width/100;
-		y0 *= input.height/100;
+	/**
+	 * @param input            the GrayU8 band
+	 * @param tourbillonFactor
+	 * @param x0
+	 * @param y0
+	 */
+	static void tourbillon(GrayU8 input, float tourbillonFactor, int x0, int y0) {
+		x0 *= input.width / 100;
+		y0 *= input.height / 100;
 		GrayU8 tmp = input.clone();
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
-				double theta=10*Math.exp(-tourbillonFactor*radious(x, y, x0, y0));
-				int p = (int) ((x-x0)*Math.cos(theta)+(y-y0)*Math.sin(theta)+x0);
-				int q = (int) (-(x-x0)*Math.sin(theta)+(y-y0)*Math.cos(theta)+y0);
-				if(p<input.width && q <input.height && p>=0 && q>=0)
+				double theta = 10 * Math.exp(-tourbillonFactor * radious(x, y, x0, y0));
+				int p = (int) ((x - x0) * Math.cos(theta) + (y - y0) * Math.sin(theta) + x0);
+				int q = (int) (-(x - x0) * Math.sin(theta) + (y - y0) * Math.cos(theta) + y0);
+				if (p < input.width && q < input.height && p >= 0 && q >= 0)
 					input.set(x, y, tmp.get(p, q));
-				else input.set(x, y, 0);
+				else
+					input.set(x, y, 0);
 			}
 		}
 	}
 
-	private static double radious(int x, int y, int x0, int y0){
-		return Math.sqrt(Math.pow(x-x0, 2)+Math.pow(y-y0, 2));
+	/**
+	 * @param x
+	 * @param y
+	 * @param x0
+	 * @param y0
+	 * @return double
+	 */
+	private static double radious(int x, int y, int x0, int y0) {
+		return Math.sqrt(Math.pow(x - x0, 2) + Math.pow(y - y0, 2));
 	}
 }
