@@ -9,6 +9,11 @@ import boofcv.struct.image.Planar;
 
 public class ImageProcessing {
 
+  /**
+   * Convert a Planar<GrayU8> with 1 band to a Planar<GrayU8> with 3 bands
+   * @param input the Planar<GrayU8> image
+   * @return a Planar<GrayU8> image with 3 bands
+   */
   private static Planar<GrayU8> grayToPlanarRGB(Planar<GrayU8> input) {
     int nbCanaux = input.getNumBands();
     if (nbCanaux == 1) {
@@ -20,6 +25,11 @@ public class ImageProcessing {
     return input;
   }
 
+  /**
+   * Do an egalisation of the value parameter
+   * @param input a Planar<GrayU8> image
+   * @return a ResponseEntity
+   */
   public static ResponseEntity<?> egalisationV(Planar<GrayU8> input) {
     input = grayToPlanarRGB(input);
     int nbCanaux = input.getNumBands();
@@ -29,6 +39,11 @@ public class ImageProcessing {
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
+  /**
+   * Do an egalisation of the saturation parameter
+   * @param input a Planar<GrayU8> image
+   * @return a ResponseEntity
+   */
   public static ResponseEntity<?> egalisationS(Planar<GrayU8> input) {
     input = grayToPlanarRGB(input);
     int nbCanaux = input.getNumBands();
@@ -38,6 +53,12 @@ public class ImageProcessing {
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
+  /**
+   * Do a sobel kernel application
+   * @param image a Planar<GrayU8> image
+   * @param color true if contours are colored
+   * @return a ResponseEntity
+   */
   public static ResponseEntity<?> sobelImage(Planar<GrayU8> image, boolean color) {
     int nbCanaux = image.getNumBands();
     if (nbCanaux != 1 && !color)
@@ -49,6 +70,12 @@ public class ImageProcessing {
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
+  /**
+   * Modify the brightness of an image
+   * @param input the Planar<GrayU8> image to edit
+   * @param delta the desire difference in value
+   * @return a ResponseEntity
+   */
   public static ResponseEntity<?> luminosityImage(Planar<GrayU8> input, int delta) {
     if (delta >= -255 && delta <= 255) {
       int nbCanaux = input.getNumBands();
@@ -60,6 +87,13 @@ public class ImageProcessing {
       return new ResponseEntity<>("the parameter must be between -255 and 255", HttpStatus.BAD_REQUEST);
   }
 
+  /**
+   * Apply a mean blur filter
+   * @param image the Planar<GrayU8> image to edit
+   * @param size the size of the kernel
+   * @param borderType border management type
+   * @return a ResponseEntity
+   */
   public static ResponseEntity<?> meanFilterWithBorders(Planar<GrayU8> image, int size, BorderType borderType) {
     if (size % 2 == 1) {
       if (size < image.height && size < image.width) {
@@ -75,6 +109,14 @@ public class ImageProcessing {
       return new ResponseEntity<>("the kernel size must be odd", HttpStatus.BAD_REQUEST);
   }
 
+  /**
+   * Apply a gaussian blur filter
+   * @param image the Planar<GrayU8> image to edit
+   * @param size the size of the kernel
+   * @param sigma the standard deviation 
+   * @param borderType the border management type
+   * @return a ResponseEntity
+   */
   public static ResponseEntity<?> gaussianBlur(Planar<GrayU8> image, int size, float sigma, BorderType borderType) {
     if(borderType == null) return new ResponseEntity<>("borderType can't be null", HttpStatus.BAD_REQUEST);
     if (size % 2 == 1) {
@@ -92,6 +134,14 @@ public class ImageProcessing {
       return new ResponseEntity<>("the kernel size must be odd", HttpStatus.BAD_REQUEST);
   }
 
+  /**
+   * Apply a filter color on an image, the saturation interval can be changed to manage filter intensity.
+   * @param input the Planar<GrayU8> image to edit
+   * @param h the hue desired
+   * @param smin the minimal saturation value
+   * @param smax the maximal saturation value
+   * @return a ResponseEntity
+   */
   public static ResponseEntity<?> filter(Planar<GrayU8> input, float h, float smin, float smax) {
     if (h >= 0 && h <= 360) {
       if (smin <= smax && smin >= 0 && smin <= 1 && smax >= 0 && smax <= 1) {
@@ -113,6 +163,13 @@ public class ImageProcessing {
       return new ResponseEntity<>("hue must be between 0 and 360", HttpStatus.BAD_REQUEST);
   }
 
+  /**
+   * Apply a rainbow filter
+   * @param input the Planar<GrayU8> image to edit
+   * @param smin the minimum saturation value
+   * @param smax the maximum saturation value
+   * @return a ResponseEntity
+   */
   public static ResponseEntity<?> rainbow(Planar<GrayU8> input, float smin, float smax) {
       if (smin <= smax && smin >= 0 && smin <= 1 && smax >= 0 && smax <= 1) {
         input = grayToPlanarRGB(input);
@@ -132,6 +189,13 @@ public class ImageProcessing {
             HttpStatus.BAD_REQUEST);
   }
 
+  /**
+   * Apply a dynamic contrast
+   * @param image the Planar<GrayU8> image to edit
+   * @param min the minimum value of a dynamic contrast
+   * @param max the maximum value of a dynamic contrast
+   * @return a ResponseEntity
+   */
   public static ResponseEntity<?> dynamicContast(Planar<GrayU8> image, int min, int max){
     if(min>max) return new ResponseEntity<>("min must be less than max", HttpStatus.BAD_REQUEST);
     int nbCanaux = image.getNumBands();
@@ -152,6 +216,11 @@ public class ImageProcessing {
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
+  /**
+   * Apply an RGB egalisation
+   * @param image the Planar<GrayU8> image to edit
+   * @return a ResponseEntity
+   */
   public static ResponseEntity<?> egalisationRGB(Planar<GrayU8> image) {
     int nbCanaux = image.getNumBands();
     if(nbCanaux!=1 && nbCanaux!=3) return new ResponseEntity<>("unsupported type", HttpStatus.BAD_REQUEST);
@@ -166,6 +235,12 @@ public class ImageProcessing {
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
+  /**
+   * Apply a threshold
+   * @param image the Planar<GrayU8> image to edit
+   * @param t the threshold
+   * @return a ResponseEntity
+   */
   public static ResponseEntity<?> threshold(Planar<GrayU8> image, int t) {
       if(t<0 || t>255) return new ResponseEntity<>("The threshold parameter must be between 0 and 255", HttpStatus.BAD_REQUEST);
       int nbCanaux = image.getNumBands();
@@ -174,6 +249,11 @@ public class ImageProcessing {
       return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
+  /**
+   * Convert image in gray scale
+   * @param image the Planar<GrayU8> image to edit
+   * @return a ResponseEntity
+   */
   public static ResponseEntity<?> RGBtoGray(Planar<GrayU8> image) {
     int nbCanaux = image.getNumBands();
     if(nbCanaux == 1) return new ResponseEntity<>("ok", HttpStatus.OK);
@@ -182,6 +262,11 @@ public class ImageProcessing {
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
+  /**
+   * Apply a negative filter
+   * @param image the Planar<GrayU8> image to edit
+   * @return a ResponseEntity
+   */
   public static ResponseEntity<?> negativeImage(Planar<GrayU8> image){
     int nbCanaux = image.getNumBands();
     for (int i = 0; i < nbCanaux; ++i)
@@ -189,35 +274,52 @@ public class ImageProcessing {
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
-  private static void gradient(Planar<GrayU8> input, int x, int y, int step){
+  /**
+   * Define the step of a pixel depending on the step parameter which define the difference between 2 steps
+   * @param input the Planar<GrayU8> image to edit
+   * @param x the abscissa of the pixel
+   * @param y the ordinate of the pixel
+   * @param step the size of step
+   */
+  private static void gradient(Planar<GrayU8> input, int x, int y, int step, boolean dark){
     int nbCanaux = input.getNumBands();
     int gl = input.getBand(0).get(x, y);
-    int val;
     for(int i = 1; i<nbCanaux; ++i) {
-      val = input.getBand(i).get(x, y);
+      int val = input.getBand(i).get(x, y);
       if (val>gl) gl = val;
     }
-    val = gl;
-    val += val%step;
-    val = gl-val;
+    int valDark = gl%step;
+    int valBright = step-valDark;
     for(int i = 0; i<nbCanaux; ++i) {
-      int v = input.getBand(i).get(x, y)+val;
+      int v0 = input.getBand(i).get(x, y);
+      int v = (dark) ? v0-valDark : v0+valBright;
       if(v>255) v = 255; 
       else if(v<0) v = 0;
       input.getBand(i).set(x, y, v);
     }
   }
 
-  public static ResponseEntity<?> draw(Planar<GrayU8> input, int step){
+  /**
+   * Apply a draw filter depending on the steps values.
+   * @param input the Planar<GrayU8> image to edit
+   * @param step the size of step
+   * @return a ResponseEntity
+   */
+  public static ResponseEntity<?> draw(Planar<GrayU8> input, int step, boolean dark){
     if(step<1 || step>255) return new ResponseEntity<>("The step must be between 1 and 255", HttpStatus.BAD_REQUEST);
     for (int y = 0; y < input.height; ++y) {
       for (int x = 0; x < input.width; ++x) {
-        gradient(input, x, y, step);
+        gradient(input, x, y, step, dark);
       }
     }
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
+  /**
+   * Apply a water color filter
+   * @param input the Planar<GrayU8> image to edit
+   * @return a ResponseEntity
+   */
   public static ResponseEntity<?> waterColor(Planar<GrayU8> input){
     int nbCanaux = input.getNumBands();
     Planar<GrayU8> contours = input.clone();
@@ -238,6 +340,12 @@ public class ImageProcessing {
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
+  /**
+   * Apply a rotation depending on the angle theta
+   * @param image the Planar<GrayU8> image to edit
+   * @param theta the angle of rotation
+   * @return a ResponseEntity
+   */
   public static ResponseEntity<?> rotation(Planar<GrayU8> image, double theta){
     theta = theta*Math.PI/180;
     if(theta<-360 || theta>360) return new ResponseEntity<>("The angle of rotation must be between -360 and 360", HttpStatus.BAD_REQUEST);
@@ -247,6 +355,13 @@ public class ImageProcessing {
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
+  /**
+   * Apply a perspective of the image
+   * @param image the Planar<GrayU8> image to edit
+   * @param delta the factor of the perspective
+   * @param perspective the type of 
+   * @return a ResponseEntity
+   */
   public static ResponseEntity<?> perspective(Planar<GrayU8> image, double delta, Perspective perspective){
     if(perspective == null) return new ResponseEntity<>("perspective can't be null", HttpStatus.BAD_REQUEST);
     int nbCanaux = image.getNumBands();
@@ -256,6 +371,12 @@ public class ImageProcessing {
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
+  /**
+   * Apply a vortex effet
+   * @param image the Planar<GrayU8> image to edit
+   * @param tourbillonFactor the factor of modification
+   * @return a ResponseEntity
+   */
   public static ResponseEntity<?> tourbillon(Planar<GrayU8> image, float tourbillonFactor){
     int nbCanaux = image.getNumBands();
     if(tourbillonFactor<0) return new ResponseEntity<>("the parameter must be positive", HttpStatus.BAD_REQUEST);

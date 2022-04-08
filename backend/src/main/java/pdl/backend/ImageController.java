@@ -102,8 +102,11 @@ public class ImageController<Item> {
         }
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "draw":
-        if (lenValue(listParam, "step") > 0) {
-          return ImageProcessing.draw(img, Integer.parseInt(getAndPopValue(listParam, "step")));
+        if (lenValue(listParam, "step") > 0 && lenValue(listParam, "color") > 0) {
+          String res = getAndPopValue(listParam, "color");
+          if(res.equals("Dark")) return ImageProcessing.draw(img, Integer.parseInt(getAndPopValue(listParam, "step")), true);
+          else if(res.equals("Bright")) return ImageProcessing.draw(img, Integer.parseInt(getAndPopValue(listParam, "step")), false);
+          return new ResponseEntity<>("wrong parameter : it must be White or Color", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       case "sobel":

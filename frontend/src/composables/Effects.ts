@@ -160,7 +160,7 @@ export class Effect {
                 this._params = new Params(
                     [new DropBox("Perspective", "persp", ["TOPLEFT", "TOP", "TOPRIGHT",
                         "LEFT", "CENTER", "RIGHT","BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT"])] as DropBox[], 
-                    [new Cursors("Delta", "delta", ["0", "0.01"], 0.001, 0)] as Cursors[])
+                    [new Cursors("Delta", "delta", ["0", "0.001"], 0.0001, 0)] as Cursors[])
                 break
 
             case EffectTypes.Rotation:
@@ -212,8 +212,8 @@ export class Effect {
             
             case EffectTypes.Draw:
                 this._text = "Draw"
-                this._params = new Params(null, [
-                    new Cursors("step", "step", ["1", "255"], 1, 1)
+                this._params = new Params([new DropBox("Type", "color", ["Bright","Dark"])] as DropBox[], 
+                            [new Cursors("step", "step", ["1", "255"], 1, 1)
                 ] as Cursors[])
                 break;
 
