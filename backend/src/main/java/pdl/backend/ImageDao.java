@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -93,7 +94,7 @@ public class ImageDao implements Dao<Image> {
     ArrayList<Image> imagesList = new ArrayList<>();
 
     for(Image img: images.values()){
-      if(img.getName().startsWith(nameImg) && ( img.getType().getSubtype().equals(type) || type.equals("all") || (type.equals("jpg") && img.getType().getSubtype().equals("jpeg")))){
+      if(img.getName().startsWith(nameImg) && ( type.equals("all") || img.getType().equals(MediaType.parseMediaType("image/"+type))  )){
         imagesList.add(img);
       }
     }

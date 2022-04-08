@@ -25,7 +25,9 @@ const submitFile = ()  =>{
   api.createImage(formData).then(() => {
     target.value = {} as HTMLInputElement
     uploaded.value = true
-  }).catch(e => console.log(e.message));
+  }).catch(e =>{ console.log(e.message)
+    window.alert("ERREUR: Type de fichier non accepté. Types acceptés: PNG et JPEG")
+  });
 }
 
 const handleFileUpload = (event: Event) => {

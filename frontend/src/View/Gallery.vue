@@ -19,7 +19,7 @@ const getImages = async () => {
     state.type = "png";
   }
   else if(jpgCheckbox && !pngCheckbox){
-    state.type = "jpg"
+    state.type = "jpeg"
   }else{
     state.type = "all";
   }

@@ -104,7 +104,7 @@ public class ImageController<Item> {
         : new ArrayList<String>();
   }
 
-  @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+  @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.TEXT_HTML_VALUE})
   public @ResponseBody ResponseEntity<?> getImage(@PathVariable("id") long id,
       @RequestParam("algorithm") Optional<String> algo,
       @RequestParam("delta") Optional<String> delta,
@@ -181,6 +181,7 @@ public class ImageController<Item> {
       imageDao.delete(image.get());
       return new ResponseEntity<>("Image id=" + id + " deleted.", HttpStatus.OK);
     }
+
     return new ResponseEntity<>("Image id=" + id + " not found.", HttpStatus.NOT_FOUND);
   }
 
@@ -213,6 +214,7 @@ public class ImageController<Item> {
     List<Image> images = new ArrayList<>();
 
     if(type.isPresent() && nameImg.isPresent()){
+
       images = imageDao.retrieveWithFilters(type.get(), nameImg.get());
     }
     else if (index.isPresent() && size.isPresent()) {
