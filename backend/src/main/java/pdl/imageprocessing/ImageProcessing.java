@@ -377,11 +377,11 @@ public class ImageProcessing {
    * @param tourbillonFactor the factor of modification
    * @return a ResponseEntity
    */
-  public static ResponseEntity<?> tourbillon(Planar<GrayU8> image, float tourbillonFactor){
+  public static ResponseEntity<?> tourbillon(Planar<GrayU8> image, float tourbillonFactor, int x0, int y0){
     int nbCanaux = image.getNumBands();
     if(tourbillonFactor<0) return new ResponseEntity<>("the parameter must be positive", HttpStatus.BAD_REQUEST);
     for (int i = 0; i < nbCanaux; ++i)
-        GrayLevelProcessing.tourbillon(image.getBand(i), tourbillonFactor);
+        GrayLevelProcessing.tourbillon(image.getBand(i), tourbillonFactor, x0, y0);
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 

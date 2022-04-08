@@ -170,7 +170,9 @@ export class Effect {
 
             case EffectTypes.Tourbillon:
                 this._text = "Tourbillon"
-                this._params = new Params(null, [new Cursors("Rotation", "tourbillon", ["0.001", "0.15"], 0.001, 0.001)] as Cursors[])
+                this._params = new Params(null, [new Cursors("Rotation", "tourbillon", ["0.001", "0.15"], 0.001, 0.001),
+                new Cursors("Position horizontale", "x0", ["0", "100"], 1, 50),
+                new Cursors("Position verticale", "y0", ["0", "100"], 1, 50)] as Cursors[])
                 break
 
             case EffectTypes.Sobel:

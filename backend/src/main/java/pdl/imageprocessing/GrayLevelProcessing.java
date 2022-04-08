@@ -174,9 +174,11 @@ class GrayLevelProcessing {
 		}
 	}
 
-	static void tourbillon(GrayU8 input, float tourbillonFactor){
-		int x0 = input.width/2;
-		int y0 = input.height/2;
+	static void tourbillon(GrayU8 input, float tourbillonFactor, int x0, int y0){
+		// int x0 = input.width/10;//input.width/2;
+		// int y0 = input.height/2;
+		x0 *= input.width/100;
+		y0 *= input.height/100;
 		GrayU8 tmp = input.clone();
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {

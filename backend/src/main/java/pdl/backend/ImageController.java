@@ -130,8 +130,9 @@ public class ImageController<Item> {
       case "waterColor":
         return ImageProcessing.waterColor(img);
       case "tourbillon":
-        if (lenValue(listParam, "tourbillon") > 0) {
-          return ImageProcessing.tourbillon(img,Float.parseFloat(getAndPopValue(listParam, "tourbillon")));
+        if (lenValue(listParam, "tourbillon") > 0 && lenValue(listParam, "x0") > 0 && lenValue(listParam, "y0") > 0) {
+          return ImageProcessing.tourbillon(img,Float.parseFloat(getAndPopValue(listParam, "tourbillon")),
+          Integer.parseInt(getAndPopValue(listParam, "x0")),Integer.parseInt(getAndPopValue(listParam, "y0")));
         }
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
       default:
@@ -198,6 +199,8 @@ public class ImageController<Item> {
       @RequestParam("threshold") Optional<String> threshold,
       @RequestParam("step") Optional<String> step,
       @RequestParam("persp") Optional<String> persp,
+      @RequestParam("x0") Optional<String> x0,
+      @RequestParam("y0") Optional<String> y0,
       @RequestParam("smin") Optional<String> smin,
       @RequestParam("smax") Optional<String> smax,
       @RequestParam("min") Optional<String> min,
@@ -227,6 +230,8 @@ public class ImageController<Item> {
             put("step", createList(step, separator));
             put("threshold", createList(threshold, separator));
             put("persp", createList(persp, separator));
+            put("x0", createList(x0, separator));
+            put("y0", createList(y0, separator));
             put("smin", createList(smin, separator));
             put("smax", createList(smax, separator));
             put("min", createList(min, separator));
