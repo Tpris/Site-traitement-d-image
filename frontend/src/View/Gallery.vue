@@ -45,6 +45,14 @@ const mouseOut =  (id: String) => {
   (<HTMLDivElement>document.getElementById('img'+id)).style.display = "none";
 }
 
+const getSize =  (size: String) => {
+  let s = size.split('x', 3)
+  let tmp = s[1]
+  s[1] = "x"
+  s[2] = tmp
+  return s[0].concat(s[1]).concat(s[2])
+}
+
 onMounted(async () => {
   state.images = await loadImages()
 })
@@ -74,6 +82,11 @@ onMounted(async () => {
       <div class="gallery-img-info"
             :ref="'img'+image['id']"
             :id="'img'+image['id']">
+        <div>
+          <p><b>nom:</b> {{image['name']}}</p>
+          <p><b>type:</b> {{image['type']}}</p>
+          <p><b>taille:</b> {{getSize(image['size'])}}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -113,7 +126,16 @@ onMounted(async () => {
   height: 22vw;
   object-fit: cover;
   border-radius: 0.75rem;
+  font-size: 20px;
+  vertical-align: middle;
 }
+
+.gallery-img-info > div{
+  top: 30%;
+  position: relative;
+}
+
+
 
 .button{
   font-family: Helvetica, Arial,  sans-serif;
