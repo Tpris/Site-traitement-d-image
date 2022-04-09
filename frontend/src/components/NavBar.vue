@@ -1,13 +1,20 @@
 <script setup lang="ts">
+import {api} from "@/http-api";
+import {ref, onMounted} from "vue";
+// Initialisation du store
 import {useImageStore} from "@/store";
 const store = useImageStore()
 import {storeToRefs} from "pinia";
-import {api} from "@/http-api";
-import {ref, onMounted} from "vue";
+// Récupération des attributs nécéssaires du store
 let { selectedImage, deleted, uploaded } = storeToRefs(store)
 
 const isGallery = ref(  window.location.pathname == "/gallery")
 const isMobile = ref(false)
+
+/**
+ * Delete an image
+ * @param id the id of the image
+ */
 const deleteImage = (id: number) => {
   api.deleteImage(id).then(() => {
     selectedImage.value = {id: -1, source : '', name: '', type:'', size:'', url:''}
@@ -17,6 +24,7 @@ const deleteImage = (id: number) => {
 
 const target = ref<HTMLInputElement>();
 
+// Upload an image
 const submitFile = ()  =>{
   if(!target.value || !target.value?.files) return
   const file = target.value?.files[0];
@@ -30,11 +38,16 @@ const submitFile = ()  =>{
   });
 }
 
+/**
+ * Action to perform when we want to upload an image
+ * @param event the event
+ */
 const handleFileUpload = (event: Event) => {
   target.value = (event.target as HTMLInputElement)
   submitFile()
 }
 
+// Initialize js match media listener
 onMounted(() => {
   isMobile.value = window.matchMedia('(min-width: 360px) and (max-width:640px)').matches
   window.matchMedia('(min-width: 360px) and (max-width:640px)').addEventListener('change', e => isMobile.value = e.matches)

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import NavBar from '@/components/NavBar.vue'
 import {onMounted, reactive, UnwrapRef} from "vue";
-import {api} from "../http-api";
+import {api} from "@/http-api";
 import {ImageType} from "@/types/ImageType";
 
 const state = reactive({

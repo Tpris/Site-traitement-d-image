@@ -2,10 +2,12 @@
   import ToolBoxButton from "@/components/buttons/ToolBoxButton.vue";
   import {reactive, UnwrapRef, watch} from "vue";
   import {EffectTypes, Cursors, DropBox, Effect} from "@/composables/Effects";
+  // Initialisation du store
   import {useImageStore} from "@/store";
   import {storeToRefs} from "pinia";
-
   const store = useImageStore()
+
+  // Récupération des attributs nécéssaires du store
   let { selectedImage, appliedEffects } = storeToRefs(store)
 
   const state = reactive({
@@ -31,6 +33,7 @@
 
   const hasParam = (e: UnwrapRef<Effect>) => e.params.dropBoxes.length !== 0 || e.params.cursors.length !== 0
 
+  // Open the menu of parameters
   const openSlider = () => {
     let element = document.getElementById('container-options') as HTMLElement
     if(element) {
@@ -40,6 +43,8 @@
         element.style.width = '30vw'
     }
   }
+
+  // Close the menu of parameters
   const closeSlider = () => {
     let element = document.getElementById('container-options') as HTMLElement
     if(element) {
@@ -55,6 +60,10 @@
   const isAppliedEffect = (type:string) => appliedEffects.value.find((e) => e.type === type)
   const removeEffectAndRefresh = (type: string) => removeEffect(type)
 
+  /**
+   * Action to perform when we want to apply an effect
+   * @param effect
+   */
   const handleEffect = (effect: UnwrapRef<Effect>) =>{
     if(selectedImage.value.id === -1) return
     openSlider()
@@ -62,6 +71,10 @@
     if(!isAppliedEffect(effect.type)) performEffect(effect, null, null)
   }
 
+  /**
+   * Action to perform when we want to apply an effect without parameters
+   * @param effect
+   */
   const handleEffectNoParam = (effect: UnwrapRef<Effect>) => {
     if(selectedImage.value.id === -1) return
     closeSlider()
@@ -70,17 +83,30 @@
     else addEffects(effect)
   }
 
+  /**
+   * Avoid spam of left and right arrow
+   * @param effect the effect
+   * @param e the event
+   * @param param the parameters
+   */
   const handleKeyUpCursors = (effect: UnwrapRef<Effect>, e: any, param: UnwrapRef<Cursors> | UnwrapRef<DropBox> | null) => {
     clearTimeout(state.timer);
     state.timer = setTimeout(() => performEffect(effect, e, param), state.waitTime);
   }
 
+  /**
+   * Perform an effect
+   * @param effect the effect
+   * @param e the event
+   * @param param the parameters
+   */
   const performEffect = (effect: UnwrapRef<Effect>, e: any, param: UnwrapRef<Cursors> | UnwrapRef<DropBox> | null) => {
     if (param) param.value = e.target.value
     removeEffect(effect.type)
     addEffects(effect)
   }
 
+  //Perform specific operation of specific effects (Filter Effect)
   watch(() => findEffect(EffectTypes.Filter), (newEffect) => {
     if(!newEffect) return
     let minCursors = newEffect.params.cursors[1]
