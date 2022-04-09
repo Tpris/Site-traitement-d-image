@@ -49,7 +49,7 @@ const loadImages = async () => {
  * @param id String
  */
 const mouseOver =  (id: String) => {
-  (<HTMLDivElement>document.getElementById('img'+id)).style.display = "block";
+  (<HTMLDivElement>document.getElementById('imgInfo'+id)).style.display = "block";
 }
 
 /**
@@ -57,7 +57,7 @@ const mouseOver =  (id: String) => {
  * @param id String
  */
 const mouseOut =  (id: String) => {
-  (<HTMLDivElement>document.getElementById('img'+id)).style.display = "none";
+  (<HTMLDivElement>document.getElementById('imgInfo'+id)).style.display = "none";
 }
 
 /**
@@ -70,6 +70,23 @@ const getSize =  (size: String) => {
   s[1] = "x"
   s[2] = tmp
   return s[0].concat(s[1]).concat(s[2])
+}
+
+const getSource=  (id: string) => {
+  api.getImage(Number.parseFloat(id))
+      .then((data) =>{
+        const reader = new FileReader()
+        reader.readAsDataURL(data as unknown as Blob)
+        reader.onload = () => {
+          let result: string = reader.result as string
+          if (result) {
+            (<HTMLImageElement>document.getElementById('img'+id)).src = result;
+          }
+        };
+      })
+      .catch(e => {
+        console.log(e.message)
+      })
 }
 
 onMounted(async () => {
@@ -97,10 +114,9 @@ onMounted(async () => {
     <div v-for="image in state.images" :key="image['id']" :id="image['id']"
          style="position: relative;" @mouseover="mouseOver(image['id'])" @mouseout="mouseOut(image['id'])"
          class="gallery-img">
-        <img :src="'/images/' + image['id']" :alt="image['name']" />
+        <img :src="getSource(image['id'])" :alt="image['name']" :id="'img'+image['id']" />
       <div class="gallery-img-info"
-            :ref="'img'+image['id']"
-            :id="'img'+image['id']">
+            :id="'imgInfo'+image['id']">
         <div>
           <p><b>nom:</b> {{image['name']}}</p>
           <p><b>type:</b> {{image['type']}}</p>
