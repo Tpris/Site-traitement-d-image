@@ -24,8 +24,10 @@ class GrayLevelProcessing {
 	}
 
 	/**
+	 * Find the minimum value of a band
+	 * 
 	 * @param input the GrayU8 band
-	 * @return int
+	 * @return int the min value
 	 */
 	static int min(GrayU8 input) {
 		int min = 255;
@@ -40,6 +42,8 @@ class GrayLevelProcessing {
 	}
 
 	/**
+	 * Find the maximum value of a band
+	 * 
 	 * @param input the GrayU8 band
 	 * @return int
 	 */
@@ -56,6 +60,8 @@ class GrayLevelProcessing {
 	}
 
 	/**
+	 * Apply a dynamic contrast on a band
+	 * 
 	 * @param input    the GrayU8 band
 	 * @param min
 	 * @param max
@@ -79,8 +85,10 @@ class GrayLevelProcessing {
 	}
 
 	/**
+	 * Apply a threshold on a band
+	 * 
 	 * @param input the GrayU8 band
-	 * @param t
+	 * @param t     the threshold
 	 */
 	static void threshold(GrayU8 input, int t) {
 		for (int y = 0; y < input.height; ++y) {
@@ -93,6 +101,8 @@ class GrayLevelProcessing {
 	}
 
 	/**
+	 * Reverse values on a band
+	 * 
 	 * @param input the GrayU8 band
 	 */
 	static void reverse(GrayU8 input) {
@@ -105,6 +115,8 @@ class GrayLevelProcessing {
 	}
 
 	/**
+	 * Calculate the histogram of a band
+	 * 
 	 * @param input the GrayU8 band
 	 * @return int[]
 	 */
@@ -119,12 +131,13 @@ class GrayLevelProcessing {
 	}
 
 	/**
-	 * @param hist
-	 * @param tailleTab
+	 * Calculate the cumulative histogram of an histogram
+	 * 
+	 * @param hist the histogram
 	 * @return int[]
 	 */
-	static int[] histogramCumulGeneric(int[] hist, int tailleTab) {
-		int[] histo = hist;
+	static int[] histogramCumulGeneric(int[] histo) {
+		int tailleTab = histo.length;
 		int histoCum[] = new int[tailleTab];
 		histoCum[0] = histo[0];
 		for (int i = 1; i < tailleTab; i++) {
@@ -134,16 +147,20 @@ class GrayLevelProcessing {
 	}
 
 	/**
+	 * Calculate the cumulative histogram of a band
+	 * 
 	 * @param input the GrayU8 band
 	 * @return int[]
 	 */
 	static int[] histogramCumul(GrayU8 input) {
-		return histogramCumulGeneric(histogram(input), 256);
+		return histogramCumulGeneric(histogram(input));
 	}
 
 	/**
+	 * Calculate an egalization of a band
+	 * 
 	 * @param input      the GrayU8 band
-	 * @param histoCumul
+	 * @param histoCumul the cumulative histogram
 	 */
 	static void egalisation(GrayU8 input, int[] histoCumul) {
 		int[] egal = new int[256];
@@ -158,9 +175,11 @@ class GrayLevelProcessing {
 	}
 
 	/**
+	 * Apply the water color thershlod on a band
+	 * 
 	 * @param input the GrayU8 band
 	 */
-	public static void threshold4step(GrayU8 input) {
+	public static void thresholdsWaterColor(GrayU8 input) {
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
 				int gl = input.get(x, y);
@@ -177,8 +196,10 @@ class GrayLevelProcessing {
 	}
 
 	/**
+	 * Apply a rotation on a band
+	 * 
 	 * @param input the GrayU8 band
-	 * @param theta
+	 * @param theta the angle of rotation
 	 */
 	static void rotate(GrayU8 input, double theta) {
 		int x0 = input.width / 2;
@@ -197,9 +218,11 @@ class GrayLevelProcessing {
 	}
 
 	/**
+	 * Apply a perspective effect on a band
+	 * 
 	 * @param input       the GrayU8 band
-	 * @param d
-	 * @param perspective
+	 * @param d           the factor of the deformation
+	 * @param perspective the type of perspective
 	 */
 	static void perspective(GrayU8 input, double d, Perspective perspective) {
 		int x0 = x0declarationToPerspective(input, d, perspective);
@@ -208,9 +231,11 @@ class GrayLevelProcessing {
 	}
 
 	/**
+	 * The x origin of the deformation
+	 * 
 	 * @param input       the GrayU8 band
-	 * @param d
-	 * @param perspective
+	 * @param d           the factor of the deformation
+	 * @param perspective the type of perspective
 	 * @return int
 	 */
 	private static int x0declarationToPerspective(GrayU8 input, double d, Perspective perspective) {
@@ -226,9 +251,11 @@ class GrayLevelProcessing {
 	}
 
 	/**
+	 * The y origin of the deformation
+	 * 
 	 * @param input       the GrayU8 band
-	 * @param d
-	 * @param perspective
+	 * @param d           the factor of the deformation
+	 * @param perspective the type of perspective
 	 * @return int
 	 */
 	private static int y0declarationToPerspective(GrayU8 input, double d, Perspective perspective) {
@@ -244,10 +271,12 @@ class GrayLevelProcessing {
 	}
 
 	/**
+	 * Do the treatement of the perspective
+	 * 
 	 * @param input the GrayU8 band
-	 * @param d
-	 * @param x0
-	 * @param y0
+	 * @param d     the factor of the deformation
+	 * @param x0    the x origin of the perspective
+	 * @param y0    the y origin of the perspective
 	 */
 	private static void perspectiveTreatement(GrayU8 input, double d, int x0, int y0) {
 		GrayU8 tmp = input.clone();
@@ -264,18 +293,20 @@ class GrayLevelProcessing {
 	}
 
 	/**
-	 * @param input            the GrayU8 band
-	 * @param tourbillonFactor
-	 * @param x0
-	 * @param y0
+	 * Apply a vortex transformation
+	 * 
+	 * @param input        the GrayU8 band
+	 * @param vortexFactor the factor of the transformation
+	 * @param x0           The x origin of the vortex
+	 * @param y0           The y origin of the vortex
 	 */
-	static void tourbillon(GrayU8 input, float tourbillonFactor, int x0, int y0) {
+	static void tourbillon(GrayU8 input, float vortexFactor, int x0, int y0) {
 		x0 *= input.width / 100;
 		y0 *= input.height / 100;
 		GrayU8 tmp = input.clone();
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
-				double theta = 10 * Math.exp(-tourbillonFactor * radious(x, y, x0, y0));
+				double theta = 10 * Math.exp(-vortexFactor * radious(x, y, x0, y0));
 				int p = (int) ((x - x0) * Math.cos(theta) + (y - y0) * Math.sin(theta) + x0);
 				int q = (int) (-(x - x0) * Math.sin(theta) + (y - y0) * Math.cos(theta) + y0);
 				if (p < input.width && q < input.height && p >= 0 && q >= 0)
@@ -287,10 +318,10 @@ class GrayLevelProcessing {
 	}
 
 	/**
-	 * @param x
-	 * @param y
-	 * @param x0
-	 * @param y0
+	 * @param x  the x position
+	 * @param y  the y position
+	 * @param x0 The x origin of the deformation
+	 * @param y0 The y origin of the deformation
 	 * @return double
 	 */
 	private static double radious(int x, int y, int x0, int y0) {

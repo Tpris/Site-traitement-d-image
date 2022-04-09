@@ -6,6 +6,11 @@ import boofcv.struct.image.GrayU8;
 
 class Convolution {
 
+  
+  /** 
+   * @param input
+   * @param output
+   */
   static void gradientImageSobel(GrayU8 input, GrayU8 output) {
     int h1[][] = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
     int h2[][] = { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
@@ -34,6 +39,15 @@ class Convolution {
     }
   }
 
+  
+  /** 
+   * @param input
+   * @param output
+   * @param size
+   * @param sigma
+   * @param kernel
+   * @param borderType
+   */
   public static void gaussianBlurGrayU8(GrayU8 input, GrayU8 output, int size, float sigma, double[][] kernel,
       BorderType borderType) {
     if (size % 2 == 1) {
@@ -58,6 +72,12 @@ class Convolution {
     }
   }
 
+  
+  /** 
+   * @param size
+   * @param sigma
+   * @return double[][]
+   */
   public static double[][] gaussianKernel(int size, float sigma) {
     double[][] kernel = new double[size][size];
     int bord = (size - 1) / 2;
@@ -77,6 +97,13 @@ class Convolution {
     return kernel;
   }
 
+  
+  /** 
+   * @param input
+   * @param output
+   * @param size
+   * @param borderType
+   */
   static void meanFilterWithBorders(GrayU8 input, GrayU8 output, int size, BorderType borderType) {
     if (size % 2 == 1) {
       int bord = (size - 1) / 2;
@@ -94,6 +121,15 @@ class Convolution {
     }
   }
 
+  
+  /** 
+   * @param x
+   * @param y
+   * @param bord
+   * @param size
+   * @param input
+   * @param output
+   */
   private static void meanFilterTreatement(int x, int y, int bord, int size, GrayU8 input, GrayU8 output) {
     int val = 0;
     for (int ky = -bord; ky <= bord; ky++) {
@@ -104,6 +140,16 @@ class Convolution {
     output.set(x, y, val / (size * size));
   }
 
+  
+  /** 
+   * @param x
+   * @param y
+   * @param bord
+   * @param size
+   * @param input
+   * @param output
+   * @param borderType
+   */
   private static void borderTreatement(int x, int y, int bord, int size, GrayU8 input, GrayU8 output,
       BorderType borderType) {
     switch (borderType) {
@@ -123,6 +169,18 @@ class Convolution {
     }
   }
 
+  
+  /** 
+   * @param x
+   * @param y
+   * @param bord
+   * @param size
+   * @param kernel
+   * @param sigma
+   * @param input
+   * @param output
+   * @param borderType
+   */
   private static void gaussianBorderTreatement(int x, int y, int bord, int size, double[][] kernel, double sigma,
       GrayU8 input, GrayU8 output, BorderType borderType) {
     switch (borderType) {
@@ -142,10 +200,25 @@ class Convolution {
     }
   }
 
+  
+  /** 
+   * @param x
+   * @param y
+   * @param input
+   * @param output
+   */
   private static void skip(int x, int y, GrayU8 input, GrayU8 output) {
     output.set(x, y, input.get(x, y));
   }
 
+  
+  /** 
+   * @param x
+   * @param y
+   * @param bord
+   * @param input
+   * @param output
+   */
   private static void normalizedMean(int x, int y, int bord, GrayU8 input, GrayU8 output) {
     int val = 0;
     int nbPix = 0;
@@ -162,6 +235,16 @@ class Convolution {
     output.set(x, y, val / nbPix);
   }
 
+  
+  /** 
+   * @param x
+   * @param y
+   * @param bord
+   * @param input
+   * @param output
+   * @param kernel
+   * @param sigma
+   */
   private static void normalizedGaussian(int x, int y, int bord, GrayU8 input, GrayU8 output, double[][] kernel,
       double sigma) {
     double coefEntierKernel = 1 / kernel[bord][bord];
@@ -187,6 +270,15 @@ class Convolution {
     output.set(x, y, (int) (val / coef));
   }
 
+  
+  /** 
+   * @param x
+   * @param y
+   * @param bord
+   * @param size
+   * @param input
+   * @param output
+   */
   private static void extendedMean(int x, int y, int bord, int size, GrayU8 input, GrayU8 output) {
     int valE = 0;
     int xE, yE = 0;
@@ -209,6 +301,16 @@ class Convolution {
     output.set(x, y, valE / (size * size));
   }
 
+  
+  /** 
+   * @param x
+   * @param y
+   * @param bord
+   * @param size
+   * @param input
+   * @param output
+   * @param kernel
+   */
   private static void extendedGaussian(int x, int y, int bord, int size, GrayU8 input, GrayU8 output,
       double[][] kernel) {
     int valE = 0;
@@ -232,6 +334,15 @@ class Convolution {
     output.set(x, y, valE);
   }
 
+  
+  /** 
+   * @param x
+   * @param y
+   * @param bord
+   * @param size
+   * @param input
+   * @param output
+   */
   private static void reflectMean(int x, int y, int bord, int size, GrayU8 input, GrayU8 output) {
     int valE = 0;
     int xE, yE = 0;
@@ -255,6 +366,16 @@ class Convolution {
     output.set(x, y, valE / (size * size));
   }
 
+  
+  /** 
+   * @param x
+   * @param y
+   * @param bord
+   * @param size
+   * @param input
+   * @param output
+   * @param kernel
+   */
   private static void reflectGaussian(int x, int y, int bord, int size, GrayU8 input, GrayU8 output,
       double[][] kernel) {
     int valE = 0;

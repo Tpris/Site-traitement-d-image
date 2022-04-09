@@ -5,7 +5,7 @@ import boofcv.struct.image.Planar;
 
 class ColorProcessing {
 
-  /** 
+  /**
    * Convert colored image to grayscale image.
    * 
    * @param input the Planar<GrayU8> image to edit
@@ -24,14 +24,15 @@ class ColorProcessing {
       }
     }
   }
-  
-  /** 
+
+  /**
    * Convert rgb values to hsv array
    * 
-   * @param r from rgb values
-   * @param g from rgb values
-   * @param b from rgb values
-   * @param hsv float[] with hsvvalues corresponding to the r, g and b values entered
+   * @param r   from rgb values
+   * @param g   from rgb values
+   * @param b   from rgb values
+   * @param hsv float[] with hsvvalues corresponding to the r, g and b values
+   *            entered
    */
   private static void rgbToHsv(int r, int g, int b, float[] hsv) {
     hsv[2] = Math.max(r, Math.max(g, b));
@@ -46,27 +47,27 @@ class ColorProcessing {
     else
       hsv[0] = 60 * (r - g) / (hsv[2] - min) + 240;
   }
-  
-  /** 
+
+  /**
    * Stores r, g and b values in rgb array
    * 
    * @param rgb the rgb array
-   * @param r the red value
-   * @param g the green value
-   * @param b the blue value
+   * @param r   the red value
+   * @param g   the green value
+   * @param b   the blue value
    */
-  private static void setRgb(int[] rgb, int r, int g, int b){
+  private static void setRgb(int[] rgb, int r, int g, int b) {
     rgb[0] = r;
     rgb[1] = g;
     rgb[2] = b;
   }
-  
-  /** 
+
+  /**
    * Convert hsv values to rgb array
    * 
-   * @param h from the hsv values
-   * @param s from the hsv values
-   * @param v from the hsv values
+   * @param h   from the hsv values
+   * @param s   from the hsv values
+   * @param v   from the hsv values
    * @param rgb the rgb array
    */
   private static void hsvToRgb(float h, float s, float v, int[] rgb) {
@@ -77,50 +78,57 @@ class ColorProcessing {
     int n = (int) (v * (1 - (1 - f) * s));
     int vInt = (int) v;
     switch (ti) {
-      case 0: setRgb(rgb, vInt, n, l);
-          break;
-      case 1: setRgb(rgb, m, vInt, l);
-          break;
-      case 2: setRgb(rgb, l, vInt, n);
-          break;
-      case 3: setRgb(rgb, l, m, vInt);
-          break;
-      case 4: setRgb(rgb, n, l, vInt);
-          break;
-      case 5: setRgb(rgb, vInt, l, m);
-          break;
+      case 0:
+        setRgb(rgb, vInt, n, l);
+        break;
+      case 1:
+        setRgb(rgb, m, vInt, l);
+        break;
+      case 2:
+        setRgb(rgb, l, vInt, n);
+        break;
+      case 3:
+        setRgb(rgb, l, m, vInt);
+        break;
+      case 4:
+        setRgb(rgb, n, l, vInt);
+        break;
+      case 5:
+        setRgb(rgb, vInt, l, m);
+        break;
     }
   }
-  
-  /** 
-   * Apply a hue filter on a position depending on the hue, the minimum and the maximun saturation
+
+  /**
+   * Apply a hue filter on a position depending on the hue, the minimum and the
+   * maximun saturation
    * 
    * @param input the Planar<GrayU8> image to edit
-   * @param h the hue value
-   * @param smin the minimum saturation
-   * @param smax the maximum saturation
-   * @param x the x position
-   * @param y the y position
+   * @param h     the hue value
+   * @param smin  the minimum saturation
+   * @param smax  the maximum saturation
+   * @param x     the x position
+   * @param y     the y position
    */
   static void filter(Planar<GrayU8> input, float h, float smin, float smax, int x, int y) {
     int[] rgb = new int[3];
     float[] hsv = new float[3];
     rgbToHsv(input.getBand(0).get(x, y),
-              input.getBand(1).get(x, y),
-              input.getBand(2).get(x, y), hsv);
+        input.getBand(1).get(x, y),
+        input.getBand(2).get(x, y), hsv);
 
     if (hsv[1] < smin)
       hsv[1] = smin;
     else if (hsv[1] > smax)
       hsv[1] = smax;
-    
+
     hsvToRgb(h, hsv[1], hsv[2], rgb);
     for (int i = 0; i < 3; ++i) {
       input.getBand(i).set(x, y, rgb[i]);
     }
   }
-  
-  /** 
+
+  /**
    * Apply an equalization depending on V from hsv values.
    * 
    * @param image the Planar<GrayU8> image to edit
@@ -143,8 +151,8 @@ class ColorProcessing {
       }
     }
   }
-  
-  /** 
+
+  /**
    * Apply an equalization depending on S from hsv values.
    * 
    * @param image the Planar<GrayU8> image to edit
@@ -152,7 +160,7 @@ class ColorProcessing {
   static void equalizationColorS(Planar<GrayU8> image) {
     float[] egal = new float[101];
     int[] histoCumul = histogramCumulS(image);
-    egal[0]=0;
+    egal[0] = 0;
     for (int i = 1; i < 101; i++) {
       egal[i] = histoCumul[i] * 100 / (image.height * image.width);
     }
@@ -168,28 +176,28 @@ class ColorProcessing {
       }
     }
   }
-  
-  /** 
+
+  /**
    * Calculate the cumulative histogram of V value
    * 
    * @param input the Planar<GrayU8> image to edit
    * @return int[]
    */
   private static int[] histogramCumulV(Planar<GrayU8> input) {
-    return GrayLevelProcessing.histogramCumulGeneric(histogramV(input), 256);
+    return GrayLevelProcessing.histogramCumulGeneric(histogramV(input));
   }
-  
-  /** 
+
+  /**
    * Calculate the cumulative histogram of S value
    * 
    * @param input the Planar<GrayU8> image to edit
    * @return int[]
    */
   private static int[] histogramCumulS(Planar<GrayU8> input) {
-    return GrayLevelProcessing.histogramCumulGeneric(histogramS(input), 101);
+    return GrayLevelProcessing.histogramCumulGeneric(histogramS(input));
   }
-  
-  /** 
+
+  /**
    * Calculate the histogram of V value
    * 
    * @param image the Planar<GrayU8> image to edit
@@ -205,8 +213,8 @@ class ColorProcessing {
     }
     return values;
   }
-  
-  /** 
+
+  /**
    * Calculate the histogram of S value
    * 
    * @param image the Planar<GrayU8> image to edit
@@ -217,17 +225,17 @@ class ColorProcessing {
     for (int y = 0; y < image.height; ++y) {
       for (int x = 0; x < image.width; ++x) {
         float s = getSfromRgb(x, y, image);
-        values[Math.round(s*100)]++;
+        values[Math.round(s * 100)]++;
       }
     }
     return values;
   }
-  
-  /** 
+
+  /**
    * Get the hsv array from rgb values of an image position
    * 
-   * @param x the x position
-   * @param y the y position
+   * @param x     the x position
+   * @param y     the y position
    * @param image the Planar<GrayU8> image to edit
    * @return float[] the hsv array
    */
@@ -237,12 +245,12 @@ class ColorProcessing {
     rgbToHsv(rgb[0], rgb[1], rgb[2], hsv);
     return hsv;
   }
-  
-  /** 
+
+  /**
    * Get the V value from rgb values of an image position
    * 
-   * @param x the x position
-   * @param y the y position
+   * @param x     the x position
+   * @param y     the y position
    * @param image the Planar<GrayU8> image to edit
    * @return float
    */
@@ -250,12 +258,12 @@ class ColorProcessing {
     float[] hsv = getHSVfromRgb(x, y, image);
     return hsv[2];
   }
-  
-  /** 
+
+  /**
    * Get the S value from rgb values of an image position
    * 
-   * @param x the x position
-   * @param y the y position
+   * @param x     the x position
+   * @param y     the y position
    * @param image the Planar<GrayU8> image to edit
    * @return float
    */
