@@ -127,6 +127,19 @@
     if(minCursors.value > maxCursors.value)
       minCursors.value = maxCursors.value
   }, {deep:true})
+
+  const effects = [EffectTypes.Rainbow, EffectTypes.DynContrast]
+  effects.forEach(effect => {
+    watch(() => findEffect(effect), (newEffect) => {
+      if(!newEffect) return
+      let minCursors = newEffect.params.cursors[0]
+      let maxCursors =  newEffect.params.cursors[1]
+      if(minCursors.param[1])
+        minCursors.param[1] = maxCursors.value + ""
+      if(minCursors.value > maxCursors.value)
+        minCursors.value = maxCursors.value
+    }, {deep:true})
+  });
 </script>
 
 <template>
