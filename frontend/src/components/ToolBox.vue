@@ -117,6 +117,18 @@
     addEffects(effect)
   }
 
+  const minInfToMax = (effect: UnwrapRef<Effect>, indMin: number, indMax : number) => {
+    watch(() => findEffect(effect), (newEffect) => {
+    if(!newEffect) return
+    let minCursors = newEffect.params.cursors[indMin]
+    let maxCursors =  newEffect.params.cursors[indMax]
+    if(minCursors.param[1])
+      minCursors.param[1] = maxCursors.value + ""
+    if(minCursors.value > maxCursors.value)
+      minCursors.value = maxCursors.value
+  }, {deep:true})
+  }
+
   //Perform specific operation of specific effects (Filter Effect)
   watch(() => findEffect(EffectTypes.Filter), (newEffect) => {
     if(!newEffect) return
@@ -130,15 +142,16 @@
 
   const effects = [EffectTypes.Rainbow, EffectTypes.DynContrast]
   effects.forEach(effect => {
-    watch(() => findEffect(effect), (newEffect) => {
-      if(!newEffect) return
-      let minCursors = newEffect.params.cursors[0]
-      let maxCursors =  newEffect.params.cursors[1]
-      if(minCursors.param[1])
-        minCursors.param[1] = maxCursors.value + ""
-      if(minCursors.value > maxCursors.value)
-        minCursors.value = maxCursors.value
-    }, {deep:true})
+    // watch(() => findEffect(effect), (newEffect) => {
+    //   if(!newEffect) return
+    //   let minCursors = newEffect.params.cursors[0]
+    //   let maxCursors =  newEffect.params.cursors[1]
+    //   if(minCursors.param[1])
+    //     minCursors.param[1] = maxCursors.value + ""
+    //   if(minCursors.value > maxCursors.value)
+    //     minCursors.value = maxCursors.value
+    // }, {deep:true})
+    minInfToMax(effect,0,1);
   });
 </script>
 
