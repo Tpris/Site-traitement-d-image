@@ -72,6 +72,10 @@ const getSize =  (size: String) => {
   return s[0].concat(s[1]).concat(s[2])
 }
 
+/**
+ * Get source img
+ * @param id String
+ */
 const getSource=  (id: string) => {
   api.getImage(Number.parseFloat(id))
       .then((data) =>{
