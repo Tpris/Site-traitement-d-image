@@ -2,96 +2,122 @@
   import ToolBoxButton from "@/components/buttons/ToolBoxButton.vue";
   import {reactive, UnwrapRef, watch} from "vue";
   import {EffectTypes, Cursors, DropBox, Effect} from "@/composables/Effects";
+  // Initialisation du store
+  import {useImageStore} from "@/store";
+  import {storeToRefs} from "pinia";
+  const store = useImageStore()
 
-  const props = defineProps<{ id: number }>()
-  const emits = defineEmits(["applyFilter"])
+  // Récupération des attributs nécéssaires du store
+  let { selectedImage, appliedEffects } = storeToRefs(store)
 
   const state = reactive({
     selectedEffect: new Effect(""),
-    appliedEffects: Array<Effect>(),
     listEffect: [
+        new Effect(EffectTypes.GaussianBlur),
+        new Effect(EffectTypes.MeanBlur),
         new Effect(EffectTypes.Sobel),
         new Effect(EffectTypes.Threshold),
         new Effect(EffectTypes.Luminosity),
-        new Effect(EffectTypes.Filter),
-        new Effect(EffectTypes.Rainbow),
-        new Effect(EffectTypes.ColorToGray),
-        new Effect(EffectTypes.Negative),
-        new Effect(EffectTypes.GaussianBlur),
-        new Effect(EffectTypes.MeanBlur),
         new Effect(EffectTypes.EgalisationS),
         new Effect(EffectTypes.EgalisationV),
         new Effect(EffectTypes.EgalisationRGB),
         new Effect(EffectTypes.DynContrast),
-        new Effect(EffectTypes.Perspective),
-        new Effect(EffectTypes.Rotation),
-        new Effect(EffectTypes.Vortex),
+        new Effect(EffectTypes.Filter),
+        new Effect(EffectTypes.Rainbow),
+        new Effect(EffectTypes.ColorToGray),
+        new Effect(EffectTypes.Negative),
+        new Effect(EffectTypes.WaterColor),
         new Effect(EffectTypes.Draw),
-        new Effect(EffectTypes.WaterColor)
+        new Effect(EffectTypes.Rotation),
+        new Effect(EffectTypes.Perspective),
+        new Effect(EffectTypes.Vortex)
       ] as Effect[],
     timer: undefined as unknown as ReturnType<typeof setTimeout>,
     waitTime: 500,
   })
 
-  watch(() => props.id, () =>{
+  watch(() => selectedImage.value.id, () =>{
     closeSlider()
-    state.appliedEffects.length = 0
+    appliedEffects.value.length = 0
     state.selectedEffect = new Effect("")
-    reloadEffectsImage()
   })
 
   const hasParam = (e: UnwrapRef<Effect>) => e.params.dropBoxes.length !== 0 || e.params.cursors.length !== 0
 
+  // Open the menu of parameters
   const openSlider = () => {
     let element = document.getElementById('container-options') as HTMLElement
-    if(element) element.style.width = '30vw'
+    if(element) {
+      if(window.matchMedia("(min-width: 360px) and (max-width:640px)").matches)
+        element.style.width = '60vw';
+      else
+        element.style.width = '30vw'
+    }
   }
+
+  // Close the menu of parameters
   const closeSlider = () => {
     let element = document.getElementById('container-options') as HTMLElement
-    if(element) element.style.width = '0'
+    if(element) {
+        element.style.width = '0'
+    }
   }
+
   const activeButton = () => "neumorphism-activate"
-
   const selectEffect = (e: UnwrapRef<Effect>) => state.selectedEffect = e
-  const addEffects = (effect: UnwrapRef<Effect>) => state.appliedEffects.push(effect)
+  const addEffects = (effect: UnwrapRef<Effect>) => appliedEffects.value.push(effect)
   const findEffect = (type:string) => state.listEffect.find((e) => e.type === type)
-  const removeEffect = (type: string) => state.appliedEffects = state.appliedEffects.filter((e) => e.type !== type )
-  const isAppliedEffect = (type:string) => state.appliedEffects.find((e) => e.type === type)
-  const reloadEffectsImage = () => emits("applyFilter", state.appliedEffects)
+  const removeEffect = (type: string) => appliedEffects.value = appliedEffects.value.filter((e) => e.type !== type )
+  const isAppliedEffect = (type:string) => appliedEffects.value.find((e) => e.type === type)
+  const removeEffectAndRefresh = (type: string) => removeEffect(type)
 
-  const removeEffectAndRefresh = (type: string) =>{
-    removeEffect(type)
-    reloadEffectsImage()
-  }
-
+  /**
+   * Action to perform when we want to apply an effect
+   * @param effect
+   */
   const handleEffect = (effect: UnwrapRef<Effect>) =>{
-    if(props.id === -1) return
+    if(selectedImage.value.id === -1) return
     openSlider()
     selectEffect(effect)
     if(!isAppliedEffect(effect.type)) performEffect(effect, null, null)
   }
 
+  /**
+   * Action to perform when we want to apply an effect without parameters
+   * @param effect
+   */
   const handleEffectNoParam = (effect: UnwrapRef<Effect>) => {
-    if(props.id === -1) return
+    if(selectedImage.value.id === -1) return
     closeSlider()
     selectEffect(effect)
     if(isAppliedEffect(effect.type)) removeEffect(effect.type)
     else addEffects(effect)
-    reloadEffectsImage()
   }
 
+  /**
+   * Avoid spam of left and right arrow
+   * @param effect the effect
+   * @param e the event
+   * @param param the parameters
+   */
   const handleKeyUpCursors = (effect: UnwrapRef<Effect>, e: any, param: UnwrapRef<Cursors> | UnwrapRef<DropBox> | null) => {
     clearTimeout(state.timer);
     state.timer = setTimeout(() => performEffect(effect, e, param), state.waitTime);
   }
 
+  /**
+   * Perform an effect
+   * @param effect the effect
+   * @param e the event
+   * @param param the parameters
+   */
   const performEffect = (effect: UnwrapRef<Effect>, e: any, param: UnwrapRef<Cursors> | UnwrapRef<DropBox> | null) => {
     if (param) param.value = e.target.value
     removeEffect(effect.type)
     addEffects(effect)
-    reloadEffectsImage()
   }
 
+  //Perform specific operation of specific effects (Filter Effect)
   watch(() => findEffect(EffectTypes.Filter), (newEffect) => {
     if(!newEffect) return
     let minCursors = newEffect.params.cursors[1]
@@ -104,7 +130,6 @@
 </script>
 
 <template>
-
   <div id="container-tool-box">
     <ul id="tool-box" class="neumorphism">
       <li v-for="effect in state.listEffect" :key="effect.type">
@@ -223,7 +248,7 @@ margin-right: 5px;
   align-items: center;
   position: relative;
   width: 0;
-  transition: 550ms width ease-in-out;
+  transition: 550ms width ease-in-out, 550ms height ease-in-out;
 }
 
 #arrow-left{
@@ -246,4 +271,10 @@ margin-right: 5px;
 .neumorphism-activate .effect-icon{
   color: #0777D9;
 }
+@media (min-width: 360px) and (max-width:640px){
+  #options{
+    width: 100vw;
+  }
+}
+
 </style>

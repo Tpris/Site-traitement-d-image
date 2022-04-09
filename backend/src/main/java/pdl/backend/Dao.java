@@ -13,6 +13,8 @@ public interface Dao<T> {
 
   List<T> retrieveGroup(final long idStart, final int size);
 
+  List<T> retrieveWithFilters(final String type, final String nameImg);
+
   void update(final T t, final String[] params);
 
   void delete(final T t);

@@ -185,6 +185,19 @@ public class ImageController<Item> {
         : new ArrayList<String>();
   }
 
+  /**
+   * Get an image with its id
+   * @param id long
+   * @param algo String
+   * @param delta String
+   * @param size String
+   * @param sigma String
+   * @param BT String
+   * @param hue String
+   * @param smin String
+   * @param smax String
+   * @return PNG or JPEG
+   */
   @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.TEXT_HTML_VALUE})
   public @ResponseBody ResponseEntity<?> getImage(@PathVariable("id") long id,
       @RequestParam("algorithm") Optional<String> algo,
@@ -209,9 +222,7 @@ public class ImageController<Item> {
     Optional<Image> image = imageDao.retrieve(id);
 
     if (image.isPresent()) {
-      String extension = image.get().getName();
-      int p = extension.lastIndexOf(".");
-      extension = extension.substring(p + 1);
+      String extension = image.get().getType().getSubtype();
       InputStream inputStream = new ByteArrayInputStream(image.get().getData());
 
       if (algo.isPresent()) {
@@ -274,6 +285,11 @@ public class ImageController<Item> {
     return new ResponseEntity<>("Image id=" + id + " not found.", HttpStatus.NOT_FOUND);
   }
 
+  /**
+   * DELETE image with its id
+   * @param id long
+   * @return ResponseEntity
+   */
   @RequestMapping(value = "/images/{id}", method = RequestMethod.DELETE)
   public ResponseEntity<?> deleteImage(@PathVariable("id") long id) {
 
@@ -283,9 +299,16 @@ public class ImageController<Item> {
       imageDao.delete(image.get());
       return new ResponseEntity<>("Image id=" + id + " deleted.", HttpStatus.OK);
     }
+
     return new ResponseEntity<>("Image id=" + id + " not found.", HttpStatus.NOT_FOUND);
   }
 
+  /**
+   * POST an image
+   * @param file MultipartFile
+   * @param redirectAttributes RedirectAttributes
+   * @return ResponseEntity
+   */
   @RequestMapping(value = "/images", method = RequestMethod.POST)
   public ResponseEntity<?> addImage(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
 
@@ -304,14 +327,29 @@ public class ImageController<Item> {
     return new ResponseEntity<>("Image uploaded", HttpStatus.OK);
   }
 
+  /**
+   * Get a list of images depending on the parameters
+   * @param index Long
+   * @param size Integer
+   * @param type String
+   * @param nameImg String
+   * @return JSON
+   */
   @RequestMapping(value = "/images", method = RequestMethod.GET, produces = "application/json")
   @ResponseBody
   public ArrayNode getImageList(
       @RequestParam("index") Optional<Long> index,
-      @RequestParam("size") Optional<Integer> size) {
+      @RequestParam("size") Optional<Integer> size,
+      @RequestParam("type") Optional<String> type,
+      @RequestParam("nameImg") Optional<String> nameImg)  {
 
     List<Image> images = new ArrayList<>();
-    if (index.isPresent() && size.isPresent()) {
+
+    if(type.isPresent() && nameImg.isPresent()){
+
+      images = imageDao.retrieveWithFilters(type.get(), nameImg.get());
+    }
+    else if (index.isPresent() && size.isPresent()) {
       images = imageDao.retrieveGroup(index.get(), size.get());
     } else {
       images = imageDao.retrieveAll();
@@ -327,7 +365,7 @@ public class ImageController<Item> {
       ObjectNode objectNode = mapper.createObjectNode();
       objectNode.put("id", image.getId());
       objectNode.put("name", image.getName());
-      objectNode.put("type", image.getType().toString());
+      objectNode.put("type", image.getType().getSubtype());
       objectNode.put("size", image.getSize());
       nodes.add(objectNode);
 

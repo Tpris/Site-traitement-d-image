@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import {ref} from "vue";
+const isGallery = ref(  window.location.pathname == "/gallery")
 </script>
 
 <template>
-  <div id="app">
+  <div v-bind:class=" isGallery? 'overflow-hidden': ''" id="app">
       <router-view />
   </div>
 </template>
@@ -10,13 +12,17 @@
 <style>
 #app {
   text-align: center;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Helvetica, Arial,  sans-serif;
   color: #2c3e50;
 }
 
 body{
   margin:0;
   background-color: #E9F2FB;
+}
+
+.overflow-hidden{
+  overflow-x: hidden;
 }
 
 @keyframes appear-neu {

@@ -1,58 +1,34 @@
 <script setup lang="ts">
-import {reactive} from 'vue';
-import { ImageType } from '@/image'
 import ToolBox from '@/components/ToolBox.vue'
 import Carrousel from '@/components/HomeCaroussel.vue'
 import Image from "@/components/ImageGetter.vue"
 import NavBar from '@/components/NavBar.vue'
-import {Effect} from "@/composables/Effects";
 import ImageMeta from "@/components/ImageMeta.vue";
 
-const state = reactive({
-  selectedImage: {
-    id: -1,
-    source : '',
-    name: '',
-    type: '',
-    size: '',
-  },
-  effects: [] as Effect[],
-  imageList: Array<ImageType>(),
-  uploaded: false,
-  deleted: false,
-})
-
-const performFilter = (effects: Effect[]) => state.effects = effects
-const handleDeleted = () => {
-  state.selectedImage = {id: -1, source : '', name: '', type:'', size:''}
-  state.deleted = true
-}
+// Initialisation du store
+import { useImageStore } from '@/store'
+import {storeToRefs} from "pinia";
+const store = useImageStore()
+// Récupération des attributs nécéssaires du store
+let { selectedImage } = storeToRefs(store)
 
 </script>
 
 <template>
-  <nav-bar @uploaded="state.uploaded = true" @deleted="handleDeleted" :selectedImage="state.selectedImage"></nav-bar>
+  <nav-bar></nav-bar>
   <div id="main-content">
     <div id="toolBox">
-      <tool-box :selected-image="state.selectedImage.id" :id="state.selectedImage.id" @applyFilter="(effects) => performFilter(effects)"></tool-box>
+      <tool-box></tool-box>
     </div>
     <div id="img-box-selected">
-      <div class="img-box" :key="state.selectedImage.id">
-        <Image v-if="state.selectedImage.id !== -1" v-model="state.selectedImage.source" :id="state.selectedImage.id" :effects="state.effects"></Image>
+      <div class="img-box" :key="selectedImage.id">
+        <Image v-if="selectedImage.id !== -1" :id="selectedImage.id" :authorize-effect="true"></Image>
       </div>
     </div>
-    <image-meta :selectedImage="state.selectedImage"></image-meta>
+    <image-meta></image-meta>
   </div>
   <div id="carrousel-box">
-    <carrousel v-model="state.selectedImage"
-               :id="state.selectedImage.id"
-               :images="state.imageList"
-               :uploaded="state.uploaded"
-               :deleted="state.deleted"
-                @uploaded="state.uploaded = false"
-                @deleted="state.deleted = false"
-    >
-    </carrousel>
+    <carrousel></carrousel>
   </div>
 </template>
 
@@ -72,6 +48,18 @@ const handleDeleted = () => {
 
 .img-box{
   animation: appear-opacity 500ms ease-in-out;
+}
+
+@media (min-width: 360px) and (max-width:640px){
+  #img-box-selected{
+    position: fixed;
+    left: 26vw;
+    z-index: -1;
+  }
+
+  .img-box img {
+    max-width: 70vw;
+  }
 }
 
 @keyframes appear-opacity {

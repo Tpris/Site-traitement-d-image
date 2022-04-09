@@ -1,21 +1,33 @@
 <script setup lang="ts">
-import {ImageType} from "@/image";
-import {defineProps, onMounted, reactive, ref, UnwrapRef, watch} from "vue";
+import {ImageType} from "@/types/ImageType";
+import { onMounted, reactive, ref, UnwrapRef, watch} from "vue";
 import Image from '@/components/ImageGetter.vue';
 import {api} from "@/http-api";
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import { Controller, Navigation, Pagination } from 'swiper';
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
-const props = defineProps<{ images: ImageType[], id: number, uploaded: boolean, deleted: boolean}>()
-const emit  = defineEmits(['update:modelValue', 'uploaded', 'deleted', 'nameChanged'])
+//Initialize the store
+import { useImageStore } from '@/store'
+import {storeToRefs} from "pinia";
+const store = useImageStore()
+// Get required attributes of the store
+let { selectedImage, uploaded, deleted } = storeToRefs(store)
 
 const state = reactive({
-  index: 0,
-  nbImg: 5,
+  size: 5,
   nbImages: 0,
+  isUpdate: false,
   currentImages: Array<ImageType>()
 })
 
-const mod= (n:number, m:number) => ((n % m) + m) % m
-
+/**
+ * Get the number of image specified begining at a certain index
+ * @param index the index
+ * @param nbImg the number of images
+ */
 const getCurrentImages = async (index:number, nbImg:number) => {
   return api.getImageListByNumber(index, nbImg).then((data) => {
     let dataArray = data as unknown as [{}]
@@ -28,63 +40,103 @@ const getCurrentImages = async (index:number, nbImg:number) => {
   })
 }
 
-onMounted(async () => {
-  state.currentImages = await getCurrentImages(state.index, state.nbImg)
-  state.index = state.nbImg
-})
+// Get the first images
+onMounted(async () => state.currentImages = await getCurrentImages(0, state.size+1))
 
-const getPreviousImages = async () => {
-  if(state.currentImages.length === 0) return
-  state.index--
-  state.currentImages.pop()
-  state.currentImages.unshift(...await getCurrentImages( mod(state.index - state.nbImg, state.nbImages), 1))
-}
+// Select an image
+const imageClick = (image: ImageType) => selectedImage.value = image
 
-const getNextImages = async () => {
-  if(state.currentImages.length === 0) return
-  state.index++
-  state.index = mod(state.index, state.nbImages)
-  state.currentImages.shift()
-  state.currentImages.push(...await getCurrentImages(state.index, 1))
-}
-
-const imageClick = (image: ImageType) => emit('update:modelValue', image)
-
+// Update the swiper when an image was uploaded
 const handleUploaded = async () => {
-    emit('uploaded', false)
-    state.currentImages.length = 0
-    state.currentImages = await getCurrentImages(state.nbImages+1 - state.nbImg, state.nbImg)
-    state.index = state.nbImages - 1
-    emit('update:modelValue', state.currentImages[state.currentImages.length - 1])
+    uploaded.value = false
+    state.isUpdate = true
+    let newImg = [...await getCurrentImages(state.nbImages,1)][0]
+    state.currentImages.push(newImg)
+    selectedImage.value = newImg
+    state.isUpdate = false
 }
 
+// Reset the swiper when an image was deleted
 const handleDeleted = async () => {
-  emit('deleted', false)
+  deleted.value = false
   state.currentImages.length = 0
-  state.index = state.nbImg
-  state.currentImages = await getCurrentImages(mod (state.nbImg - state.index,  state.nbImages), state.nbImg)
+  state.currentImages = await getCurrentImages(0, state.size)
+  await loadNextImages()
 }
 
-watch(() => props.uploaded, ((newState) => newState && handleUploaded()))
-watch(() => props.deleted, ((newState) => newState && handleDeleted()))
+const loadNextImages = async () => state.currentImages.push(...await getCurrentImages(state.currentImages.length, state.size))
+
+/**
+ * Action to perform at the end of the swiper
+ * @param swiper the swiper
+ */
+const handleEdge = async (swiper: any) => {
+  if(swiper.isEnd && state.currentImages.length !== state.nbImages && !state.isUpdate){
+    state.isUpdate = true
+    await loadNextImages()
+    swiper.update()
+    state.isUpdate = false
+  }
+}
+
+watch(() => uploaded.value, ((newState) => newState && handleUploaded()))
+watch(() => deleted.value, ((newState) => newState && handleDeleted()))
 </script>
 
 <template>
   <div class="neumorphism container">
-    <a id="arrow-left" class="arrow neumorphism neumorphism-push" @click="getPreviousImages">&lt;</a>
     <div class="container-images" :key="state.nbImages">
-      <Image v-for="image in state.currentImages"
-             :key="image.id"
-             class="img neumorphism neumorphism-push appear"
-             :class="props.id === image.id ? 'selected-image' : 'neumorphism-push'"
-             @click="imageClick(image)" :id="image.id"
-      />
+      <button id="arrow-left" class="prevArrow arrow neumorphism neumorphism-push">&lt;</button>
+      <swiper
+          :navigation="{ nextEl: '.nextArrow', prevEl: '.prevArrow' }"
+          :slidesPerView="5"
+          :speed="300"
+          :loop="false"
+          :slidesPerGroup="1"
+          :pagination="{
+            dynamicBullets: true,
+          }"
+          :modules="[Controller, Pagination, Navigation]"
+          class="mySwiper"
+          :breakpoints="{
+            360: {
+                slidesPerView: 1
+            },
+            640: {
+              slidesPerView: 2
+            },
+            820: {
+              slidesPerView: 5
+            }
+          }"
+          @toEdge="handleEdge"
+      >
+        <swiper-slide v-for="image in state.currentImages" class="text-center" :key="image.id">
+          <Image class="img neumorphism neumorphism-push appear"
+                 :class="selectedImage.id === image.id ? 'selected-image' : 'neumorphism-push'"
+                 @click="imageClick(image)" :id="image.id"
+          />
+        </swiper-slide>
+      </swiper>
+      <button id="arrow-right" class="nextArrow arrow neumorphism neumorphism-push">&gt;</button>
     </div>
-      <a id="arrow-right" class="arrow neumorphism neumorphism-push" @click="getNextImages">&gt;</a>
   </div>
 </template>
 
 <style scoped>
+
+.mySwiper{
+  margin-left: 0;
+  margin-right: 0;
+  width: 90vw;
+}
+
+.swiper-slide{
+  display: flex;
+  justify-content: center;
+  width: 90vw;
+}
+
 .container{
   width: 100%;
   height: 100%;
@@ -122,6 +174,7 @@ watch(() => props.deleted, ((newState) => newState && handleDeleted()))
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  border: none;
 }
 
 .arrow div{
@@ -156,9 +209,9 @@ watch(() => props.deleted, ((newState) => newState && handleDeleted()))
 .img{
   display: flex;
   align-self: center;
-  cursor: pointer;
   margin-left: 2vw;
   margin-right: 2vw;
+  cursor: pointer;
   transition: opacity 199ms ease-in-out;
 }
 
