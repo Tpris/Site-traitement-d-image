@@ -117,6 +117,14 @@
     addEffects(effect)
   }
 
+  
+
+  /**
+   * Cursor management min less than max
+   * @param effect the effect
+   * @param indMin min cursor index
+   * @param indMax max cursor index
+   */
   const minInfToMax = (effect: UnwrapRef<Effect>, indMin: number, indMax : number) => {
     watch(() => findEffect(effect), (newEffect) => {
     if(!newEffect) return
