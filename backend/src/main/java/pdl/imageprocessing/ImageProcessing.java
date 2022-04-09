@@ -304,8 +304,9 @@ public class ImageProcessing {
    * Define the step of a pixel depending on the step parameter which define the
    * difference between 2 steps.
    * 
-   * Shades are redefined according to landings. 
-   * The difference with the nearer landing is defined according to the biggest value of a position.
+   * Shades are redefined according to landings.
+   * The difference with the nearer landing is defined according to the biggest
+   * value of a position.
    * The difference is applied for each bands of the position.
    * 
    * @param input the Planar<GrayU8> image to edit
@@ -316,8 +317,8 @@ public class ImageProcessing {
   private static void gradient(Planar<GrayU8> input, int x, int y, int step, boolean dark) {
     int nbCanaux = input.getNumBands();
     int maxVal = getMaxValueFromAPosition(input, x, y);
-    int valDark = maxVal % step; // calcul the difference between the value and the upper landing 
-    int valBright = step - valDark; // calcul the difference between the value and the lower landing 
+    int valDark = maxVal % step; // calcul the difference between the value and the upper landing
+    int valBright = step - valDark; // calcul the difference between the value and the lower landing
     for (int i = 0; i < nbCanaux; ++i) {
       int v0 = input.getBand(i).get(x, y);
       int v = (dark) ? v0 - valDark : v0 + valBright;
@@ -337,7 +338,7 @@ public class ImageProcessing {
    * @param y     the ordinate of the pixel
    * @return the maximum value
    */
-  private static int getMaxValueFromAPosition(Planar<GrayU8> input, int x, int y){
+  private static int getMaxValueFromAPosition(Planar<GrayU8> input, int x, int y) {
     int nbCanaux = input.getNumBands();
     int maxVal = input.getBand(0).get(x, y);
     for (int i = 1; i < nbCanaux; ++i) {
@@ -380,17 +381,27 @@ public class ImageProcessing {
     for (int i = 0; i < nbCanaux; ++i) {
       GrayLevelProcessing.thresholdsWaterColor(input.getBand(i));
     }
-    for (int y = 0; y < input.height; ++y) {
-      for (int x = 0; x < input.width; ++x) {
-        for (int i = 0; i < nbCanaux; ++i) {
-          int c = contours.getBand(i).get(x, y);
+    applyMinValues(input, contours);
+    return new ResponseEntity<>("ok", HttpStatus.OK);
+  }
+
+  /**
+   * Apply the minimum values on the first input between two images.
+   * @param input the Planar image compared and edited
+   * @param input2 the Planar image compared
+   */
+  private static void applyMinValues(Planar<GrayU8> input, Planar<GrayU8> input2){
+    int nbCanaux = input.getNumBands();
+    for (int i = 0; i < nbCanaux; ++i) {
+      for (int y = 0; y < input.height; ++y) {
+        for (int x = 0; x < input.width; ++x) {
+          int c = input2.getBand(i).get(x, y);
           int color = input.getBand(i).get(x, y);
           if (c < color)
             input.getBand(i).set(x, y, c);
         }
       }
     }
-    return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 
   /**
