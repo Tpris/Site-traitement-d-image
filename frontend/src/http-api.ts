@@ -24,6 +24,7 @@ const requests = {
 export const api = {
   getImageList: (): Promise<AxiosResponse<any>> => requests.get('images', {}),
   getImageListByNumber: (index: number, size: number): Promise<AxiosResponse<any>> => requests.get('images', {params: { index: index, size:size }}),
+  getImageListWithFilters: (type: String, nameImg: String): Promise<AxiosResponse<any>> => requests.get('images', {params: { type: type, nameImg:nameImg }}),
   getImage: (id: PropType<{ type: NumberConstructor; required: boolean }> | number | undefined): Promise<AxiosResponse<any>> => requests.get(`images/${id}`, { responseType: "blob" }),
 
   getImageEffect: (): Promise<AxiosResponse<any>> => {

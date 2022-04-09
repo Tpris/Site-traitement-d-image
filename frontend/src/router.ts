@@ -9,6 +9,12 @@ const routes: Array<RouteRecordRaw> = [
     props: true
   },
   {
+    path: "/gallery",
+    name: "gallery",
+    component: () => import("./View/Gallery.vue"),
+    props: true
+  },
+  {
     path: "/image/:id",
     name: "image",
     component: () => import("./components/ImageGetter.vue"),
