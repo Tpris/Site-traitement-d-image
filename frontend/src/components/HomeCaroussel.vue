@@ -8,10 +8,12 @@ import { Controller, Navigation, Pagination } from 'swiper';
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+
+//Initialize the store
 import { useImageStore } from '@/store'
 import {storeToRefs} from "pinia";
-
 const store = useImageStore()
+// Get required attributes of the store
 let { selectedImage, uploaded, deleted } = storeToRefs(store)
 
 const state = reactive({
@@ -21,8 +23,11 @@ const state = reactive({
   currentImages: Array<ImageType>()
 })
 
-const controlledSwiper = ref(null);
-
+/**
+ * Get the number of image specified begining at a certain index
+ * @param index the index
+ * @param nbImg the number of images
+ */
 const getCurrentImages = async (index:number, nbImg:number) => {
   return api.getImageListByNumber(index, nbImg).then((data) => {
     let dataArray = data as unknown as [{}]
@@ -35,10 +40,13 @@ const getCurrentImages = async (index:number, nbImg:number) => {
   })
 }
 
+// Get the first images
 onMounted(async () => state.currentImages = await getCurrentImages(0, state.size+1))
 
+// Select an image
 const imageClick = (image: ImageType) => selectedImage.value = image
 
+// Update the swiper when an image was uploaded
 const handleUploaded = async () => {
     uploaded.value = false
     state.isUpdate = true
@@ -48,8 +56,7 @@ const handleUploaded = async () => {
     state.isUpdate = false
 }
 
-const handleSwiper = (swiper: any) => controlledSwiper.value = swiper
-
+// Reset the swiper when an image was deleted
 const handleDeleted = async () => {
   deleted.value = false
   state.currentImages.length = 0
@@ -59,6 +66,10 @@ const handleDeleted = async () => {
 
 const loadNextImages = async () => state.currentImages.push(...await getCurrentImages(state.currentImages.length, state.size))
 
+/**
+ * Action to perform at the end of the swiper
+ * @param swiper the swiper
+ */
 const handleEdge = async (swiper: any) => {
   if(swiper.isEnd && state.currentImages.length !== state.nbImages && !state.isUpdate){
     state.isUpdate = true
@@ -99,7 +110,6 @@ watch(() => deleted.value, ((newState) => newState && handleDeleted()))
             }
           }"
           @toEdge="handleEdge"
-          @swiper="handleSwiper"
       >
         <swiper-slide v-for="image in state.currentImages" class="text-center" :key="image.id">
           <Image class="img neumorphism neumorphism-push appear"

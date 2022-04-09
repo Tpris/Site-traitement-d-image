@@ -1,7 +1,9 @@
 <script setup lang="ts">
+  // Initialisation du store
   import { useImageStore } from '@/store'
   import {storeToRefs} from "pinia";
   const store = useImageStore()
+  // Récuparation des attributs nécéssaires du store
   let { selectedImage } = storeToRefs(store)
 </script>
 

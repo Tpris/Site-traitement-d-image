@@ -4,9 +4,12 @@ import Carrousel from '@/components/HomeCaroussel.vue'
 import Image from "@/components/ImageGetter.vue"
 import NavBar from '@/components/NavBar.vue'
 import ImageMeta from "@/components/ImageMeta.vue";
+
+// Initialisation du store
 import { useImageStore } from '@/store'
 import {storeToRefs} from "pinia";
 const store = useImageStore()
+// Récupération des attributs nécéssaires du store
 let { selectedImage } = storeToRefs(store)
 
 </script>
