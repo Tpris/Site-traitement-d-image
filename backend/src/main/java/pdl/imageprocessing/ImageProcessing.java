@@ -101,6 +101,8 @@ public class ImageProcessing {
    * @return a ResponseEntity
    */
   public static ResponseEntity<?> meanFilterWithBorders(Planar<GrayU8> image, int size, BorderType borderType) {
+    if (borderType == null)
+      return new ResponseEntity<>("borderType can't be null", HttpStatus.BAD_REQUEST);
     if (size % 2 == 1) {
       if (size < image.height && size < image.width) {
         int nbCanaux = image.getNumBands();
@@ -133,7 +135,7 @@ public class ImageProcessing {
         Planar<GrayU8> input = image.clone();
         double[][] kernel = Convolution.gaussianKernel(size, sigma);
         for (int i = 0; i < nbCanaux; ++i) {
-          Convolution.gaussianBlurGrayU8(input.getBand(i), image.getBand(i), size, sigma, kernel, borderType);
+          Convolution.gaussianBlurGrayU8(input.getBand(i), image.getBand(i), sigma, kernel, borderType);
         }
         return new ResponseEntity<>("ok", HttpStatus.OK);
       } else
