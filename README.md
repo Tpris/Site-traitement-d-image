@@ -14,21 +14,22 @@ Besoin 20.
 - Firefox Version 98
 - Firefox Version 97
 - Firefox Version 91.7
+
 ---
 ## Commandes pour exécuter le projet
 
 ### A réaliser avant
 
-— __Au CREMI ou si vous n'avez pas le chemin vers Node de configurer__
+*  __Au CREMI ou si vous n'avez pas le chemin vers Node de configurer__
 > `export PATH=/opt/users/Node.js/bin:$PATH`
 
-— __Obligatoire__
+*  __Obligatoire__
 
 Se rendre dans le dossier **j1d**
 > `cd j1d`
 
 > `mvn clean install`
----
+
 ### Pour lancer le projet
 
 > `mvn --projects backend spring-boot:run`
