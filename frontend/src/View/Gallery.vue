@@ -68,7 +68,7 @@ onMounted(async () => {
            <input type="search" v-model="state.nameImg" placeholder="Entrez le nom de l'image" class="items"/>
            <div id="type-check">
               <input type="checkbox" name="png" value="" class="items" id="type-png"/><label for="PNG">PNG</label>
-              <input type="checkbox" name="jpg" value="" class="items" id="type-jpg"/><label for="JPG">JPG</label>
+              <input type="checkbox" name="jpg" value="" class="items" id="type-jpg"/><label for="JPG">JPEG</label>
            </div>
             <input v-on:click="getImages()" type="button" name="search" value="Chercher" class="button neumorphism neumorphism-push items"/>
         </form>
