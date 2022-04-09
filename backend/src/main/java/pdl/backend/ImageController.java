@@ -131,9 +131,7 @@ public class ImageController<Item> {
     Optional<Image> image = imageDao.retrieve(id);
 
     if (image.isPresent()) {
-      String extension = image.get().getName();
-      int p = extension.lastIndexOf(".");
-      extension = extension.substring(p + 1);
+      String extension = image.get().getType().getSubtype();
       InputStream inputStream = new ByteArrayInputStream(image.get().getData());
 
       if (algo.isPresent()) {
