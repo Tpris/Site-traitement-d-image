@@ -302,7 +302,11 @@ public class ImageProcessing {
 
   /**
    * Define the step of a pixel depending on the step parameter which define the
-   * difference between 2 steps
+   * difference between 2 steps.
+   * 
+   * Shades are redefined according to landings. 
+   * The difference with the nearer landing is defined according to the biggest value of a position.
+   * The difference is applied for each bands of the position.
    * 
    * @param input the Planar<GrayU8> image to edit
    * @param x     the abscissa of the pixel
@@ -311,14 +315,9 @@ public class ImageProcessing {
    */
   private static void gradient(Planar<GrayU8> input, int x, int y, int step, boolean dark) {
     int nbCanaux = input.getNumBands();
-    int gl = input.getBand(0).get(x, y);
-    for (int i = 1; i < nbCanaux; ++i) {
-      int val = input.getBand(i).get(x, y);
-      if (val > gl)
-        gl = val;
-    }
-    int valDark = gl % step;
-    int valBright = step - valDark;
+    int maxVal = getMaxValueFromAPosition(input, x, y);
+    int valDark = maxVal % step; // calcul the difference between the value and the upper landing 
+    int valBright = step - valDark; // calcul the difference between the value and the lower landing 
     for (int i = 0; i < nbCanaux; ++i) {
       int v0 = input.getBand(i).get(x, y);
       int v = (dark) ? v0 - valDark : v0 + valBright;
@@ -328,6 +327,25 @@ public class ImageProcessing {
         v = 0;
       input.getBand(i).set(x, y, v);
     }
+  }
+
+  /**
+   * Find the maximum value from a position
+   * 
+   * @param input the Planar<GrayU8> image to edit
+   * @param x     the abscissa of the pixel
+   * @param y     the ordinate of the pixel
+   * @return the maximum value
+   */
+  private static int getMaxValueFromAPosition(Planar<GrayU8> input, int x, int y){
+    int nbCanaux = input.getNumBands();
+    int maxVal = input.getBand(0).get(x, y);
+    for (int i = 1; i < nbCanaux; ++i) {
+      int val = input.getBand(i).get(x, y);
+      if (val > maxVal)
+        maxVal = val;
+    }
+    return maxVal;
   }
 
   /**
@@ -418,12 +436,12 @@ public class ImageProcessing {
    * @param tourbillonFactor the factor of modification
    * @return a ResponseEntity
    */
-  public static ResponseEntity<?> tourbillon(Planar<GrayU8> image, float tourbillonFactor, int x0, int y0) {
+  public static ResponseEntity<?> vortex(Planar<GrayU8> image, float tourbillonFactor, int x0, int y0) {
     int nbCanaux = image.getNumBands();
     if (tourbillonFactor < 0)
       return new ResponseEntity<>("the parameter must be positive", HttpStatus.BAD_REQUEST);
     for (int i = 0; i < nbCanaux; ++i)
-      GrayLevelProcessing.tourbillon(image.getBand(i), tourbillonFactor, x0, y0);
+      GrayLevelProcessing.vortex(image.getBand(i), tourbillonFactor, x0, y0);
     return new ResponseEntity<>("ok", HttpStatus.OK);
   }
 

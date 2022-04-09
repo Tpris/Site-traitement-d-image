@@ -175,7 +175,7 @@ class GrayLevelProcessing {
 	}
 
 	/**
-	 * Apply the water color thershlod on a band
+	 * Apply the water color threshlod on a band
 	 * 
 	 * @param input the GrayU8 band
 	 */
@@ -183,13 +183,13 @@ class GrayLevelProcessing {
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
 				int gl = input.get(x, y);
-				if (gl < 61) {
+				if (gl < 61) { // dark values become white
 					input.set(x, y, 255);
-				} else if (gl < 122) {
+				} else if (gl < 122) { // values between 61 and 122 are cleared to the step 122
 					input.set(x, y, 122);
-				} else if (gl < 183) {
+				} else if (gl < 183) { // values between 122 and 183 are cleared to the step 183
 					input.set(x, y, 183);
-				} else
+				} else // bright values become white
 					input.set(x, y, 255);
 			}
 		}
@@ -202,6 +202,7 @@ class GrayLevelProcessing {
 	 * @param theta the angle of rotation
 	 */
 	static void rotate(GrayU8 input, double theta) {
+		// x0 and y0 are the origin of the rotation
 		int x0 = input.width / 2;
 		int y0 = input.height / 2;
 		GrayU8 tmp = input.clone();
@@ -225,6 +226,7 @@ class GrayLevelProcessing {
 	 * @param perspective the type of perspective
 	 */
 	static void perspective(GrayU8 input, double d, Perspective perspective) {
+		// x0 and y0 are the origin of the perspective
 		int x0 = x0declarationToPerspective(input, d, perspective);
 		int y0 = y0declarationToPerspective(input, d, perspective);
 		perspectiveTreatement(input, d, x0, y0);
@@ -300,7 +302,7 @@ class GrayLevelProcessing {
 	 * @param x0           The x origin of the vortex
 	 * @param y0           The y origin of the vortex
 	 */
-	static void tourbillon(GrayU8 input, float vortexFactor, int x0, int y0) {
+	static void vortex(GrayU8 input, float vortexFactor, int x0, int y0) {
 		x0 *= input.width / 100;
 		y0 *= input.height / 100;
 		GrayU8 tmp = input.clone();

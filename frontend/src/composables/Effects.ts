@@ -14,8 +14,8 @@ export enum EffectTypes {
     ColorToGray = "RGBtoGray",
     Draw = "draw",
     WaterColor = "waterColor",
-    Tourbillon = "tourbillon",
-    Fisheyes = "fisheyes",
+    Vortex = "vortex",
+    Perspective = "perspective",
     Rotation = "rotation"
 }
 
@@ -111,7 +111,7 @@ export class Effect {
                 break;
 
             case EffectTypes.Rainbow:
-                this._text = "Rainbow"
+                this._text = "Arc En Ciel"
                 this._params = new Params(null, [
                     new Cursors("min", "smin", ["0", "1"], 0.01, 0),
                     new Cursors("max", "smax", ["0", "1"], 0.01, 1)
@@ -119,7 +119,7 @@ export class Effect {
                 break;
             
             case EffectTypes.DynContrast:
-                this._text = "Dyn. Contrast"
+                this._text = "Cont- raste Dyn."
                 this._params = new Params(null, [
                     new Cursors("min", "min", ["0", "255"], 1, 0),
                     new Cursors("max", "max", ["0", "255"], 1, 255)
@@ -127,14 +127,14 @@ export class Effect {
                 break;
 
             case EffectTypes.Threshold:
-                this._text = "Threshold"
+                this._text = "Seuil"
                 this._params = new Params(null, [
                     new Cursors("threshold", "threshold", ["0", "255"], 1, 122)
                 ] as Cursors[])
                 break;
 
             case EffectTypes.GaussianBlur:
-                this._text = "Gauss."
+                this._text = "Flou Gauss."
                 this._params = new Params(
                     [new DropBox("Type", "BT", ["SKIP", "NORMALIZED", "EXTENDED", "REFLECT"])] as DropBox[],
                     [new Cursors("Taille", "size", ["1", "35"], 2, 1),
@@ -143,7 +143,7 @@ export class Effect {
                 break;
 
             case EffectTypes.MeanBlur:
-                this._text = "Flou"
+                this._text = "Flou Moy."
                 this._params = new Params(
                     [new DropBox("Type", "BT", ["SKIP", "NORMALIZED", "EXTENDED", "REFLECT"])] as DropBox[],
                     [new Cursors("Taille", "size", ["1", "35"], 2, 1)] as Cursors[]
@@ -155,28 +155,28 @@ export class Effect {
                 this._params = new Params(null, [new Cursors("Delta", "delta", ["-255", "255"], 1, 0)] as Cursors[])
                 break
 
-            case EffectTypes.Fisheyes:
-                this._text = "Fish eyes"
+            case EffectTypes.Perspective:
+                this._text = "Relief"
                 this._params = new Params(
                     [new DropBox("Perspective", "persp", ["TOPLEFT", "TOP", "TOPRIGHT",
                         "LEFT", "CENTER", "RIGHT","BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT"])] as DropBox[], 
-                    [new Cursors("Delta", "delta", ["0", "0.001"], 0.0001, 0)] as Cursors[])
+                    [new Cursors("Delta", "delta", ["0", "0.002"], 0.0001, 0)] as Cursors[])
                 break
 
             case EffectTypes.Rotation:
-                this._text = "Rot°"
+                this._text = "Rota- tion"
                 this._params = new Params(null, [new Cursors("Angle", "theta", ["0", "360"], 0.1, 0)] as Cursors[])
                 break
 
-            case EffectTypes.Tourbillon:
-                this._text = "Tourbillon"
-                this._params = new Params(null, [new Cursors("Rotation", "tourbillon", ["0.001", "0.15"], 0.001, 0.001),
+            case EffectTypes.Vortex:
+                this._text = "Tour- billon"
+                this._params = new Params(null, [new Cursors("Rotation", "vortex", ["0.001", "0.15"], 0.001, 0.001),
                 new Cursors("Position horizontale", "x0", ["0", "100"], 1, 50),
                 new Cursors("Position verticale", "y0", ["0", "100"], 1, 50)] as Cursors[])
                 break
 
             case EffectTypes.Sobel:
-                this._text = "Sobel"
+                this._text = "Contour"
                 this._params = new Params(
                     [new DropBox("Type", "color", ["Color","White"])] as DropBox[],
                     null)
@@ -203,12 +203,12 @@ export class Effect {
                 break;
 
             case EffectTypes.ColorToGray:
-                this._text = "Gray"
+                this._text = "Gris"
                 this._params = new Params(null, null)
                 break;
 
             case EffectTypes.WaterColor:
-                this._text = "Water Color"
+                this._text = "Aqua- relle"
                 this._params = new Params(null, null)
                 break;
             

@@ -85,7 +85,7 @@ public class ImageController<Item> {
           return ImageProcessing.luminosityImage(img, Integer.parseInt(getAndPopValue(listParam, "delta")));
         }
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
-      case "fisheyes":
+      case "perspective":
         if (lenValue(listParam, "delta") > 0  && lenValue(listParam, "persp") > 0 ) {
           return ImageProcessing.perspective(img, Double.parseDouble(getAndPopValue(listParam, "delta")) , 
                                               stringToPerspective(getAndPopValue(listParam, "persp")));
@@ -129,9 +129,9 @@ public class ImageController<Item> {
         return ImageProcessing.negativeImage(img);
       case "waterColor":
         return ImageProcessing.waterColor(img);
-      case "tourbillon":
-        if (lenValue(listParam, "tourbillon") > 0 && lenValue(listParam, "x0") > 0 && lenValue(listParam, "y0") > 0) {
-          return ImageProcessing.tourbillon(img,Float.parseFloat(getAndPopValue(listParam, "tourbillon")),
+      case "vortex":
+        if (lenValue(listParam, "vortex") > 0 && lenValue(listParam, "x0") > 0 && lenValue(listParam, "y0") > 0) {
+          return ImageProcessing.vortex(img,Float.parseFloat(getAndPopValue(listParam, "vortex")),
           Integer.parseInt(getAndPopValue(listParam, "x0")),Integer.parseInt(getAndPopValue(listParam, "y0")));
         }
         return new ResponseEntity<>("missing parameter", HttpStatus.BAD_REQUEST);
@@ -189,7 +189,7 @@ public class ImageController<Item> {
   public @ResponseBody ResponseEntity<?> getImage(@PathVariable("id") long id,
       @RequestParam("algorithm") Optional<String> algo,
       @RequestParam("delta") Optional<String> delta,
-      @RequestParam("tourbillon") Optional<String> tourbillon,
+      @RequestParam("vortex") Optional<String> vortex,
       @RequestParam("theta") Optional<String> theta,
       @RequestParam("size") Optional<String> size,
       @RequestParam("sigma") Optional<String> sigma,
@@ -220,7 +220,7 @@ public class ImageController<Item> {
         HashMap<String, ArrayList<String>> listParam = new HashMap<String, ArrayList<String>>() {
           {
             put("delta", createList(delta, separator));
-            put("tourbillon", createList(tourbillon, separator));
+            put("vortex", createList(vortex, separator));
             put("theta", createList(theta, separator));
             put("size", createList(size, separator));
             put("sigma", createList(sigma, separator));
