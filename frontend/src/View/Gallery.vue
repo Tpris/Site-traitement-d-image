@@ -11,6 +11,9 @@ const state = reactive({
   type: "all"
 })
 
+/**
+ * Get a list of images depending on specific filters ( image type, image name)
+ */
 const getImages = async () => {
   let pngCheckbox = (<HTMLInputElement>document.getElementById("type-png")).checked;
   let jpgCheckbox = (<HTMLInputElement>document.getElementById("type-jpg")).checked;
@@ -27,6 +30,9 @@ const getImages = async () => {
   state.images = await loadImages()
 }
 
+/**
+ * Return list images
+ */
 const loadImages = async () => {
   return api.getImageListWithFilters(state.type, state.nameImg).then((data) => {
       let dataArray = data as unknown as [{}]
@@ -37,14 +43,27 @@ const loadImages = async () => {
       return state.images
     })
 }
+
+/**
+ * Display information of an image
+ * @param id String
+ */
 const mouseOver =  (id: String) => {
   (<HTMLDivElement>document.getElementById('img'+id)).style.display = "block";
 }
 
+/**
+ * Hide information of an image
+ * @param id String
+ */
 const mouseOut =  (id: String) => {
   (<HTMLDivElement>document.getElementById('img'+id)).style.display = "none";
 }
 
+/**
+ * Get proper form of size image without number of channels
+ * @param size String
+ */
 const getSize =  (size: String) => {
   let s = size.split('x', 3)
   let tmp = s[1]
