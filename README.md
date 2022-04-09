@@ -15,7 +15,6 @@ Besoin 20.
 - Firefox Version 97
 - Firefox Version 91.7
 
----
 ## Commandes pour exécuter le projet
 
 ### A réaliser avant
