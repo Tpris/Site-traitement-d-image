@@ -185,7 +185,7 @@ public class ImageController<Item> {
         : new ArrayList<String>();
   }
 
-  @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
+  @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.TEXT_HTML_VALUE})
   public @ResponseBody ResponseEntity<?> getImage(@PathVariable("id") long id,
       @RequestParam("algorithm") Optional<String> algo,
       @RequestParam("delta") Optional<String> delta,
