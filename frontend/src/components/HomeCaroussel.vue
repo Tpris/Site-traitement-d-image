@@ -35,10 +35,7 @@ const getCurrentImages = async (index:number, nbImg:number) => {
   })
 }
 
-onMounted(async () => {
-  state.currentImages = await getCurrentImages(0, state.size)
-  await loadNextImages()
-})
+onMounted(async () => state.currentImages = await getCurrentImages(0, state.size+1))
 
 const imageClick = (image: ImageType) => selectedImage.value = image
 
