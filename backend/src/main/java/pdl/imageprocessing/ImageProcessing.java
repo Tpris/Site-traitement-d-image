@@ -102,7 +102,7 @@ public class ImageProcessing {
    */
   public static ResponseEntity<?> meanFilterWithBorders(Planar<GrayU8> image, int size, BorderType borderType) {
     if (borderType == null)
-      return new ResponseEntity<>("borderType can't be null", HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>("borderType parameter is incorrect", HttpStatus.BAD_REQUEST);
     if (size % 2 == 1) {
       if (size < image.height && size < image.width) {
         int nbCanaux = image.getNumBands();
@@ -128,7 +128,7 @@ public class ImageProcessing {
    */
   public static ResponseEntity<?> gaussianBlur(Planar<GrayU8> image, int size, float sigma, BorderType borderType) {
     if (borderType == null)
-      return new ResponseEntity<>("borderType can't be null", HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>("borderType parameter is incorrect", HttpStatus.BAD_REQUEST);
     if (size % 2 == 1) {
       if (size < image.height && size < image.width) {
         int nbCanaux = image.getNumBands();
@@ -431,7 +431,7 @@ public class ImageProcessing {
    */
   public static ResponseEntity<?> perspective(Planar<GrayU8> image, double delta, Perspective perspective) {
     if (perspective == null)
-      return new ResponseEntity<>("perspective can't be null", HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>("perspective parameter is incorrect", HttpStatus.BAD_REQUEST);
     int nbCanaux = image.getNumBands();
     if (delta < 0)
       return new ResponseEntity<>("delta must be positive", HttpStatus.BAD_REQUEST);
