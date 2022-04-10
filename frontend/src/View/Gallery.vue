@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import NavBar from '@/components/NavBar.vue'
-import {onMounted, reactive, UnwrapRef} from "vue";
+import {onMounted, PropType, reactive, UnwrapRef} from "vue";
 import {api} from "@/http-api";
 import {ImageType} from "@/types/ImageType";
 
@@ -86,7 +86,7 @@ const getSize =  (size: String) => {
  * Get source img
  * @param id String
  */
-const getSource=  (id: number) => {
+const getSource =  (id: PropType<{ type: NumberConstructor; required: boolean }> | undefined | number)  => {
   api.getImage(id)
       .then((data) =>{
         const reader = new FileReader()
