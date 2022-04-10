@@ -6,7 +6,8 @@ import {ImageType} from "@/types/ImageType";
 
 //Initialize the store
 import { useImageStore } from '@/store'
-import {storeToRefs} from "pinia";
+import {storeToRefs} from "pinia"
+import Image from '@/components/ImageGetter.vue'
 const store = useImageStore()
 // Get required attributes of the store
 let { selectedImage} = storeToRefs(store)
@@ -128,9 +129,11 @@ onMounted(async () => {
     </div>
     <div class="gallery">
       <div v-for="image in state.images" :key="image.id" :id="image.id.toString()"
-           style="position: relative;" @mouseover="mouseOver(image.id)" @mouseout="mouseOut(image.id)" @click="imageClick(image)"
+           @mouseover="mouseOver(image.id)" @mouseout="mouseOut(image.id)"
            class="gallery-img">
-          <img :src="getSource(image.id)" :alt="image.name" :id="'img'+image.id.toString()" />
+        <Image class="img neumorphism appear"
+               @click="imageClick(image)" :alt="image.name" :id="image.id"
+        />
         <router-link to="/">
         <div class="gallery-img-info"
               :id="'imgInfo'+image.id">
@@ -164,12 +167,18 @@ onMounted(async () => {
   border-radius: 0.75rem;
 }
 
+.appear{
+  animation: appear 650ms ease-in-out;
+}
+
 .gallery-img {
- cursor: pointer;
+  cursor: pointer;
+  position: relative;
 }
 
 .gallery-img-info{
   opacity: 90%;
+  animation: appear-opacity 400ms ease-in-out;
   background: white;
   z-index: 9999;
   position: absolute;
@@ -188,8 +197,6 @@ onMounted(async () => {
   top: 30%;
   position: relative;
 }
-
-
 
 .button{
   font-family: Helvetica, Arial,  sans-serif;
@@ -233,6 +240,32 @@ onMounted(async () => {
   }
 }
 
+
+@keyframes appear-opacity {
+  From {
+    opacity: 0;
+  }
+  To {
+    opacity: 90%;
+  }
+}
+
+@keyframes appear {
+  From {
+    opacity: 0;
+    box-shadow: unset;
+  }
+  To {
+    opacity: 100%;
+    box-shadow:
+        inset 0 0 15px rgba(55, 84, 170,0),
+        inset 0 0 20px rgba(255, 255, 255,0),
+        7px 7px 15px rgba(55, 84, 170,.15),
+        -7px -7px 20px rgba(255, 255, 255,1),
+        inset 0 0 4px rgba(255, 255, 255,.2);
+  }
+}
+
 @media (min-width: 628px){
 
   #type-check{
@@ -241,7 +274,6 @@ onMounted(async () => {
 }
 
 @media (min-width: 1910px){
-
   .gallery {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
