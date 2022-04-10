@@ -121,8 +121,8 @@ export class Effect {
             case EffectTypes.DynContrast:
                 this._text = "Cont- raste Dyn."
                 this._params = new Params(null, [
-                    new Cursors("min", "min", ["0", "255"], 1, 0),
-                    new Cursors("max", "max", ["0", "255"], 1, 255)
+                    new Cursors("min", "min", ["0", "255"], 1.0, 0),
+                    new Cursors("max", "max", ["0", "255"], 1.0, 255)
                 ] as Cursors[])
                 break;
 

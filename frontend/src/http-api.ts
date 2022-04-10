@@ -36,11 +36,11 @@ export const api = {
       if (index !== 0) algorithm += separator
       algorithm += e.type
       e.params.dropBoxes.forEach((dB: UnwrapRef<DropBox>) =>{
-        if (params.has(dB.name)) params.set(dB.name, params.get(dB.name) + separator + dB.value)
+        if (params.has(dB.name) && dB.value !== '') params.set(dB.name, params.get(dB.name) + separator + dB.value)
         else params.set(dB.name, dB.value)
       })
       e.params.cursors.forEach((c: UnwrapRef<Cursors>) =>{
-        if (params.has(c.name)) params.set(c.name, params.get(c.name) + separator + c.value)
+        if (params.has(c.name) && c.value) params.set(c.name, params.get(c.name) + separator + c.value)
         else params.set(c.name, c.value.toString())
       })
     })
