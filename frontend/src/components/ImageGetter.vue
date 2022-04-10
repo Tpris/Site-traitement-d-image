@@ -58,7 +58,9 @@ const getImageEffect = (effects: UnwrapRef<Effect[]>) =>{
   if(!effects || effects.length === 0) return getImage(selectedImage.value.id)
   api.getImageEffect()
       .then((data) => updateSource(data as unknown as Blob))
-      .catch(e => console.log(e.message))
+      .catch((e) =>{
+        if(e) console.log(e.message)
+      })
 }
 
 onMounted(() => getImage(props.id))

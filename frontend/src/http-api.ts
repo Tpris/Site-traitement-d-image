@@ -31,19 +31,26 @@ export const api = {
     let params = new Map<string, string>();
     let algorithm : string = ""
     let separator = "_"
+    let hasAllParams = true
 
     appliedEffects.value.forEach((e: UnwrapRef<Effect>, index: number) => {
       if (index !== 0) algorithm += separator
       algorithm += e.type
       e.params.dropBoxes.forEach((dB: UnwrapRef<DropBox>) =>{
-        if (params.has(dB.name) && dB.value !== '') params.set(dB.name, params.get(dB.name) + separator + dB.value)
-        else params.set(dB.name, dB.value)
+          if(dB.value === "") {
+            hasAllParams = false
+            return
+          }
+          if (params.has(dB.name) && dB.value !== "") params.set(dB.name, params.get(dB.name) + separator + dB.value)
+          else params.set(dB.name, dB.value)
       })
+      if(!hasAllParams) return
       e.params.cursors.forEach((c: UnwrapRef<Cursors>) =>{
-        if (params.has(c.name) && c.value) params.set(c.name, params.get(c.name) + separator + c.value)
+        if (params.has(c.name)) params.set(c.name, params.get(c.name) + separator + c.value)
         else params.set(c.name, c.value.toString())
       })
     })
+    if(!hasAllParams) return Promise.reject()
 
     let objParams = Object.fromEntries(params)
     return requests.get(`images/${selectedImage.value.id}`, {

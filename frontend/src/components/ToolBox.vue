@@ -129,8 +129,6 @@
     let maxCursors = effect.params.cursors[indMax]
     if (minCursors.param[1])
       minCursors.param[1] = maxCursors.value + ""
-
-    console.log(typeof maxCursors.value)
     if (Number(minCursors.value) > Number(maxCursors.value)){
       minCursors.value = maxCursors.value
     }
