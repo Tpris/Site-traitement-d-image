@@ -58,7 +58,7 @@ const loadImages = async () => {
  * Display information of an image
  * @param id String
  */
-const mouseOver =  (id: String) => {
+const mouseOver =  (id: Number) => {
   (<HTMLDivElement>document.getElementById('imgInfo'+id)).style.display = "block";
 }
 
@@ -66,7 +66,7 @@ const mouseOver =  (id: String) => {
  * Hide information of an image
  * @param id String
  */
-const mouseOut =  (id: String) => {
+const mouseOut =  (id: Number) => {
   (<HTMLDivElement>document.getElementById('imgInfo'+id)).style.display = "none";
 }
 
@@ -110,38 +110,39 @@ onMounted(async () => {
 </script>
 
 <template>
-<div>
+  <nav-bar></nav-bar>
   <div>
-      <h2 class="" for="search"> Chercher une image:</h2>
-      <div class=""> 
-        <form>
-           <input type="search" v-model="state.nameImg" placeholder="Entrez le nom de l'image" class="items"/>
-           <div id="type-check">
-              <input type="checkbox" name="png" value="" class="items" id="type-png"/><label for="PNG">PNG</label>
-              <input type="checkbox" name="jpg" value="" class="items" id="type-jpg"/><label for="JPG">JPEG</label>
-           </div>
-            <input v-on:click="getImages()" type="button" name="search" value="Chercher" class="button neumorphism neumorphism-push items"/>
-        </form>
-      </div>
-  </div>
-  <div class="gallery">
-    <div v-for="image in state.images" :key="image['id']" :id="image['id']"
-         style="position: relative;" @mouseover="mouseOver(image['id'])" @mouseout="mouseOut(image['id'])" @click="imageClick(image)"
-         class="gallery-img">
-        <img :src="getSource(image['id'])" :alt="image['name']" :id="'img'+image['id']" />
-      <router-link to="/">
-      <div class="gallery-img-info"
-            :id="'imgInfo'+image['id']">
-        <div>
-          <p><b>nom:</b> {{image['name']}}</p>
-          <p><b>type:</b> {{image['type']}}</p>
-          <p><b>taille:</b> {{getSize(image['size'])}}</p>
+    <div>
+        <h2 class="" for="search"> Chercher une image:</h2>
+        <div class="">
+          <form>
+             <input type="search" v-model="state.nameImg" placeholder="Entrez le nom de l'image" class="items"/>
+             <div id="type-check">
+                <input type="checkbox" name="png" value="" class="items" id="type-png"/><label for="PNG">PNG</label>
+                <input type="checkbox" name="jpg" value="" class="items" id="type-jpg"/><label for="JPG">JPEG</label>
+             </div>
+              <input v-on:click="getImages()" type="button" name="search" value="Chercher" class="button neumorphism neumorphism-push items"/>
+          </form>
         </div>
+    </div>
+    <div class="gallery">
+      <div v-for="image in state.images" :key="image.id" :id="image.id"
+           style="position: relative;" @mouseover="mouseOver(image.id)" @mouseout="mouseOut(image.id)" @click="imageClick(image)"
+           class="gallery-img">
+          <img :src="getSource(image.id)" :alt="image['name']" :id="'img'+image.id" />
+        <router-link to="/">
+        <div class="gallery-img-info"
+              :id="'imgInfo'+image.id">
+          <div>
+            <p><b>nom:</b> {{image.name}}</p>
+            <p><b>type:</b> {{image.type}}</p>
+            <p><b>taille:</b> {{getSize(image.size)}}</p>
+          </div>
+        </div>
+        </router-link>
       </div>
-      </router-link>
     </div>
   </div>
-</div>
 </template>
 
 <style scoped>
