@@ -4,6 +4,16 @@ import {onMounted, reactive, UnwrapRef} from "vue";
 import {api} from "@/http-api";
 import {ImageType} from "@/types/ImageType";
 
+//Initialize the store
+import { useImageStore } from '@/store'
+import {storeToRefs} from "pinia";
+const store = useImageStore()
+// Get required attributes of the store
+let { selectedImage} = storeToRefs(store)
+
+// Select an image
+const imageClick = (image: ImageType) => selectedImage.value = image
+
 const state = reactive({
   images: Array<ImageType>(),
   limit: 0,
@@ -79,7 +89,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <nav-bar></nav-bar>
+<div>
   <div>
       <h2 class="" for="search"> Chercher une image:</h2>
       <div class=""> 
@@ -95,9 +105,10 @@ onMounted(async () => {
   </div>
   <div class="gallery">
     <div v-for="image in state.images" :key="image['id']" :id="image['id']"
-         style="position: relative;" @mouseover="mouseOver(image['id'])" @mouseout="mouseOut(image['id'])"
+         style="position: relative;" @mouseover="mouseOver(image['id'])" @mouseout="mouseOut(image['id'])" @click="imageClick(image)" 
          class="gallery-img">
         <img :src="'/images/' + image['id']" :alt="image['name']" />
+        <router-link to="/">
       <div class="gallery-img-info"
             :ref="'img'+image['id']"
             :id="'img'+image['id']">
@@ -107,8 +118,10 @@ onMounted(async () => {
           <p><b>taille:</b> {{getSize(image['size'])}}</p>
         </div>
       </div>
+      </router-link>
     </div>
   </div>
+</div>
 </template>
 
 <style scoped>
