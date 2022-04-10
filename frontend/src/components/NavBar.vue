@@ -58,7 +58,7 @@ onMounted(() => {
   <nav class="neumorphism" id="nav-bar">
     <div id="container-logo" v-if="isMobile">
       <router-link to="/">
-        <input v-bind:class=" isGallery? 'logo-nav-g': 'logo-nav'" type="image" src="../../public/logoApp.png"/>
+        🔥🐉
       </router-link>
     </div>
       <router-link v-else to="/" class="no-deco-link">
@@ -67,7 +67,7 @@ onMounted(() => {
    
     <div v-if="!isGallery"  class="items">
       <router-link class="button link neumorphism neumorphism-push" to="/gallery">
-        <span v-if="isMobile"><input type="image" src="/gallery.png" class="icon-nav"/></span>
+        <span v-if="isMobile">🖼️</span>
         <span v-else>Galerie</span>
       </router-link>
 
@@ -75,17 +75,16 @@ onMounted(() => {
          v-if="selectedImage.source !== '' && selectedImage.id !== -1"
          :href="selectedImage.source"
          :download="selectedImage.name">
-        <span v-if="isMobile"><input type="image" src="/download.png" class="icon-nav"/></span>
+        <span v-if="isMobile">⬇️</span>
         <span v-else>Télécharger</span>
       </a>
       <button class="button neumorphism neumorphism-push" v-else>
-        <span v-if="isMobile"><input type="image" src="/download.png" class="icon-nav"/></span>
+        <span v-if="isMobile">⬇️</span>
         <span v-else>Télécharger</span>
       </button>
 
       <label class="button neumorphism neumorphism-push" for="file">
-        <span v-if="isMobile"><input type="image" src="/add.png" class="icon-nav"/></span>
-
+       <span v-if="isMobile">➕</span>
         <span v-else>Ajouter</span>
       </label>
       <div id="input-upload">
@@ -93,19 +92,18 @@ onMounted(() => {
       </div>
 
       <button class="button neumorphism neumorphism-push" v-if="selectedImage.source && selectedImage.id !== -1" @click="deleteImage(selectedImage.id)">
-
-        <span v-if="isMobile"><input type="image" src="/delete.png" class="icon-nav" /></span>
+       <span v-if="isMobile">🗑</span>
         <span v-else>Supprimer</span>
       </button>
       <button class="button neumorphism neumorphism-push" v-else>
-        <span v-if="isMobile"><input type="image" src="/delete.png" class="icon-nav"/></span>
+        <span v-if="isMobile">🗑</span>
         <span v-else>Supprimer</span>
       </button>
     </div>
 
     <div v-else class="items">
       <router-link v-if="isGallery" class="button link neumorphism neumorphism-push" to="/">
-        <span v-if="isMobile"><input type="image" src="/edit.png" class="icon-nav"/></span>
+        <span v-if="isMobile">🎨</span>
         <span v-else>Editeur</span>
       </router-link>
     </div>
