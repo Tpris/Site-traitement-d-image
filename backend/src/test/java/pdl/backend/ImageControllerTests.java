@@ -148,10 +148,10 @@ public class ImageControllerTests {
             0, 1, 2, 3, 4
         )))
         .andExpect(jsonPath("$[*].name", containsInAnyOrder(
-            "test.jpg", "space.jpeg", "cloud.png", "bn.jpg", "de.png"
+                "space", "test", "cloud", "de", "bn"
         )))
         .andExpect(jsonPath("$[*].type", containsInAnyOrder(
-            "image/jpeg", "image/png", "image/jpeg" , "image/jpeg", "image/png"
+            "jpeg",  "jpeg", "png", "png","jpeg"
         )))
         .andExpect(jsonPath("$[*].size", containsInAnyOrder(
             "245x252x3", "225x225x3", "1988x1290x3", "275x183x3", "600x450x4"
