@@ -117,30 +117,34 @@
     addEffects(effect)
   }
 
-  
-
   /**
    * Cursor management min less than max
    * @param effect the effect
    * @param indMin min cursor index
    * @param indMax max cursor index
    */
-  const minInfToMax = (effect: UnwrapRef<Effect>, indMin: number, indMax : number) => {
-    watch(() => findEffect(effect), (newEffect) => {
-    if(!newEffect) return
-    let minCursors = newEffect.params.cursors[indMin]
-    let maxCursors =  newEffect.params.cursors[indMax]
-    if(minCursors.param[1])
+  const minInfToMax = (effect: UnwrapRef<Effect>,  indMin: number, indMax: number) => {
+    if (!effect) return
+    let minCursors = effect.params.cursors[indMin]
+    let maxCursors = effect.params.cursors[indMax]
+    if (minCursors.param[1])
       minCursors.param[1] = maxCursors.value + ""
-    if(minCursors.value > maxCursors.value)
+    if (minCursors.value > maxCursors.value)
       minCursors.value = maxCursors.value
-  }, {deep:true})
   }
 
   //Perform specific operation of specific effects
-  minInfToMax(EffectTypes.Filter,1,2);
-  minInfToMax(EffectTypes.Rainbow,0,1);
-  minInfToMax(EffectTypes.DynContrast,0,1);
+  watch(() => findEffect(EffectTypes.Filter), (newEffect) => {
+    minInfToMax(newEffect,1,2);
+  }, {deep:true})
+
+  watch(() => findEffect(EffectTypes.Rainbow), (newEffect) => {
+    minInfToMax(newEffect, 0, 1);
+  }, {deep:true})
+
+  watch(() => findEffect(EffectTypes.DynContrast), (newEffect) => {
+    minInfToMax(newEffect, 0, 1);
+  }, {deep:true})
 
 </script>
 
