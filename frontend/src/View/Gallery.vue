@@ -83,28 +83,6 @@ const getSize =  (size: String) => {
   return s[0].concat(s[1]).concat(s[2])
 }
 
-/**
- * Get source img
- * @param id String
- */
-const getSource =  (id: PropType<{ type: NumberConstructor; required: boolean }> | undefined | number)  => {
-  api.getImage(id)
-      .then((data) =>{
-        const reader = new FileReader()
-        reader.readAsDataURL(data as unknown as Blob)
-        reader.onload = () => {
-          let result: string = reader.result as string
-          if (result) {
-            if(id)
-              (<HTMLImageElement>document.getElementById('img'+id.toString())).src = result;
-          }
-        };
-      })
-      .catch(e => {
-        console.log(e.message)
-      })
-}
-
 onMounted(async () => {
   state.images = await loadImages()
 })
@@ -129,10 +107,10 @@ onMounted(async () => {
     </div>
     <div class="gallery">
       <div v-for="image in state.images" :key="image.id" :id="image.id.toString()"
-           @mouseover="mouseOver(image.id)" @mouseout="mouseOut(image.id)"
+           @click="imageClick(image)" @mouseover="mouseOver(image.id)" @mouseout="mouseOut(image.id)"
            class="gallery-img">
         <Image class="img neumorphism appear"
-               @click="imageClick(image)" :alt="image.name" :id="image.id"
+               :alt="image.name" :id="image.id"
         />
         <router-link to="/">
         <div class="gallery-img-info"
