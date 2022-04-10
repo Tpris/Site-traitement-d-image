@@ -123,7 +123,7 @@
    * @param indMin min cursor index
    * @param indMax max cursor index
    */
-  const minInfToMax = (effect: UnwrapRef<Effect>,  indMin: number, indMax: number) => {
+  const minInfToMax = (effect: UnwrapRef<Effect> | undefined, indMin: number, indMax: number) => {
     if (!effect) return
     let minCursors = effect.params.cursors[indMin]
     let maxCursors = effect.params.cursors[indMax]
@@ -132,7 +132,6 @@
     if (Number(minCursors.value) > Number(maxCursors.value)){
       minCursors.value = maxCursors.value
     }
-
   }
 
   //Perform specific operation of specific effects
