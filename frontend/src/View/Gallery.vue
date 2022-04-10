@@ -94,7 +94,8 @@ const getSource =  (id: PropType<{ type: NumberConstructor; required: boolean }>
         reader.onload = () => {
           let result: string = reader.result as string
           if (result) {
-            (<HTMLImageElement>document.getElementById('img'+id)).src = result;
+            if(id)
+              (<HTMLImageElement>document.getElementById('img'+id.toString())).src = result;
           }
         };
       })
