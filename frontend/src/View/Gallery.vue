@@ -86,8 +86,8 @@ const getSize =  (size: String) => {
  * Get source img
  * @param id String
  */
-const getSource=  (id: string) => {
-  api.getImage(Number.parseFloat(id))
+const getSource=  (id: number) => {
+  api.getImage(id)
       .then((data) =>{
         const reader = new FileReader()
         reader.readAsDataURL(data as unknown as Blob)
@@ -126,10 +126,10 @@ onMounted(async () => {
         </div>
     </div>
     <div class="gallery">
-      <div v-for="image in state.images" :key="image.id" :id="image.id"
+      <div v-for="image in state.images" :key="image.id" :id="image.id.toString()"
            style="position: relative;" @mouseover="mouseOver(image.id)" @mouseout="mouseOut(image.id)" @click="imageClick(image)"
            class="gallery-img">
-          <img :src="getSource(image.id)" :alt="image['name']" :id="'img'+image.id" />
+          <img :src="getSource(image.id)" :alt="image.name" :id="'img'+image.id.toString()" />
         <router-link to="/">
         <div class="gallery-img-info"
               :id="'imgInfo'+image.id">
