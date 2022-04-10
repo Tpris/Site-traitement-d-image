@@ -139,8 +139,8 @@
 
   //Perform specific operation of specific effects
   minInfToMax(EffectTypes.Filter,1,2);
-  const effects = [EffectTypes.Rainbow, EffectTypes.DynContrast]
-  effects.forEach(effect => { minInfToMax(effect,0,1); });
+  minInfToMax(EffectTypes.Rainbow,0,1);
+  minInfToMax(EffectTypes.DynContrast,0,1);
 
 </script>
 

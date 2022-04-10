@@ -129,7 +129,7 @@ export class Effect {
             case EffectTypes.Threshold:
                 this._text = "Seuil"
                 this._params = new Params(null, [
-                    new Cursors("threshold", "threshold", ["0", "255"], 1, 122)
+                    new Cursors("seuil", "threshold", ["0", "255"], 1, 122)
                 ] as Cursors[])
                 break;
 
